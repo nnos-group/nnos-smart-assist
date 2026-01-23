@@ -1,10 +1,17 @@
 import { User, Car, MapPin, Sparkles, ArrowRight } from "lucide-react";
+import { ClientData } from "@/types/accessories";
 
 interface ClientDataScreenProps {
+  clientData: ClientData;
+  onClientDataChange: (data: ClientData) => void;
   onGenerateSuggestion: () => void;
 }
 
-const ClientDataScreen = ({ onGenerateSuggestion }: ClientDataScreenProps) => {
+const ClientDataScreen = ({ clientData, onClientDataChange, onGenerateSuggestion }: ClientDataScreenProps) => {
+  const handleChange = (field: keyof ClientData, value: string) => {
+    onClientDataChange({ ...clientData, [field]: value });
+  };
+
   return (
     <div className="min-h-screen p-8 app-container">
       <div className="max-w-5xl mx-auto fade-in">
@@ -29,24 +36,36 @@ const ClientDataScreen = ({ onGenerateSuggestion }: ClientDataScreenProps) => {
             <div className="space-y-4">
               <div>
                 <label className="label-text block mb-2">Modelo</label>
-                <div className="input-field bg-secondary/80 font-medium">
-                  RAM RAMPAGE REBEL
-                </div>
+                <input
+                  type="text"
+                  value={clientData.vehicleModel}
+                  onChange={(e) => handleChange("vehicleModel", e.target.value)}
+                  className="input-field w-full font-medium"
+                  placeholder="Ex: RAM RAMPAGE REBEL"
+                />
               </div>
               <div>
                 <label className="label-text block mb-2">Cor</label>
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-ram-red border-2 border-white shadow-md"></div>
-                  <span className="input-field bg-secondary/80 flex-1 font-medium">
-                    Vermelho Volcano
-                  </span>
+                  <input
+                    type="text"
+                    value={clientData.vehicleColor}
+                    onChange={(e) => handleChange("vehicleColor", e.target.value)}
+                    className="input-field flex-1 font-medium"
+                    placeholder="Ex: Vermelho Volcano"
+                  />
                 </div>
               </div>
               <div>
                 <label className="label-text block mb-2">Ano/Modelo</label>
-                <div className="input-field bg-secondary/80 font-medium">
-                  2024/2025
-                </div>
+                <input
+                  type="text"
+                  value={clientData.vehicleYear}
+                  onChange={(e) => handleChange("vehicleYear", e.target.value)}
+                  className="input-field w-full font-medium"
+                  placeholder="Ex: 2024/2025"
+                />
               </div>
             </div>
           </div>
@@ -63,22 +82,34 @@ const ClientDataScreen = ({ onGenerateSuggestion }: ClientDataScreenProps) => {
             <div className="space-y-4">
               <div>
                 <label className="label-text block mb-2">Nome Completo</label>
-                <div className="input-field bg-secondary/80 font-medium">
-                  João Silva
-                </div>
+                <input
+                  type="text"
+                  value={clientData.clientName}
+                  onChange={(e) => handleChange("clientName", e.target.value)}
+                  className="input-field w-full font-medium"
+                  placeholder="Nome do cliente"
+                />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="label-text block mb-2">Idade</label>
-                  <div className="input-field bg-secondary/80 font-medium">
-                    35 anos
-                  </div>
+                  <input
+                    type="text"
+                    value={clientData.clientAge}
+                    onChange={(e) => handleChange("clientAge", e.target.value)}
+                    className="input-field w-full font-medium"
+                    placeholder="Ex: 35"
+                  />
                 </div>
                 <div>
                   <label className="label-text block mb-2">Gênero</label>
-                  <div className="input-field bg-secondary/80 font-medium">
-                    Masculino
-                  </div>
+                  <input
+                    type="text"
+                    value={clientData.clientGender}
+                    onChange={(e) => handleChange("clientGender", e.target.value)}
+                    className="input-field w-full font-medium"
+                    placeholder="Ex: Masculino"
+                  />
                 </div>
               </div>
             </div>
@@ -96,21 +127,33 @@ const ClientDataScreen = ({ onGenerateSuggestion }: ClientDataScreenProps) => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="label-text block mb-2">Estado</label>
-                <div className="input-field bg-secondary/80 font-medium">
-                  Mato Grosso
-                </div>
+                <input
+                  type="text"
+                  value={clientData.state}
+                  onChange={(e) => handleChange("state", e.target.value)}
+                  className="input-field w-full font-medium"
+                  placeholder="Ex: Mato Grosso"
+                />
               </div>
               <div>
                 <label className="label-text block mb-2">Tipo de Terreno</label>
-                <div className="input-field bg-secondary/80 font-medium">
-                  Estradas de Terra / Rural
-                </div>
+                <input
+                  type="text"
+                  value={clientData.terrainType}
+                  onChange={(e) => handleChange("terrainType", e.target.value)}
+                  className="input-field w-full font-medium"
+                  placeholder="Ex: Estradas de Terra"
+                />
               </div>
               <div>
                 <label className="label-text block mb-2">Condição Climática</label>
-                <div className="input-field bg-secondary/80 font-medium">
-                  Alta Incidência de Chuvas
-                </div>
+                <input
+                  type="text"
+                  value={clientData.climateCondition}
+                  onChange={(e) => handleChange("climateCondition", e.target.value)}
+                  className="input-field w-full font-medium"
+                  placeholder="Ex: Alta Incidência de Chuvas"
+                />
               </div>
             </div>
 
@@ -118,7 +161,7 @@ const ClientDataScreen = ({ onGenerateSuggestion }: ClientDataScreenProps) => {
               <div className="flex items-start gap-3">
                 <Sparkles className="w-5 h-5 text-ram-red flex-shrink-0 mt-0.5" />
                 <p className="text-sm text-foreground">
-                  <strong className="text-ram-red">Análise Regional:</strong> A região do Mato Grosso apresenta alta 
+                  <strong className="text-ram-red">Análise Regional:</strong> A região do {clientData.state || "..."} apresenta alta 
                   demanda por acessórios de proteção e performance off-road devido às condições de estradas 
                   não pavimentadas e clima tropical com chuvas intensas.
                 </p>

@@ -1,33 +1,22 @@
 import { RotateCw, Check, MessageSquare, ArrowRight, Layers } from "lucide-react";
 import { useState } from "react";
 import ramRampageImage from "@/assets/ram-rampage-rebel.jpg";
+import { Accessory } from "@/types/accessories";
 
 interface VehicleVisualizationScreenProps {
+  accessories: Accessory[];
+  onAccessoryToggle: (id: string) => void;
   onGenerateScript: () => void;
 }
 
-const accessories = [
-  { name: "Estribo Lateral", active: true },
-  { name: "Protetor de Caçamba", active: true },
-  { name: "Pneus All-Terrain", active: true },
-  { name: "Friso Lateral", active: true },
-];
-
-const VehicleVisualizationScreen = ({ onGenerateScript }: VehicleVisualizationScreenProps) => {
+const VehicleVisualizationScreen = ({ accessories, onAccessoryToggle, onGenerateScript }: VehicleVisualizationScreenProps) => {
   const [rotation, setRotation] = useState(0);
-  const [activeAccessories, setActiveAccessories] = useState(accessories);
 
   const handleRotate = () => {
     setRotation((prev) => (prev + 45) % 360);
   };
 
-  const toggleAccessory = (index: number) => {
-    setActiveAccessories((prev) =>
-      prev.map((item, i) =>
-        i === index ? { ...item, active: !item.active } : item
-      )
-    );
-  };
+  const selectedAccessories = accessories.filter((a) => a.selected);
 
   return (
     <div className="min-h-screen p-8 app-container">
@@ -64,9 +53,9 @@ const VehicleVisualizationScreen = ({ onGenerateScript }: VehicleVisualizationSc
 
                 {/* Accessory Badges Overlay */}
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-wrap justify-center gap-2">
-                  {activeAccessories.filter(a => a.active).map((acc) => (
+                  {selectedAccessories.map((acc) => (
                     <span 
-                      key={acc.name}
+                      key={acc.id}
                       className="px-3 py-1.5 bg-stellantis-blue/90 text-primary-foreground text-xs font-medium rounded-full backdrop-blur-sm shadow-lg"
                     >
                       ✓ {acc.name}
@@ -83,6 +72,11 @@ const VehicleVisualizationScreen = ({ onGenerateScript }: VehicleVisualizationSc
                 {/* AR Badge */}
                 <div className="absolute top-4 right-4 bg-ram-red text-accent-foreground px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider shadow-lg">
                   Visualização AR
+                </div>
+
+                {/* Accessory Count */}
+                <div className="absolute top-4 left-4 bg-stellantis-blue/90 text-primary-foreground px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider shadow-lg">
+                  {selectedAccessories.length} Acessórios
                 </div>
               </div>
 
@@ -105,30 +99,37 @@ const VehicleVisualizationScreen = ({ onGenerateScript }: VehicleVisualizationSc
               <h3 className="label-text mb-4">Acessórios do Pacote</h3>
               
               <div className="space-y-2 mb-6">
-                {activeAccessories.map((acc, index) => (
+                {accessories.map((acc) => (
                   <button
-                    key={acc.name}
-                    onClick={() => toggleAccessory(index)}
+                    key={acc.id}
+                    onClick={() => onAccessoryToggle(acc.id)}
                     className={`w-full flex items-center justify-between p-3 rounded-lg border transition-all duration-200 ${
-                      acc.active
+                      acc.selected
                         ? "bg-primary/10 border-primary text-primary"
                         : "bg-secondary/50 border-border text-muted-foreground"
                     }`}
                   >
-                    <span className="text-sm font-medium">{acc.name}</span>
-                    <Check className={`w-4 h-4 ${acc.active ? "opacity-100" : "opacity-30"}`} />
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">{acc.icon}</span>
+                      <span className="text-sm font-medium">{acc.name}</span>
+                    </div>
+                    <Check className={`w-4 h-4 ${acc.selected ? "opacity-100" : "opacity-30"}`} />
                   </button>
                 ))}
               </div>
 
               <div className="border-t border-border pt-4">
-                <p className="text-xs text-muted-foreground mb-4">
-                  Toque para adicionar ou remover acessórios da visualização
-                </p>
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-sm text-muted-foreground">Total:</span>
+                  <span className="text-lg font-bold text-ram-red">
+                    R$ {selectedAccessories.reduce((sum, a) => sum + a.price, 0).toLocaleString("pt-BR")}
+                  </span>
+                </div>
                 
                 <button
                   onClick={onGenerateScript}
-                  className="btn-accent w-full flex items-center justify-center gap-2 text-sm"
+                  disabled={selectedAccessories.length === 0}
+                  className="btn-accent w-full flex items-center justify-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <MessageSquare className="w-4 h-4" />
                   Gerar Argumentação
