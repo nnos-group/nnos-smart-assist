@@ -6,12 +6,23 @@ import VehicleVisualizationScreen from "@/components/VehicleVisualizationScreen"
 import SalesScriptScreen from "@/components/SalesScriptScreen";
 import NavigationBar from "@/components/NavigationBar";
 import SuccessModal from "@/components/SuccessModal";
+import { Accessory, ClientData, defaultAccessories, defaultClientData } from "@/types/accessories";
 
 type Screen = "login" | "data" | "package" | "visualization" | "script";
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>("login");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [accessories, setAccessories] = useState<Accessory[]>(defaultAccessories);
+  const [clientData, setClientData] = useState<ClientData>(defaultClientData);
+
+  const handleAccessoryToggle = (id: string) => {
+    setAccessories((prev) =>
+      prev.map((item) =>
+        item.id === id ? { ...item, selected: !item.selected } : item
+      )
+    );
+  };
 
   const getStepNumber = (): number => {
     switch (currentScreen) {
@@ -47,10 +58,14 @@ const Index = () => {
 
   const handleLogout = () => {
     setCurrentScreen("login");
+    setAccessories(defaultAccessories);
+    setClientData(defaultClientData);
   };
 
   const handleNewSale = () => {
     setShowSuccessModal(false);
+    setAccessories(defaultAccessories);
+    setClientData(defaultClientData);
     setCurrentScreen("data");
   };
 
@@ -78,18 +93,24 @@ const Index = () => {
 
         {currentScreen === "data" && (
           <ClientDataScreen
+            clientData={clientData}
+            onClientDataChange={setClientData}
             onGenerateSuggestion={() => setCurrentScreen("package")}
           />
         )}
 
         {currentScreen === "package" && (
           <PackageSuggestionScreen
+            accessories={accessories}
+            onAccessoryToggle={handleAccessoryToggle}
             onVisualize={() => setCurrentScreen("visualization")}
           />
         )}
 
         {currentScreen === "visualization" && (
           <VehicleVisualizationScreen
+            accessories={accessories}
+            onAccessoryToggle={handleAccessoryToggle}
             onGenerateScript={() => setCurrentScreen("script")}
           />
         )}
