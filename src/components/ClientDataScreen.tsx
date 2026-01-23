@@ -1,5 +1,6 @@
 import { User, Car, MapPin, Sparkles, ArrowRight } from "lucide-react";
 import { ClientData } from "@/types/accessories";
+import VoiceInputButton from "./VoiceInputButton";
 
 interface ClientDataScreenProps {
   clientData: ClientData;
@@ -12,15 +13,22 @@ const ClientDataScreen = ({ clientData, onClientDataChange, onGenerateSuggestion
     onClientDataChange({ ...clientData, [field]: value });
   };
 
+  const handleVoiceData = (extractedData: Partial<ClientData>) => {
+    onClientDataChange({ ...clientData, ...extractedData });
+  };
+
   return (
     <div className="min-h-screen p-8 app-container">
       <div className="max-w-5xl mx-auto fade-in">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="section-title mb-2">Identificação do Cliente e Veículo</h1>
-          <p className="text-muted-foreground">
-            Preencha os dados para gerar sugestões personalizadas de acessórios
-          </p>
+        {/* Header with Voice Input */}
+        <div className="mb-8 flex items-start justify-between">
+          <div>
+            <h1 className="section-title mb-2">Identificação do Cliente e Veículo</h1>
+            <p className="text-muted-foreground">
+              Preencha os dados ou use o microfone para falar as informações
+            </p>
+          </div>
+          <VoiceInputButton onDataExtracted={handleVoiceData} />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
