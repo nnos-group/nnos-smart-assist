@@ -1,12 +1,73 @@
 import { User, Car, MapPin, Sparkles, ArrowRight } from "lucide-react";
 import { ClientData } from "@/types/accessories";
 import VoiceInputButton from "./VoiceInputButton";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface ClientDataScreenProps {
   clientData: ClientData;
   onClientDataChange: (data: ClientData) => void;
   onGenerateSuggestion: () => void;
 }
+
+// Opções para os dropdowns
+const vehicleModels = [
+  "RAM RAMPAGE REBEL",
+  "RAM RAMPAGE LARAMIE",
+  "RAM 1500 LARAMIE",
+  "RAM 2500 LARAMIE",
+  "RAM 3500 LARAMIE",
+  "FIAT TORO RANCH",
+  "FIAT TORO ULTRA",
+  "JEEP COMPASS TRAILHAWK",
+  "JEEP COMMANDER OVERLAND",
+];
+
+const vehicleColors = [
+  { name: "Vermelho Volcano", color: "#B22222" },
+  { name: "Preto Carbon", color: "#1a1a1a" },
+  { name: "Branco Polar", color: "#f5f5f5" },
+  { name: "Cinza Granite", color: "#5a5a5a" },
+  { name: "Azul Patriot", color: "#1e3a5f" },
+  { name: "Verde Recon", color: "#2d4a3e" },
+];
+
+const vehicleYears = [
+  "2025/2026",
+  "2024/2025",
+  "2024/2024",
+  "2023/2024",
+  "2023/2023",
+];
+
+const states = [
+  "Acre", "Alagoas", "Amapá", "Amazonas", "Bahia", "Ceará", "Distrito Federal",
+  "Espírito Santo", "Goiás", "Maranhão", "Mato Grosso", "Mato Grosso do Sul",
+  "Minas Gerais", "Pará", "Paraíba", "Paraná", "Pernambuco", "Piauí",
+  "Rio de Janeiro", "Rio Grande do Norte", "Rio Grande do Sul", "Rondônia",
+  "Roraima", "Santa Catarina", "São Paulo", "Sergipe", "Tocantins",
+];
+
+const terrainTypes = [
+  "Estradas Pavimentadas",
+  "Estradas de Terra",
+  "Trilhas Off-Road",
+  "Uso Misto (Urbano/Rural)",
+  "Fazenda/Agronegócio",
+];
+
+const climateConditions = [
+  "Alta Incidência de Chuvas",
+  "Clima Seco",
+  "Clima Tropical",
+  "Clima Subtropical",
+  "Temperaturas Extremas",
+];
 
 const ClientDataScreen = ({ clientData, onClientDataChange, onGenerateSuggestion }: ClientDataScreenProps) => {
   const handleChange = (field: keyof ClientData, value: string) => {
@@ -16,6 +77,8 @@ const ClientDataScreen = ({ clientData, onClientDataChange, onGenerateSuggestion
   const handleVoiceData = (extractedData: Partial<ClientData>) => {
     onClientDataChange({ ...clientData, ...extractedData });
   };
+
+  const selectedColor = vehicleColors.find(c => c.name === clientData.vehicleColor);
 
   return (
     <div className="min-h-screen p-8 app-container">
@@ -44,36 +107,62 @@ const ClientDataScreen = ({ clientData, onClientDataChange, onGenerateSuggestion
             <div className="space-y-4">
               <div>
                 <label className="label-text block mb-2">Modelo</label>
-                <input
-                  type="text"
-                  value={clientData.vehicleModel}
-                  onChange={(e) => handleChange("vehicleModel", e.target.value)}
-                  className="input-field w-full font-medium"
-                  placeholder="Ex: RAM RAMPAGE REBEL"
-                />
+                <Select value={clientData.vehicleModel} onValueChange={(value) => handleChange("vehicleModel", value)}>
+                  <SelectTrigger className="w-full font-medium">
+                    <SelectValue placeholder="Selecione o modelo" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {vehicleModels.map((model) => (
+                      <SelectItem key={model} value={model}>
+                        {model}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <label className="label-text block mb-2">Cor</label>
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-ram-red border-2 border-white shadow-md"></div>
-                  <input
-                    type="text"
-                    value={clientData.vehicleColor}
-                    onChange={(e) => handleChange("vehicleColor", e.target.value)}
-                    className="input-field flex-1 font-medium"
-                    placeholder="Ex: Vermelho Volcano"
-                  />
-                </div>
+                <Select value={clientData.vehicleColor} onValueChange={(value) => handleChange("vehicleColor", value)}>
+                  <SelectTrigger className="w-full font-medium">
+                    <div className="flex items-center gap-3">
+                      {selectedColor && (
+                        <div 
+                          className="w-6 h-6 rounded-full border-2 border-white shadow-md flex-shrink-0" 
+                          style={{ backgroundColor: selectedColor.color }}
+                        />
+                      )}
+                      <SelectValue placeholder="Selecione a cor" />
+                    </div>
+                  </SelectTrigger>
+                  <SelectContent>
+                    {vehicleColors.map((color) => (
+                      <SelectItem key={color.name} value={color.name}>
+                        <div className="flex items-center gap-3">
+                          <div 
+                            className="w-5 h-5 rounded-full border border-border" 
+                            style={{ backgroundColor: color.color }}
+                          />
+                          {color.name}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <label className="label-text block mb-2">Ano/Modelo</label>
-                <input
-                  type="text"
-                  value={clientData.vehicleYear}
-                  onChange={(e) => handleChange("vehicleYear", e.target.value)}
-                  className="input-field w-full font-medium"
-                  placeholder="Ex: 2024/2025"
-                />
+                <Select value={clientData.vehicleYear} onValueChange={(value) => handleChange("vehicleYear", value)}>
+                  <SelectTrigger className="w-full font-medium">
+                    <SelectValue placeholder="Selecione o ano" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {vehicleYears.map((year) => (
+                      <SelectItem key={year} value={year}>
+                        {year}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
           </div>
@@ -135,33 +224,48 @@ const ClientDataScreen = ({ clientData, onClientDataChange, onGenerateSuggestion
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="label-text block mb-2">Estado</label>
-                <input
-                  type="text"
-                  value={clientData.state}
-                  onChange={(e) => handleChange("state", e.target.value)}
-                  className="input-field w-full font-medium"
-                  placeholder="Ex: Mato Grosso"
-                />
+                <Select value={clientData.state} onValueChange={(value) => handleChange("state", value)}>
+                  <SelectTrigger className="w-full font-medium">
+                    <SelectValue placeholder="Selecione o estado" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {states.map((state) => (
+                      <SelectItem key={state} value={state}>
+                        {state}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <label className="label-text block mb-2">Tipo de Terreno</label>
-                <input
-                  type="text"
-                  value={clientData.terrainType}
-                  onChange={(e) => handleChange("terrainType", e.target.value)}
-                  className="input-field w-full font-medium"
-                  placeholder="Ex: Estradas de Terra"
-                />
+                <Select value={clientData.terrainType} onValueChange={(value) => handleChange("terrainType", value)}>
+                  <SelectTrigger className="w-full font-medium">
+                    <SelectValue placeholder="Selecione o terreno" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {terrainTypes.map((terrain) => (
+                      <SelectItem key={terrain} value={terrain}>
+                        {terrain}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <label className="label-text block mb-2">Condição Climática</label>
-                <input
-                  type="text"
-                  value={clientData.climateCondition}
-                  onChange={(e) => handleChange("climateCondition", e.target.value)}
-                  className="input-field w-full font-medium"
-                  placeholder="Ex: Alta Incidência de Chuvas"
-                />
+                <Select value={clientData.climateCondition} onValueChange={(value) => handleChange("climateCondition", value)}>
+                  <SelectTrigger className="w-full font-medium">
+                    <SelectValue placeholder="Selecione o clima" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {climateConditions.map((climate) => (
+                      <SelectItem key={climate} value={climate}>
+                        {climate}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
