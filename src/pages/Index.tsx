@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import LoginScreen from "@/components/LoginScreen";
 import ClientDataScreen from "@/components/ClientDataScreen";
 import PackageSuggestionScreen from "@/components/PackageSuggestionScreen";
@@ -6,15 +6,20 @@ import VehicleVisualizationScreen from "@/components/VehicleVisualizationScreen"
 import SalesScriptScreen from "@/components/SalesScriptScreen";
 import NavigationBar from "@/components/NavigationBar";
 import SuccessModal from "@/components/SuccessModal";
-import { Accessory, ClientData, defaultAccessories, defaultClientData } from "@/types/accessories";
+import { Accessory, ClientData, defaultClientData, getAccessoriesForVehicle } from "@/types/accessories";
 
 type Screen = "login" | "data" | "package" | "visualization" | "script";
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>("login");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [accessories, setAccessories] = useState<Accessory[]>(defaultAccessories);
   const [clientData, setClientData] = useState<ClientData>(defaultClientData);
+  const [accessories, setAccessories] = useState<Accessory[]>(getAccessoriesForVehicle(defaultClientData.vehicleModel));
+
+  // Atualizar acessórios quando o modelo do veículo mudar
+  useEffect(() => {
+    setAccessories(getAccessoriesForVehicle(clientData.vehicleModel));
+  }, [clientData.vehicleModel]);
 
   const handleAccessoryToggle = (id: string) => {
     setAccessories((prev) =>
@@ -58,14 +63,14 @@ const Index = () => {
 
   const handleLogout = () => {
     setCurrentScreen("login");
-    setAccessories(defaultAccessories);
     setClientData(defaultClientData);
+    setAccessories(getAccessoriesForVehicle(defaultClientData.vehicleModel));
   };
 
   const handleNewSale = () => {
     setShowSuccessModal(false);
-    setAccessories(defaultAccessories);
     setClientData(defaultClientData);
+    setAccessories(getAccessoriesForVehicle(defaultClientData.vehicleModel));
     setCurrentScreen("data");
   };
 
@@ -102,6 +107,7 @@ const Index = () => {
         {currentScreen === "package" && (
           <PackageSuggestionScreen
             accessories={accessories}
+            clientData={clientData}
             onAccessoryToggle={handleAccessoryToggle}
             onVisualize={() => setCurrentScreen("visualization")}
           />
@@ -110,13 +116,18 @@ const Index = () => {
         {currentScreen === "visualization" && (
           <VehicleVisualizationScreen
             accessories={accessories}
+            clientData={clientData}
             onAccessoryToggle={handleAccessoryToggle}
             onGenerateScript={() => setCurrentScreen("script")}
           />
         )}
 
         {currentScreen === "script" && (
-          <SalesScriptScreen onClose={handleCloseSale} />
+          <SalesScriptScreen 
+            clientData={clientData}
+            accessories={accessories}
+            onClose={handleCloseSale} 
+          />
         )}
       </div>
 

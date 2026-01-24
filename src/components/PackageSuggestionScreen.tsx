@@ -1,17 +1,19 @@
-import { Package, Check, Sparkles, Eye, ArrowRight } from "lucide-react";
-import { Accessory } from "@/types/accessories";
+import { Package, Check, Sparkles, Eye, ArrowRight, User, MapPin, Car } from "lucide-react";
+import { Accessory, ClientData, getPackageName } from "@/types/accessories";
 
 interface PackageSuggestionScreenProps {
   accessories: Accessory[];
+  clientData: ClientData;
   onAccessoryToggle: (id: string) => void;
   onVisualize: () => void;
 }
 
-const PackageSuggestionScreen = ({ accessories, onAccessoryToggle, onVisualize }: PackageSuggestionScreenProps) => {
+const PackageSuggestionScreen = ({ accessories, clientData, onAccessoryToggle, onVisualize }: PackageSuggestionScreenProps) => {
   const selectedAccessories = accessories.filter((item) => item.selected);
   const total = selectedAccessories.reduce((sum, item) => sum + item.price, 0);
   const fullTotal = accessories.reduce((sum, item) => sum + item.price, 0);
-  const savings = fullTotal === total ? 1200 : Math.round((fullTotal - total) * 0.13);
+  const savings = fullTotal === total ? Math.round(fullTotal * 0.13) : 0;
+  const packageName = getPackageName(clientData.vehicleModel);
 
   return (
     <div className="min-h-screen p-8 app-container">
@@ -27,6 +29,27 @@ const PackageSuggestionScreen = ({ accessories, onAccessoryToggle, onVisualize }
           <h1 className="section-title">Pacote de Acessórios Recomendado pela IA</h1>
         </div>
 
+        {/* Client Info Summary */}
+        <div className="card-premium p-4 mb-6 slide-up bg-gradient-to-r from-secondary/50 to-background">
+          <div className="flex flex-wrap items-center gap-6 text-sm">
+            <div className="flex items-center gap-2">
+              <User className="w-4 h-4 text-stellantis-blue" />
+              <span className="text-muted-foreground">Cliente:</span>
+              <span className="font-semibold text-foreground">{clientData.clientName || "Não informado"}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Car className="w-4 h-4 text-stellantis-blue" />
+              <span className="text-muted-foreground">Veículo:</span>
+              <span className="font-semibold text-foreground">{clientData.vehicleModel} - {clientData.vehicleColor}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-stellantis-blue" />
+              <span className="text-muted-foreground">Região:</span>
+              <span className="font-semibold text-foreground">{clientData.state || "Não informado"}</span>
+            </div>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Package Card */}
           <div className="lg:col-span-2 space-y-4">
@@ -38,10 +61,13 @@ const PackageSuggestionScreen = ({ accessories, onAccessoryToggle, onVisualize }
                 </div>
                 <div>
                   <h2 className="text-2xl font-bold text-foreground">
-                    Pacote Off-Road Pro
+                    {packageName}
                   </h2>
                   <p className="text-muted-foreground">
-                    Otimizado para região: <span className="font-semibold text-stellantis-blue">Mato Grosso</span>
+                    Otimizado para região: <span className="font-semibold text-stellantis-blue">{clientData.state || "Brasil"}</span>
+                    {clientData.terrainType && (
+                      <span> • {clientData.terrainType}</span>
+                    )}
                   </p>
                 </div>
               </div>
@@ -49,7 +75,7 @@ const PackageSuggestionScreen = ({ accessories, onAccessoryToggle, onVisualize }
 
             {/* Accessories List */}
             <div className="card-premium p-6 slide-up" style={{ animationDelay: "0.1s" }}>
-              <h3 className="label-text mb-4">Selecione os Acessórios</h3>
+              <h3 className="label-text mb-4">Selecione os Acessórios para {clientData.vehicleModel}</h3>
               <div className="space-y-3">
                 {accessories.map((item, index) => (
                   <button
@@ -128,7 +154,7 @@ const PackageSuggestionScreen = ({ accessories, onAccessoryToggle, onVisualize }
                 )}
               </div>
 
-              {selectedAccessories.length === accessories.length && (
+              {selectedAccessories.length === accessories.length && savings > 0 && (
                 <div className="p-4 rounded-lg bg-green-50 border border-green-200 mb-6">
                   <p className="text-sm text-green-800 font-medium">
                     💰 Economia de R$ {savings.toLocaleString("pt-BR")} em relação aos itens avulsos
