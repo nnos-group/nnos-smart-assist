@@ -1,3 +1,5 @@
+export type StockStatus = "available" | "dormant" | "obsolete";
+
 export interface Accessory {
   id: string;
   name: string;
@@ -5,6 +7,9 @@ export interface Accessory {
   price: number;
   icon: string;
   selected: boolean;
+  stockStatus: StockStatus;
+  stockDays: number; // dias em estoque
+  discountPercent: number; // desconto aplicado (0 se disponível)
 }
 
 export interface ClientData {
@@ -19,6 +24,17 @@ export interface ClientData {
   climateCondition: string;
 }
 
+// Calcular status e desconto baseado nos dias em estoque
+export const getStockInfo = (days: number): { status: StockStatus; discount: number; label: string } => {
+  if (days > 365) {
+    return { status: "obsolete", discount: Math.min(35, 25 + Math.floor((days - 365) / 60) * 3), label: "Estoque Obsoleto" };
+  }
+  if (days > 180) {
+    return { status: "dormant", discount: Math.min(20, 10 + Math.floor((days - 180) / 30) * 2), label: "Estoque Dormente" };
+  }
+  return { status: "available", discount: 0, label: "Disponível" };
+};
+
 // Imagens dos veículos por modelo
 export const vehicleImages: Record<string, string> = {
   "RAM RAMPAGE REBEL": "/vehicles/ram-rampage-rebel.jpg",
@@ -32,74 +48,85 @@ export const vehicleImages: Record<string, string> = {
   "JEEP COMMANDER OVERLAND": "/vehicles/jeep-commander-overland.jpg",
 };
 
-// Acessórios específicos por tipo de veículo
+// Helper: criar acessório com estoque simulado
+const acc = (
+  id: string, name: string, description: string, price: number, icon: string, 
+  selected: boolean, stockDays: number
+): Accessory => {
+  const info = getStockInfo(stockDays);
+  return {
+    id, name, description, price, icon, selected,
+    stockStatus: info.status,
+    stockDays,
+    discountPercent: info.discount,
+  };
+};
+
+// Acessórios específicos por tipo de veículo (com dados de estoque simulados)
 export const accessoriesByVehicle: Record<string, Accessory[]> = {
-  // RAM - Pickups
   "RAM RAMPAGE REBEL": [
-    { id: "estribo", name: "Estribo Lateral Premium", description: "Acesso facilitado e proteção lateral", price: 2500, icon: "🚗", selected: true },
-    { id: "protetor", name: "Protetor de Caçamba HD", description: "Proteção contra riscos e impactos", price: 1200, icon: "🛡️", selected: true },
-    { id: "pneus", name: "Pneus All-Terrain 265/70R16", description: "Tração superior em qualquer terreno", price: 4800, icon: "⚙️", selected: true },
-    { id: "friso", name: "Friso Lateral Cromado", description: "Proteção e estética refinada", price: 450, icon: "✨", selected: true },
-    { id: "santantonio", name: "Santo Antônio Esportivo", description: "Proteção e estilo para sua pickup", price: 1800, icon: "🏋️", selected: false },
-    { id: "capota", name: "Capota Marítima Retrátil", description: "Proteção total da caçamba", price: 3200, icon: "🔒", selected: false },
+    acc("estribo", "Estribo Lateral Premium", "Acesso facilitado e proteção lateral", 2500, "🚗", true, 45),
+    acc("protetor", "Protetor de Caçamba HD", "Proteção contra riscos e impactos", 1200, "🛡️", true, 210),
+    acc("pneus", "Pneus All-Terrain 265/70R16", "Tração superior em qualquer terreno", 4800, "⚙️", true, 30),
+    acc("friso", "Friso Lateral Cromado", "Proteção e estética refinada", 450, "✨", true, 400),
+    acc("santantonio", "Santo Antônio Esportivo", "Proteção e estilo para sua pickup", 1800, "🏋️", false, 190),
+    acc("capota", "Capota Marítima Retrátil", "Proteção total da caçamba", 3200, "🔒", false, 60),
   ],
   "RAM RAMPAGE LARAMIE": [
-    { id: "estribo", name: "Estribo Lateral Premium", description: "Acesso facilitado e proteção lateral", price: 2500, icon: "🚗", selected: true },
-    { id: "protetor", name: "Protetor de Caçamba HD", description: "Proteção contra riscos e impactos", price: 1200, icon: "🛡️", selected: true },
-    { id: "pneus", name: "Pneus Highway 265/65R17", description: "Conforto e durabilidade no asfalto", price: 3800, icon: "⚙️", selected: true },
-    { id: "friso", name: "Friso Lateral Cromado", description: "Proteção e estética refinada", price: 450, icon: "✨", selected: true },
-    { id: "capota", name: "Capota Rígida Elétrica", description: "Abertura automática premium", price: 5500, icon: "🔒", selected: false },
+    acc("estribo", "Estribo Lateral Premium", "Acesso facilitado e proteção lateral", 2500, "🚗", true, 120),
+    acc("protetor", "Protetor de Caçamba HD", "Proteção contra riscos e impactos", 1200, "🛡️", true, 380),
+    acc("pneus", "Pneus Highway 265/65R17", "Conforto e durabilidade no asfalto", 3800, "⚙️", true, 15),
+    acc("friso", "Friso Lateral Cromado", "Proteção e estética refinada", 450, "✨", true, 250),
+    acc("capota", "Capota Rígida Elétrica", "Abertura automática premium", 5500, "🔒", false, 90),
   ],
   "RAM 1500 LARAMIE": [
-    { id: "estribo", name: "Estribo Lateral Elétrico", description: "Acesso automatizado premium", price: 4500, icon: "🚗", selected: true },
-    { id: "protetor", name: "Protetor de Caçamba Spray-On", description: "Proteção permanente profissional", price: 2800, icon: "🛡️", selected: true },
-    { id: "pneus", name: "Pneus All-Terrain 275/65R18", description: "Performance em todos os terrenos", price: 6200, icon: "⚙️", selected: true },
-    { id: "santantonio", name: "Santo Antônio Off-Road", description: "Proteção e estilo esportivo", price: 3200, icon: "🏋️", selected: true },
-    { id: "capota", name: "Capota Rígida Tri-Fold", description: "Abertura em três partes", price: 4800, icon: "🔒", selected: false },
+    acc("estribo", "Estribo Lateral Elétrico", "Acesso automatizado premium", 4500, "🚗", true, 60),
+    acc("protetor", "Protetor de Caçamba Spray-On", "Proteção permanente profissional", 2800, "🛡️", true, 200),
+    acc("pneus", "Pneus All-Terrain 275/65R18", "Performance em todos os terrenos", 6200, "⚙️", true, 25),
+    acc("santantonio", "Santo Antônio Off-Road", "Proteção e estilo esportivo", 3200, "🏋️", true, 420),
+    acc("capota", "Capota Rígida Tri-Fold", "Abertura em três partes", 4800, "🔒", false, 150),
   ],
   "RAM 2500 LARAMIE": [
-    { id: "estribo", name: "Estribo Lateral Elétrico", description: "Acesso automatizado premium", price: 4800, icon: "🚗", selected: true },
-    { id: "protetor", name: "Protetor de Caçamba Heavy Duty", description: "Para cargas pesadas", price: 3200, icon: "🛡️", selected: true },
-    { id: "pneus", name: "Pneus LT275/70R18", description: "Carga extra e durabilidade", price: 7500, icon: "⚙️", selected: true },
-    { id: "engate", name: "Engate de Reboque 5ª Roda", description: "Para reboques pesados", price: 5200, icon: "🔗", selected: true },
-    { id: "farol", name: "Kit Faróis Auxiliares LED", description: "Iluminação off-road potente", price: 2800, icon: "💡", selected: false },
+    acc("estribo", "Estribo Lateral Elétrico", "Acesso automatizado premium", 4800, "🚗", true, 90),
+    acc("protetor", "Protetor de Caçamba Heavy Duty", "Para cargas pesadas", 3200, "🛡️", true, 300),
+    acc("pneus", "Pneus LT275/70R18", "Carga extra e durabilidade", 7500, "⚙️", true, 40),
+    acc("engate", "Engate de Reboque 5ª Roda", "Para reboques pesados", 5200, "🔗", true, 500),
+    acc("farol", "Kit Faróis Auxiliares LED", "Iluminação off-road potente", 2800, "💡", false, 185),
   ],
   "RAM 3500 LARAMIE": [
-    { id: "estribo", name: "Estribo Lateral Elétrico", description: "Acesso automatizado premium", price: 4800, icon: "🚗", selected: true },
-    { id: "protetor", name: "Protetor de Caçamba Industrial", description: "Máxima resistência a impactos", price: 3800, icon: "🛡️", selected: true },
-    { id: "pneus", name: "Pneus LT285/75R17", description: "Máxima capacidade de carga", price: 8200, icon: "⚙️", selected: true },
-    { id: "engate", name: "Engate Gooseneck", description: "Para reboques especiais", price: 4500, icon: "🔗", selected: true },
-    { id: "toolbox", name: "Caixa de Ferramentas Embutida", description: "Armazenamento profissional", price: 2200, icon: "🧰", selected: false },
+    acc("estribo", "Estribo Lateral Elétrico", "Acesso automatizado premium", 4800, "🚗", true, 75),
+    acc("protetor", "Protetor de Caçamba Industrial", "Máxima resistência a impactos", 3800, "🛡️", true, 220),
+    acc("pneus", "Pneus LT285/75R17", "Máxima capacidade de carga", 8200, "⚙️", true, 50),
+    acc("engate", "Engate Gooseneck", "Para reboques especiais", 4500, "🔗", true, 365),
+    acc("toolbox", "Caixa de Ferramentas Embutida", "Armazenamento profissional", 2200, "🧰", false, 450),
   ],
-  // FIAT TORO
   "FIAT TORO RANCH": [
-    { id: "estribo", name: "Estribo Lateral Tubular", description: "Design esportivo e funcional", price: 1800, icon: "🚗", selected: true },
-    { id: "protetor", name: "Protetor de Caçamba", description: "Proteção contra riscos", price: 850, icon: "🛡️", selected: true },
-    { id: "pneus", name: "Pneus All-Terrain 225/65R17", description: "Tração em diversos terrenos", price: 3200, icon: "⚙️", selected: true },
-    { id: "santantonio", name: "Santo Antônio Cromado", description: "Estilo e proteção", price: 1500, icon: "🏋️", selected: true },
-    { id: "capota", name: "Capota Marítima", description: "Proteção flexível da caçamba", price: 1200, icon: "🔒", selected: false },
+    acc("estribo", "Estribo Lateral Tubular", "Design esportivo e funcional", 1800, "🚗", true, 100),
+    acc("protetor", "Protetor de Caçamba", "Proteção contra riscos", 850, "🛡️", true, 350),
+    acc("pneus", "Pneus All-Terrain 225/65R17", "Tração em diversos terrenos", 3200, "⚙️", true, 20),
+    acc("santantonio", "Santo Antônio Cromado", "Estilo e proteção", 1500, "🏋️", true, 195),
+    acc("capota", "Capota Marítima", "Proteção flexível da caçamba", 1200, "🔒", false, 270),
   ],
   "FIAT TORO ULTRA": [
-    { id: "estribo", name: "Estribo Lateral Premium", description: "Design urbano sofisticado", price: 2200, icon: "🚗", selected: true },
-    { id: "protetor", name: "Protetor de Caçamba", description: "Proteção contra riscos", price: 850, icon: "🛡️", selected: true },
-    { id: "pneus", name: "Pneus Highway 225/55R18", description: "Conforto e economia", price: 2800, icon: "⚙️", selected: true },
-    { id: "friso", name: "Friso Lateral na Cor do Veículo", description: "Visual integrado", price: 650, icon: "✨", selected: true },
-    { id: "capota", name: "Capota Rígida Elétrica", description: "Abertura automática", price: 4200, icon: "🔒", selected: false },
+    acc("estribo", "Estribo Lateral Premium", "Design urbano sofisticado", 2200, "🚗", true, 80),
+    acc("protetor", "Protetor de Caçamba", "Proteção contra riscos", 850, "🛡️", true, 290),
+    acc("pneus", "Pneus Highway 225/55R18", "Conforto e economia", 2800, "⚙️", true, 35),
+    acc("friso", "Friso Lateral na Cor do Veículo", "Visual integrado", 650, "✨", true, 410),
+    acc("capota", "Capota Rígida Elétrica", "Abertura automática", 4200, "🔒", false, 55),
   ],
-  // JEEP
   "JEEP COMPASS TRAILHAWK": [
-    { id: "estribo", name: "Estribo Lateral Off-Road", description: "Para trilhas extremas", price: 2800, icon: "🚗", selected: true },
-    { id: "protetor", name: "Protetor de Carter", description: "Proteção do motor", price: 1500, icon: "🛡️", selected: true },
-    { id: "pneus", name: "Pneus All-Terrain 225/60R17", description: "Máxima tração off-road", price: 3600, icon: "⚙️", selected: true },
-    { id: "rack", name: "Rack de Teto Travessa", description: "Transporte de equipamentos", price: 1200, icon: "📦", selected: true },
-    { id: "guincho", name: "Kit Guincho Dianteiro", description: "Recuperação em trilhas", price: 4500, icon: "⚓", selected: false },
+    acc("estribo", "Estribo Lateral Off-Road", "Para trilhas extremas", 2800, "🚗", true, 110),
+    acc("protetor", "Protetor de Carter", "Proteção do motor", 1500, "🛡️", true, 240),
+    acc("pneus", "Pneus All-Terrain 225/60R17", "Máxima tração off-road", 3600, "⚙️", true, 45),
+    acc("rack", "Rack de Teto Travessa", "Transporte de equipamentos", 1200, "📦", true, 370),
+    acc("guincho", "Kit Guincho Dianteiro", "Recuperação em trilhas", 4500, "⚓", false, 200),
   ],
   "JEEP COMMANDER OVERLAND": [
-    { id: "estribo", name: "Estribo Lateral Premium", description: "Elegância e funcionalidade", price: 3200, icon: "🚗", selected: true },
-    { id: "protetor", name: "Protetor de Carter e Caixa", description: "Proteção completa", price: 2200, icon: "🛡️", selected: true },
-    { id: "pneus", name: "Pneus Highway 235/55R19", description: "Performance premium", price: 4200, icon: "⚙️", selected: true },
-    { id: "rack", name: "Rack de Teto Integrado", description: "Design elegante", price: 1800, icon: "📦", selected: true },
-    { id: "sensor", name: "Sensores de Estacionamento 360°", description: "Segurança total", price: 2500, icon: "📡", selected: false },
+    acc("estribo", "Estribo Lateral Premium", "Elegância e funcionalidade", 3200, "🚗", true, 65),
+    acc("protetor", "Protetor de Carter e Caixa", "Proteção completa", 2200, "🛡️", true, 330),
+    acc("pneus", "Pneus Highway 235/55R19", "Performance premium", 4200, "⚙️", true, 30),
+    acc("rack", "Rack de Teto Integrado", "Design elegante", 1800, "📦", true, 190),
+    acc("sensor", "Sensores de Estacionamento 360°", "Segurança total", 2500, "📡", false, 480),
   ],
 };
 
@@ -116,12 +143,10 @@ export const packageNames: Record<string, string> = {
   "JEEP COMMANDER OVERLAND": "Pacote Overland Premium",
 };
 
-// Função para obter acessórios do veículo selecionado
 export const getAccessoriesForVehicle = (vehicleModel: string): Accessory[] => {
   return accessoriesByVehicle[vehicleModel] || accessoriesByVehicle["RAM RAMPAGE REBEL"];
 };
 
-// Função para obter o nome do pacote
 export const getPackageName = (vehicleModel: string): string => {
   return packageNames[vehicleModel] || "Pacote Personalizado";
 };
