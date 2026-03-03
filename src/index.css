@@ -2,74 +2,67 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Salesforce+Sans:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   :root {
-    /* Premium Automotive Theme - Refined */
-    --background: 225 25% 97%;
-    --foreground: 225 30% 8%;
+    /* Salesforce Lightning Theme */
+    --background: 210 20% 98%;
+    --foreground: 210 29% 15%;
 
     --card: 0 0% 100%;
-    --card-foreground: 225 30% 8%;
+    --card-foreground: 210 29% 15%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 225 30% 8%;
+    --popover-foreground: 210 29% 15%;
 
-    /* Deep Stellantis Blue */
-    --primary: 224 72% 18%;
+    /* Salesforce Deep Blue */
+    --primary: 210 95% 19%;
     --primary-foreground: 0 0% 100%;
 
     /* Light Surface */
-    --secondary: 225 18% 95%;
-    --secondary-foreground: 225 30% 12%;
+    --secondary: 210 14% 96%;
+    --secondary-foreground: 210 29% 15%;
 
-    --muted: 225 15% 92%;
-    --muted-foreground: 225 12% 48%;
+    --muted: 210 12% 93%;
+    --muted-foreground: 210 10% 46%;
 
-    /* RAM Red */
-    --accent: 2 80% 52%;
+    /* Salesforce Action Blue */
+    --accent: 207 98% 41%;
     --accent-foreground: 0 0% 100%;
+
+    /* RAM Red for CTAs */
+    --ram-red: 2 80% 52%;
+    --ram-red-dark: 2 80% 42%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 225 18% 90%;
-    --input: 225 18% 90%;
-    --ring: 224 72% 18%;
+    --border: 214 20% 85%;
+    --input: 214 20% 85%;
+    --ring: 207 98% 41%;
 
-    --radius: 0.875rem;
+    --radius: 0.25rem;
 
-    /* Custom Colors */
-    --stellantis-blue: 224 72% 18%;
-    --stellantis-blue-light: 224 60% 40%;
-    --ram-red: 2 80% 52%;
-    --ram-red-dark: 2 80% 42%;
-    --charcoal: 225 20% 14%;
-    --steel: 225 12% 52%;
-    --silver: 225 10% 76%;
-    --gold: 42 75% 55%;
+    /* Custom Salesforce Colors */
+    --sf-navy: 210 95% 19%;
+    --sf-blue: 207 98% 41%;
+    --sf-blue-hover: 207 98% 35%;
+    --sf-light-blue: 207 90% 95%;
+    --sf-border: 214 20% 85%;
+    --sf-border-light: 214 15% 91%;
+    --charcoal: 210 20% 14%;
+    --steel: 210 10% 46%;
+    --silver: 210 8% 76%;
     --emerald: 160 60% 42%;
     --amber: 38 92% 50%;
     --orange-stock: 25 90% 50%;
-    
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(224 72% 18%), hsl(224 60% 32%));
-    --gradient-accent: linear-gradient(135deg, hsl(2 80% 52%), hsl(2 80% 42%));
-    --gradient-dark: linear-gradient(180deg, hsl(225 20% 10%), hsl(225 25% 6%));
-    --gradient-card: linear-gradient(170deg, hsl(0 0% 100%), hsl(225 25% 98%));
-    --gradient-glass: linear-gradient(135deg, hsl(0 0% 100% / 0.9), hsl(0 0% 100% / 0.6));
-    --gradient-mesh: radial-gradient(at 20% 20%, hsl(224 72% 18% / 0.05) 0%, transparent 60%),
-                     radial-gradient(at 80% 80%, hsl(2 80% 52% / 0.04) 0%, transparent 60%);
-    
-    /* Shadows */
-    --shadow-xs: 0 1px 3px -1px hsl(225 30% 8% / 0.06);
-    --shadow-sm: 0 2px 8px -2px hsl(225 30% 8% / 0.08);
-    --shadow-md: 0 8px 24px -6px hsl(225 30% 8% / 0.1), 0 2px 8px -2px hsl(225 30% 8% / 0.04);
-    --shadow-lg: 0 20px 50px -12px hsl(225 30% 8% / 0.14);
-    --shadow-accent: 0 10px 30px -6px hsl(2 80% 52% / 0.3);
-    --shadow-blue: 0 10px 30px -6px hsl(224 72% 18% / 0.25);
-    --shadow-glow: 0 0 40px -10px hsl(2 80% 52% / 0.2);
+
+    /* Shadows - Salesforce style (subtle) */
+    --shadow-xs: 0 1px 2px 0 hsl(210 29% 15% / 0.05);
+    --shadow-sm: 0 1px 3px 0 hsl(210 29% 15% / 0.08);
+    --shadow-md: 0 2px 6px -1px hsl(210 29% 15% / 0.1);
+    --shadow-lg: 0 4px 12px -2px hsl(210 29% 15% / 0.12);
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
@@ -82,33 +75,33 @@
   }
 
   .dark {
-    --background: 225 25% 6%;
-    --foreground: 225 12% 95%;
+    --background: 210 20% 7%;
+    --foreground: 210 10% 92%;
 
-    --card: 225 22% 10%;
-    --card-foreground: 225 12% 95%;
+    --card: 210 18% 11%;
+    --card-foreground: 210 10% 92%;
 
-    --popover: 225 22% 10%;
-    --popover-foreground: 225 12% 95%;
+    --popover: 210 18% 11%;
+    --popover-foreground: 210 10% 92%;
 
-    --primary: 224 60% 55%;
+    --primary: 207 90% 55%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 225 18% 15%;
-    --secondary-foreground: 225 12% 90%;
+    --secondary: 210 15% 16%;
+    --secondary-foreground: 210 10% 88%;
 
-    --muted: 225 18% 13%;
-    --muted-foreground: 225 12% 55%;
+    --muted: 210 15% 14%;
+    --muted-foreground: 210 10% 55%;
 
-    --accent: 2 80% 55%;
+    --accent: 207 90% 50%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 62% 45%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 225 18% 18%;
-    --input: 225 18% 18%;
-    --ring: 224 60% 55%;
+    --border: 210 15% 20%;
+    --input: 210 15% 20%;
+    --ring: 207 90% 55%;
 
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
@@ -128,163 +121,191 @@
 
   body {
     @apply bg-background text-foreground antialiased;
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
   }
 }
 
 @layer components {
+  /* Salesforce Lightning App Container */
   .app-container {
     @apply min-h-screen;
     background: hsl(var(--background));
-    background-image: var(--gradient-mesh);
   }
 
-  .card-premium {
-    @apply bg-card rounded-2xl border border-border/40 backdrop-blur-sm;
-    box-shadow: var(--shadow-md);
-    background: var(--gradient-card);
-  }
-
-  .card-glass {
-    @apply rounded-2xl border border-border/30 backdrop-blur-xl;
-    background: var(--gradient-glass);
+  /* SF Lightning Card */
+  .sf-card {
+    @apply bg-card rounded border border-border;
     box-shadow: var(--shadow-sm);
   }
 
+  /* Legacy card-premium mapped to SF style */
+  .card-premium {
+    @apply bg-card rounded border border-border;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .card-glass {
+    @apply bg-card rounded border border-border;
+    box-shadow: var(--shadow-xs);
+  }
+
+  /* SF Lightning Primary Button */
   .btn-primary {
-    @apply text-primary-foreground font-semibold px-6 py-3 rounded-xl 
-           transition-all duration-300 hover:translate-y-[-2px] active:translate-y-0 active:scale-[0.98];
-    background: var(--gradient-primary);
-    box-shadow: var(--shadow-blue);
+    @apply text-primary-foreground font-medium px-5 py-2.5 rounded
+           transition-colors duration-150 active:scale-[0.98];
+    background: hsl(var(--sf-blue));
   }
 
+  .btn-primary:hover {
+    background: hsl(var(--sf-blue-hover));
+  }
+
+  /* Accent Button (RAM Red for closing sales) */
   .btn-accent {
-    @apply text-accent-foreground font-semibold px-6 py-3 rounded-xl 
-           transition-all duration-300 hover:translate-y-[-2px] active:translate-y-0 active:scale-[0.98];
-    background: var(--gradient-accent);
-    box-shadow: var(--shadow-accent);
+    @apply font-medium px-5 py-2.5 rounded
+           transition-colors duration-150 active:scale-[0.98];
+    background: hsl(var(--ram-red));
+    color: hsl(0 0% 100%);
   }
 
+  .btn-accent:hover {
+    background: hsl(var(--ram-red-dark));
+  }
+
+  /* SF Lightning Input */
   .input-field {
-    @apply w-full px-4 py-3.5 rounded-xl border border-border bg-card/80 
+    @apply w-full px-3 py-2 rounded border border-border bg-card
            text-foreground placeholder:text-muted-foreground
-           focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary/50
-           transition-all duration-200;
+           focus:outline-none focus:ring-1 focus:border-accent
+           transition-colors duration-150;
+    focus-ring-color: hsl(var(--sf-blue));
   }
 
+  .input-field:focus {
+    border-color: hsl(var(--sf-blue));
+    box-shadow: 0 0 0 1px hsl(var(--sf-blue));
+  }
+
+  /* SF Section Title */
   .section-title {
-    @apply text-3xl font-bold text-foreground tracking-tight;
-    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    @apply text-xl font-bold text-foreground;
   }
 
+  /* SF Label */
   .label-text {
-    @apply text-xs font-semibold text-muted-foreground uppercase tracking-[0.12em];
+    @apply text-xs font-semibold text-muted-foreground uppercase tracking-wide;
   }
 
   .price-tag {
-    @apply font-bold text-stellantis-blue;
+    @apply font-bold;
+    color: hsl(var(--sf-blue));
   }
 
+  /* SF Lightning List Item */
   .accessory-card {
-    @apply flex items-center justify-between p-4 rounded-xl bg-secondary/40 
-           border border-border/30 transition-all duration-200
-           hover:bg-secondary/80 hover:shadow-sm;
+    @apply flex items-center justify-between p-3 rounded border border-border
+           transition-colors duration-150 hover:bg-secondary/60;
   }
 
   .screen-transition {
-    @apply transition-all duration-500 ease-out;
+    @apply transition-all duration-300 ease-out;
   }
 
   .fade-in {
-    animation: fadeIn 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    animation: fadeIn 0.3s ease-out forwards;
   }
 
   .slide-up {
-    animation: slideUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    animation: slideUp 0.35s ease-out forwards;
     opacity: 0;
   }
 
-  /* Stock badges */
+  /* Stock badges - flat SF style */
   .badge-dormant {
-    @apply px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider;
-    background: hsl(var(--amber) / 0.15);
+    @apply px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider;
+    background: hsl(var(--amber) / 0.12);
     color: hsl(var(--amber));
-    border: 1px solid hsl(var(--amber) / 0.3);
+    border: 1px solid hsl(var(--amber) / 0.25);
   }
 
   .badge-obsolete {
-    @apply px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider;
-    background: hsl(var(--orange-stock) / 0.15);
+    @apply px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider;
+    background: hsl(var(--orange-stock) / 0.12);
     color: hsl(var(--orange-stock));
-    border: 1px solid hsl(var(--orange-stock) / 0.3);
+    border: 1px solid hsl(var(--orange-stock) / 0.25);
   }
 
   .badge-available {
-    @apply px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider;
-    background: hsl(var(--emerald) / 0.12);
+    @apply px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider;
+    background: hsl(var(--emerald) / 0.1);
     color: hsl(var(--emerald));
-    border: 1px solid hsl(var(--emerald) / 0.25);
+    border: 1px solid hsl(var(--emerald) / 0.2);
   }
 
   .discount-tag {
-    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-bold;
-    background: hsl(var(--emerald) / 0.12);
+    @apply inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-xs font-bold;
+    background: hsl(var(--emerald) / 0.1);
     color: hsl(var(--emerald));
   }
 }
 
 @layer utilities {
-  .text-gradient-primary {
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  .text-sf-navy {
+    color: hsl(var(--sf-navy));
   }
 
-  .text-gradient-accent {
-    background: var(--gradient-accent);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  .text-sf-blue {
+    color: hsl(var(--sf-blue));
   }
 
-  .bg-stellantis-blue {
-    background-color: hsl(var(--stellantis-blue));
+  .bg-sf-navy {
+    background-color: hsl(var(--sf-navy));
   }
 
-  .bg-stellantis-blue-light {
-    background-color: hsl(var(--stellantis-blue-light));
+  .bg-sf-blue {
+    background-color: hsl(var(--sf-blue));
   }
 
-  .bg-ram-red {
-    background-color: hsl(var(--ram-red));
-  }
-
-  .text-stellantis-blue {
-    color: hsl(var(--stellantis-blue));
+  .bg-sf-light-blue {
+    background-color: hsl(var(--sf-light-blue));
   }
 
   .text-ram-red {
     color: hsl(var(--ram-red));
   }
 
+  .bg-ram-red {
+    background-color: hsl(var(--ram-red));
+  }
+
   .text-steel {
     color: hsl(var(--steel));
   }
 
+  /* Keep legacy references working */
+  .text-stellantis-blue {
+    color: hsl(var(--sf-navy));
+  }
+
+  .bg-stellantis-blue {
+    background-color: hsl(var(--sf-navy));
+  }
+
   .border-stellantis-blue {
-    border-color: hsl(var(--stellantis-blue));
+    border-color: hsl(var(--sf-navy));
   }
 
   .font-display {
-    font-family: 'Space Grotesk', 'Inter', sans-serif;
+    font-family: 'Inter', -apple-system, sans-serif;
   }
 }
 
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(4px);
   }
   to {
     opacity: 1;
@@ -295,34 +316,10 @@
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(24px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-@keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 0 0 20px hsl(2 80% 52% / 0.25), var(--shadow-accent);
-  }
-  50% {
-    box-shadow: 0 0 50px hsl(2 80% 52% / 0.4), var(--shadow-accent);
-  }
-}
-
-.pulse-glow {
-  animation: pulse-glow 2.5s ease-in-out infinite;
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-
-.shimmer {
-  background: linear-gradient(90deg, transparent 0%, hsl(0 0% 100% / 0.06) 50%, transparent 100%);
-  background-size: 200% 100%;
-  animation: shimmer 3s infinite;
 }

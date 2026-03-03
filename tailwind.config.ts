@@ -2,7 +2,12 @@ import type { Config } from "tailwindcss";
 
 export default {
   darkMode: ["class"],
-  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  content: [
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   prefix: "",
   theme: {
     container: {
@@ -14,20 +19,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'system-ui', 'sans-serif'],
+        sans: ["Inter", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "sans-serif"],
       },
       colors: {
-        "stellantis-blue": "hsl(var(--stellantis-blue))",
-        "stellantis-blue-light": "hsl(var(--stellantis-blue-light))",
-        "ram-red": "hsl(var(--ram-red))",
-        "ram-red-dark": "hsl(var(--ram-red-dark))",
-        "charcoal": "hsl(var(--charcoal))",
-        "steel": "hsl(var(--steel))",
-        "silver": "hsl(var(--silver))",
-        "gold": "hsl(var(--gold))",
-        "emerald": "hsl(var(--emerald))",
-        "amber": "hsl(var(--amber))",
-        "orange-stock": "hsl(var(--orange-stock))",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -71,6 +65,23 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        sf: {
+          navy: "hsl(var(--sf-navy))",
+          blue: "hsl(var(--sf-blue))",
+          "light-blue": "hsl(var(--sf-light-blue))",
+        },
+        ram: {
+          red: "hsl(var(--ram-red))",
+          "red-dark": "hsl(var(--ram-red-dark))",
+        },
+        // Legacy
+        "stellantis-blue": "hsl(var(--sf-navy))",
+        "ram-red": "hsl(var(--ram-red))",
+        "charcoal": "hsl(var(--charcoal))",
+        "steel": "hsl(var(--steel))",
+        "emerald": "hsl(var(--emerald))",
+        "amber": "hsl(var(--amber))",
+        "orange-stock": "hsl(var(--orange-stock))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -79,47 +90,27 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
         },
         "fade-in": {
-          from: {
-            opacity: "0",
-            transform: "translateY(10px)",
-          },
-          to: {
-            opacity: "1",
-            transform: "translateY(0)",
-          },
+          from: { opacity: "0", transform: "translateY(4px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
         },
         "slide-up": {
-          from: {
-            opacity: "0",
-            transform: "translateY(30px)",
-          },
-          to: {
-            opacity: "1",
-            transform: "translateY(0)",
-          },
+          from: { opacity: "0", transform: "translateY(8px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in": "fade-in 0.4s ease-out forwards",
-        "slide-up": "slide-up 0.5s ease-out forwards",
+        "fade-in": "fade-in 0.3s ease-out forwards",
+        "slide-up": "slide-up 0.35s ease-out forwards",
       },
     },
   },
