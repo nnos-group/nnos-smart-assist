@@ -65,7 +65,7 @@ const ClientDataScreen = ({ clientData, onClientDataChange, onGenerateSuggestion
     <div className="min-h-screen p-6 md:p-8 app-container">
       <div className="max-w-5xl mx-auto fade-in">
         {/* Header */}
-        <div className="mb-8 flex items-start justify-between">
+        <div className="mb-6 flex items-start justify-between">
           <div>
             <h1 className="section-title mb-1">Identificação do Cliente</h1>
             <p className="text-muted-foreground text-sm">
@@ -75,21 +75,19 @@ const ClientDataScreen = ({ clientData, onClientDataChange, onGenerateSuggestion
           <VoiceInputButton onDataExtracted={handleVoiceData} />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Vehicle */}
-          <div className="card-premium p-6 slide-up" style={{ animationDelay: "0.05s" }}>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "var(--gradient-primary)" }}>
-                <Car className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <h2 className="text-lg font-bold text-foreground font-display">Veículo</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+          {/* Vehicle Section */}
+          <div className="sf-card p-5 slide-up" style={{ animationDelay: "0.05s" }}>
+            <div className="flex items-center gap-2.5 mb-5 pb-3 border-b border-border">
+              <Car className="w-4 h-4 text-sf-blue" />
+              <h2 className="text-sm font-bold text-foreground">Veículo</h2>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="label-text block mb-2">Modelo</label>
+                <label className="text-xs font-medium text-foreground block mb-1.5">Modelo</label>
                 <Select value={clientData.vehicleModel} onValueChange={(v) => handleChange("vehicleModel", v)}>
-                  <SelectTrigger className="w-full font-medium h-12 rounded-xl">
+                  <SelectTrigger className="w-full h-9 rounded text-sm">
                     <SelectValue placeholder="Selecione o modelo" />
                   </SelectTrigger>
                   <SelectContent>
@@ -100,12 +98,12 @@ const ClientDataScreen = ({ clientData, onClientDataChange, onGenerateSuggestion
                 </Select>
               </div>
               <div>
-                <label className="label-text block mb-2">Cor</label>
+                <label className="text-xs font-medium text-foreground block mb-1.5">Cor</label>
                 <Select value={clientData.vehicleColor} onValueChange={(v) => handleChange("vehicleColor", v)}>
-                  <SelectTrigger className="w-full font-medium h-12 rounded-xl">
-                    <div className="flex items-center gap-3">
+                  <SelectTrigger className="w-full h-9 rounded text-sm">
+                    <div className="flex items-center gap-2">
                       {selectedColor && (
-                        <div className="w-5 h-5 rounded-full border-2 border-border shadow-sm flex-shrink-0" 
+                        <div className="w-4 h-4 rounded-full border border-border flex-shrink-0" 
                           style={{ backgroundColor: selectedColor.color }} />
                       )}
                       <SelectValue placeholder="Selecione a cor" />
@@ -114,8 +112,8 @@ const ClientDataScreen = ({ clientData, onClientDataChange, onGenerateSuggestion
                   <SelectContent>
                     {vehicleColors.map((c) => (
                       <SelectItem key={c.name} value={c.name}>
-                        <div className="flex items-center gap-3">
-                          <div className="w-4 h-4 rounded-full border border-border" style={{ backgroundColor: c.color }} />
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full border border-border" style={{ backgroundColor: c.color }} />
                           {c.name}
                         </div>
                       </SelectItem>
@@ -124,9 +122,9 @@ const ClientDataScreen = ({ clientData, onClientDataChange, onGenerateSuggestion
                 </Select>
               </div>
               <div>
-                <label className="label-text block mb-2">Ano/Modelo</label>
+                <label className="text-xs font-medium text-foreground block mb-1.5">Ano/Modelo</label>
                 <Select value={clientData.vehicleYear} onValueChange={(v) => handleChange("vehicleYear", v)}>
-                  <SelectTrigger className="w-full font-medium h-12 rounded-xl">
+                  <SelectTrigger className="w-full h-9 rounded text-sm">
                     <SelectValue placeholder="Selecione o ano" />
                   </SelectTrigger>
                   <SelectContent>
@@ -139,53 +137,49 @@ const ClientDataScreen = ({ clientData, onClientDataChange, onGenerateSuggestion
             </div>
           </div>
 
-          {/* Client */}
-          <div className="card-premium p-6 slide-up" style={{ animationDelay: "0.1s" }}>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "var(--gradient-primary)" }}>
-                <User className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <h2 className="text-lg font-bold text-foreground font-display">Cliente</h2>
+          {/* Client Section */}
+          <div className="sf-card p-5 slide-up" style={{ animationDelay: "0.1s" }}>
+            <div className="flex items-center gap-2.5 mb-5 pb-3 border-b border-border">
+              <User className="w-4 h-4 text-sf-blue" />
+              <h2 className="text-sm font-bold text-foreground">Cliente</h2>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="label-text block mb-2">Nome Completo</label>
+                <label className="text-xs font-medium text-foreground block mb-1.5">Nome Completo</label>
                 <input type="text" value={clientData.clientName}
                   onChange={(e) => handleChange("clientName", e.target.value)}
-                  className="input-field w-full font-medium h-12" placeholder="Nome do cliente" />
+                  className="input-field h-9 text-sm" placeholder="Nome do cliente" />
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="label-text block mb-2">Idade</label>
+                  <label className="text-xs font-medium text-foreground block mb-1.5">Idade</label>
                   <input type="text" value={clientData.clientAge}
                     onChange={(e) => handleChange("clientAge", e.target.value)}
-                    className="input-field w-full font-medium h-12" placeholder="Ex: 35" />
+                    className="input-field h-9 text-sm" placeholder="Ex: 35" />
                 </div>
                 <div>
-                  <label className="label-text block mb-2">Gênero</label>
+                  <label className="text-xs font-medium text-foreground block mb-1.5">Gênero</label>
                   <input type="text" value={clientData.clientGender}
                     onChange={(e) => handleChange("clientGender", e.target.value)}
-                    className="input-field w-full font-medium h-12" placeholder="Ex: Masculino" />
+                    className="input-field h-9 text-sm" placeholder="Ex: Masculino" />
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Region */}
-          <div className="card-premium p-6 lg:col-span-2 slide-up" style={{ animationDelay: "0.15s" }}>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "var(--gradient-primary)" }}>
-                <MapPin className="w-5 h-5 text-primary-foreground" />
-              </div>
-              <h2 className="text-lg font-bold text-foreground font-display">Região de Uso</h2>
+          {/* Region Section - Full Width */}
+          <div className="sf-card p-5 lg:col-span-2 slide-up" style={{ animationDelay: "0.15s" }}>
+            <div className="flex items-center gap-2.5 mb-5 pb-3 border-b border-border">
+              <MapPin className="w-4 h-4 text-sf-blue" />
+              <h2 className="text-sm font-bold text-foreground">Região de Uso</h2>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="label-text block mb-2">Estado</label>
+                <label className="text-xs font-medium text-foreground block mb-1.5">Estado</label>
                 <Select value={clientData.state} onValueChange={(v) => handleChange("state", v)}>
-                  <SelectTrigger className="w-full font-medium h-12 rounded-xl">
+                  <SelectTrigger className="w-full h-9 rounded text-sm">
                     <SelectValue placeholder="Selecione o estado" />
                   </SelectTrigger>
                   <SelectContent>
@@ -196,9 +190,9 @@ const ClientDataScreen = ({ clientData, onClientDataChange, onGenerateSuggestion
                 </Select>
               </div>
               <div>
-                <label className="label-text block mb-2">Tipo de Terreno</label>
+                <label className="text-xs font-medium text-foreground block mb-1.5">Tipo de Terreno</label>
                 <Select value={clientData.terrainType} onValueChange={(v) => handleChange("terrainType", v)}>
-                  <SelectTrigger className="w-full font-medium h-12 rounded-xl">
+                  <SelectTrigger className="w-full h-9 rounded text-sm">
                     <SelectValue placeholder="Selecione o terreno" />
                   </SelectTrigger>
                   <SelectContent>
@@ -209,9 +203,9 @@ const ClientDataScreen = ({ clientData, onClientDataChange, onGenerateSuggestion
                 </Select>
               </div>
               <div>
-                <label className="label-text block mb-2">Condição Climática</label>
+                <label className="text-xs font-medium text-foreground block mb-1.5">Condição Climática</label>
                 <Select value={clientData.climateCondition} onValueChange={(v) => handleChange("climateCondition", v)}>
-                  <SelectTrigger className="w-full font-medium h-12 rounded-xl">
+                  <SelectTrigger className="w-full h-9 rounded text-sm">
                     <SelectValue placeholder="Selecione o clima" />
                   </SelectTrigger>
                   <SelectContent>
@@ -223,11 +217,11 @@ const ClientDataScreen = ({ clientData, onClientDataChange, onGenerateSuggestion
               </div>
             </div>
 
-            <div className="mt-6 p-4 rounded-xl bg-accent/5 border border-accent/15">
-              <div className="flex items-start gap-3">
-                <Sparkles className="w-5 h-5 text-ram-red flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-foreground leading-relaxed">
-                  <strong className="text-ram-red">Análise Regional:</strong> A região do {clientData.state || "..."} apresenta alta 
+            <div className="mt-5 p-3 rounded bg-sf-light-blue border border-border">
+              <div className="flex items-start gap-2">
+                <Sparkles className="w-4 h-4 text-sf-blue flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-foreground leading-relaxed">
+                  <strong className="text-sf-blue">Análise Regional:</strong> A região do {clientData.state || "..."} apresenta alta 
                   demanda por acessórios de proteção e performance off-road.
                 </p>
               </div>
@@ -236,11 +230,11 @@ const ClientDataScreen = ({ clientData, onClientDataChange, onGenerateSuggestion
         </div>
 
         {/* Action */}
-        <div className="mt-8 flex justify-center slide-up" style={{ animationDelay: "0.25s" }}>
-          <button onClick={onGenerateSuggestion} className="btn-accent flex items-center gap-3 text-lg px-10 py-4 pulse-glow">
-            <Sparkles className="w-6 h-6" />
+        <div className="mt-6 flex justify-center slide-up" style={{ animationDelay: "0.25s" }}>
+          <button onClick={onGenerateSuggestion} className="btn-primary flex items-center gap-2 text-sm px-8 py-3">
+            <Sparkles className="w-4 h-4" />
             Gerar Sugestão de IA
-            <ArrowRight className="w-5 h-5" />
+            <ArrowRight className="w-4 h-4" />
           </button>
         </div>
       </div>

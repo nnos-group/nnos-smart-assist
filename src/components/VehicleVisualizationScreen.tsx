@@ -1,7 +1,7 @@
-import { RotateCw, Check, MessageSquare, ArrowRight, Layers, Car, Zap } from "lucide-react";
+import { RotateCw, Check, MessageSquare, ArrowRight, Layers, Car } from "lucide-react";
 import { useState, useMemo } from "react";
 import ramRampageImage from "@/assets/ram-rampage-rebel.jpg";
-import { Accessory, ClientData, vehicleImages } from "@/types/accessories";
+import { Accessory, ClientData } from "@/types/accessories";
 
 interface VehicleVisualizationScreenProps {
   accessories: Accessory[];
@@ -10,12 +10,7 @@ interface VehicleVisualizationScreenProps {
   onGenerateScript: () => void;
 }
 
-// Fallback de imagens por marca para demonstração
-const getVehicleImage = (vehicleModel: string): string => {
-  // Retornar a imagem local existente como fallback
-  // Em produção, usaria vehicleImages[vehicleModel]
-  return ramRampageImage;
-};
+const getVehicleImage = (): string => ramRampageImage;
 
 const VehicleVisualizationScreen = ({ accessories, clientData, onAccessoryToggle, onGenerateScript }: VehicleVisualizationScreenProps) => {
   const [rotation, setRotation] = useState(0);
@@ -28,12 +23,10 @@ const VehicleVisualizationScreen = ({ accessories, clientData, onAccessoryToggle
   };
 
   const selectedAccessories = accessories.filter((a) => a.selected);
-  const vehicleImage = getVehicleImage(clientData.vehicleModel);
-  
-  // Calcular profundidade 3D baseada na rotação
+  const vehicleImage = getVehicleImage();
+
   const depth3D = useMemo(() => {
-    const angle = rotation % 360;
-    const radians = (angle * Math.PI) / 180;
+    const radians = ((rotation % 360) * Math.PI) / 180;
     return {
       scaleX: Math.cos(radians),
       translateZ: Math.sin(radians) * 50,
@@ -42,129 +35,87 @@ const VehicleVisualizationScreen = ({ accessories, clientData, onAccessoryToggle
   }, [rotation]);
 
   return (
-    <div className="min-h-screen p-8 app-container">
+    <div className="min-h-screen p-6 md:p-8 app-container">
       <div className="max-w-6xl mx-auto fade-in">
         {/* Header */}
-        <div className="mb-6">
-          <p className="text-sm font-medium text-ram-red uppercase tracking-wider mb-1">
-            Visualização Interativa 3D
-          </p>
-          <h1 className="section-title">{clientData.vehicleModel} - {clientData.vehicleColor}</h1>
-          <p className="text-muted-foreground text-sm mt-1">
-            Ano: {clientData.vehicleYear} • Cliente: {clientData.clientName}
+        <div className="mb-5">
+          <p className="label-text text-sf-blue mb-1">Visualização Interativa</p>
+          <h1 className="section-title">{clientData.vehicleModel} — {clientData.vehicleColor}</h1>
+          <p className="text-muted-foreground text-xs mt-1">
+            Ano: {clientData.vehicleYear} · Cliente: {clientData.clientName}
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-5">
           {/* Vehicle Display */}
           <div className="lg:col-span-3">
-            <div className="card-premium p-6 slide-up">
-              {/* Vehicle Image Container with 3D depth effect */}
-              <div 
-                className="relative aspect-video bg-gradient-to-br from-secondary via-background to-secondary rounded-xl overflow-hidden mb-6"
-                style={{
-                  perspective: "1500px",
-                  perspectiveOrigin: "center center",
-                }}
+            <div className="sf-card p-5 slide-up">
+              <div
+                className="relative aspect-video bg-secondary rounded overflow-hidden mb-5"
+                style={{ perspective: "1500px" }}
               >
-                {/* Background gradient for depth */}
-                <div 
-                  className="absolute inset-0 bg-gradient-radial from-transparent via-transparent to-black/20 pointer-events-none"
-                  style={{
-                    opacity: 0.5 + Math.abs(Math.sin((rotation * Math.PI) / 180)) * 0.3,
-                  }}
-                />
-                
-                {/* Floor/shadow reflection */}
-                <div 
-                  className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] h-[20%] bg-gradient-to-t from-black/30 to-transparent rounded-[50%] blur-xl transition-all duration-700"
+                {/* Floor shadow */}
+                <div
+                  className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] h-[15%] bg-gradient-to-t from-foreground/15 to-transparent rounded-[50%] blur-xl transition-all duration-700"
                   style={{
                     transform: `translateX(-50%) scaleX(${1 + Math.abs(depth3D.scaleX) * 0.2})`,
-                    opacity: 0.4 + Math.abs(depth3D.scaleX) * 0.3,
+                    opacity: 0.3 + Math.abs(depth3D.scaleX) * 0.3,
                   }}
                 />
 
-                {/* Vehicle Image with 3D Transform */}
-                <div 
-                  className={`absolute inset-0 flex items-center justify-center transition-all duration-700 ease-out p-4 ${isRotating ? 'blur-[2px]' : ''}`}
-                  style={{ 
-                    transform: `
-                      perspective(1500px) 
-                      rotateY(${rotation}deg) 
-                      translateZ(${depth3D.translateZ}px)
-                      scale(${0.95 + Math.abs(depth3D.scaleX) * 0.05})
-                    `,
+                {/* Vehicle Image */}
+                <div
+                  className={`absolute inset-0 flex items-center justify-center transition-all duration-700 ease-out p-4 ${isRotating ? 'blur-[1px]' : ''}`}
+                  style={{
+                    transform: `perspective(1500px) rotateY(${rotation}deg) translateZ(${depth3D.translateZ}px) scale(${0.95 + Math.abs(depth3D.scaleX) * 0.05})`,
                     transformStyle: "preserve-3d",
                   }}
                 >
-                  <img 
-                    src={vehicleImage} 
+                  <img
+                    src={vehicleImage}
                     alt={`${clientData.vehicleModel} ${clientData.vehicleColor}`}
                     className="max-h-full max-w-full object-contain transition-all duration-700"
-                    style={{
-                      filter: `drop-shadow(0 ${depth3D.shadow}px ${depth3D.shadow * 1.5}px rgba(0,0,0,0.4))`,
-                    }}
+                    style={{ filter: `drop-shadow(0 ${depth3D.shadow}px ${depth3D.shadow * 1.5}px rgba(0,0,0,0.3))` }}
                   />
                 </div>
 
-                {/* 3D Rotation indicator ring */}
-                <div 
-                  className="absolute bottom-20 left-1/2 -translate-x-1/2 w-[60%] h-4 border-2 border-dashed border-stellantis-blue/30 rounded-[50%] pointer-events-none"
-                  style={{
-                    transform: `translateX(-50%) rotateX(70deg) rotateZ(${rotation}deg)`,
-                    transformStyle: "preserve-3d",
-                  }}
-                />
-
-                {/* Accessory Badges Overlay */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-wrap justify-center gap-2 max-w-[90%]">
-                  {selectedAccessories.slice(0, 4).map((acc) => (
-                    <span 
-                      key={acc.id}
-                      className="px-3 py-1.5 bg-stellantis-blue/90 text-primary-foreground text-xs font-medium rounded-full backdrop-blur-sm shadow-lg"
-                    >
-                      ✓ {acc.name}
-                    </span>
-                  ))}
-                  {selectedAccessories.length > 4 && (
-                    <span className="px-3 py-1.5 bg-ram-red/90 text-primary-foreground text-xs font-medium rounded-full backdrop-blur-sm shadow-lg">
-                      +{selectedAccessories.length - 4} mais
-                    </span>
-                  )}
-                </div>
-
-                {/* Rotation Indicator */}
-                <div className="absolute bottom-4 left-4 bg-charcoal/80 text-primary-foreground px-3 py-1.5 rounded-lg text-sm font-medium backdrop-blur-sm flex items-center gap-2">
-                  <Layers className="w-4 h-4" />
-                  Vista: {rotation}°
-                </div>
-
-                {/* 3D Badge */}
-                <div className="absolute top-4 right-4 bg-ram-red text-accent-foreground px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider shadow-lg flex items-center gap-1">
-                  <Zap className="w-3 h-3" />
-                  Visualização 3D
-                </div>
-
-                {/* Vehicle Info Badge */}
-                <div className="absolute top-4 left-4 bg-stellantis-blue/90 text-primary-foreground px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider shadow-lg flex items-center gap-1">
+                {/* Badges */}
+                <div className="absolute top-3 left-3 bg-sf-navy text-primary-foreground px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
                   <Car className="w-3 h-3" />
                   {clientData.vehicleYear}
                 </div>
 
-                {/* Accessory Count */}
-                <div className="absolute top-14 left-4 bg-charcoal/80 text-primary-foreground px-3 py-1.5 rounded-lg text-xs font-medium backdrop-blur-sm">
-                  {selectedAccessories.length} Acessórios Selecionados
+                <div className="absolute top-3 right-3 bg-sf-blue text-primary-foreground px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider">
+                  360° View
+                </div>
+
+                <div className="absolute bottom-3 left-3 bg-foreground/70 text-primary-foreground px-2 py-1 rounded text-xs font-medium flex items-center gap-1.5">
+                  <Layers className="w-3 h-3" />
+                  {rotation}°
+                </div>
+
+                {/* Selected accessory tags */}
+                <div className="absolute bottom-3 right-3 flex flex-wrap justify-end gap-1 max-w-[60%]">
+                  {selectedAccessories.slice(0, 3).map((acc) => (
+                    <span key={acc.id} className="px-2 py-0.5 bg-sf-navy/80 text-primary-foreground text-[10px] font-medium rounded">
+                      {acc.name}
+                    </span>
+                  ))}
+                  {selectedAccessories.length > 3 && (
+                    <span className="px-2 py-0.5 bg-ram-red/80 text-primary-foreground text-[10px] font-medium rounded">
+                      +{selectedAccessories.length - 3}
+                    </span>
+                  )}
                 </div>
               </div>
 
-              {/* Controls */}
-              <div className="flex justify-center gap-4">
+              <div className="flex justify-center">
                 <button
                   onClick={handleRotate}
                   disabled={isRotating}
-                  className="btn-primary flex items-center gap-2 px-8 disabled:opacity-70"
+                  className="btn-primary flex items-center gap-2 text-sm px-6 disabled:opacity-70"
                 >
-                  <RotateCw className={`w-5 h-5 transition-transform duration-700 ${isRotating ? 'animate-spin' : ''}`} />
+                  <RotateCw className={`w-4 h-4 transition-transform duration-700 ${isRotating ? 'animate-spin' : ''}`} />
                   Girar 360°
                 </button>
               </div>
@@ -173,61 +124,43 @@ const VehicleVisualizationScreen = ({ accessories, clientData, onAccessoryToggle
 
           {/* Accessories Panel */}
           <div className="lg:col-span-1">
-            <div className="card-premium p-5 slide-up" style={{ animationDelay: "0.1s" }}>
-              <h3 className="label-text mb-4">Acessórios do Pacote</h3>
-              
-              <div className="space-y-2 mb-6 max-h-[300px] overflow-y-auto">
+            <div className="sf-card p-4 slide-up" style={{ animationDelay: "0.1s" }}>
+              <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-3">Acessórios</h3>
+
+              <div className="space-y-1.5 mb-4 max-h-[300px] overflow-y-auto">
                 {accessories.map((acc) => (
                   <button
                     key={acc.id}
                     onClick={() => onAccessoryToggle(acc.id)}
-                    className={`w-full flex items-center justify-between p-3 rounded-lg border transition-all duration-200 ${
+                    className={`w-full flex items-center justify-between p-2 rounded border text-left transition-colors text-sm ${
                       acc.selected
-                        ? "bg-primary/10 border-primary text-primary"
-                        : "bg-secondary/50 border-border text-muted-foreground"
+                        ? "bg-sf-light-blue border-accent text-foreground"
+                        : "bg-card border-border text-muted-foreground hover:bg-secondary/50"
                     }`}
                   >
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg">{acc.icon}</span>
-                      <span className="text-sm font-medium truncate max-w-[120px]">{acc.name}</span>
-                    </div>
-                    <Check className={`w-4 h-4 flex-shrink-0 ${acc.selected ? "opacity-100" : "opacity-30"}`} />
+                    <span className="truncate max-w-[140px] text-xs font-medium">{acc.name}</span>
+                    <Check className={`w-3.5 h-3.5 flex-shrink-0 ${acc.selected ? "text-sf-blue" : "opacity-20"}`} />
                   </button>
                 ))}
               </div>
 
-              <div className="border-t border-border pt-4">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-sm text-muted-foreground">Total:</span>
-                  <span className="text-lg font-bold text-ram-red">
+              <div className="border-t border-border pt-3">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-xs text-muted-foreground">Total:</span>
+                  <span className="text-base font-bold text-sf-blue">
                     R$ {selectedAccessories.reduce((sum, a) => sum + a.price, 0).toLocaleString("pt-BR")}
                   </span>
                 </div>
-                
+
                 <button
                   onClick={onGenerateScript}
                   disabled={selectedAccessories.length === 0}
-                  className="btn-accent w-full flex items-center justify-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="btn-accent w-full flex items-center justify-center gap-2 text-xs h-9 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <MessageSquare className="w-4 h-4" />
+                  <MessageSquare className="w-3.5 h-3.5" />
                   Gerar Argumentação
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </button>
-              </div>
-            </div>
-
-            {/* Info Card */}
-            <div className="card-premium p-4 mt-4 slide-up" style={{ animationDelay: "0.2s" }}>
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center flex-shrink-0">
-                  <Check className="w-4 h-4 text-accent" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-foreground">Cliente Engajado</p>
-                  <p className="text-xs text-muted-foreground">
-                    Visualização 3D aumenta conversão em 47%
-                  </p>
-                </div>
               </div>
             </div>
           </div>
