@@ -249,6 +249,19 @@
     background: hsl(var(--emerald) / 0.1);
     color: hsl(var(--emerald));
   }
+
+  /* CTA Orange Button */
+  .btn-cta-orange {
+    @apply font-bold rounded transition-all duration-150 active:scale-[0.98];
+    background: hsl(25 95% 53%);
+    color: hsl(0 0% 100%);
+    box-shadow: 0 2px 8px hsl(25 95% 53% / 0.3);
+  }
+
+  .btn-cta-orange:hover {
+    background: hsl(25 95% 45%);
+    box-shadow: 0 4px 12px hsl(25 95% 53% / 0.4);
+  }
 }
 
 @layer utilities {

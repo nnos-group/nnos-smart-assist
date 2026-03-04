@@ -119,6 +119,7 @@ const Index = () => {
             clientData={clientData}
             onAccessoryToggle={handleAccessoryToggle}
             onGenerateScript={() => setCurrentScreen("script")}
+            onAddToProposal={handleCloseSale}
           />
         )}
 
