@@ -69,8 +69,8 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
           )}
         </div>
 
-        <p className="text-center text-[11px] text-muted-foreground mt-6">
-          © 2025 Stellantis • Concessionária Premium
+        <p className="text-center text-[11px] text-muted-foreground mt-6">© 2026 Stellantis • Concessionária Premium
+
         </p>
       </div>
     </div>);
