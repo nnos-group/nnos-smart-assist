@@ -32,7 +32,7 @@ const NavigationBar = ({ currentStep, onBack, onLogout, showBack }: NavigationBa
                 <Car className="w-4 h-4 text-primary-foreground" />
               </div>
               <span className="font-bold text-primary-foreground tracking-tight text-xl">
-                NNÓS <span className="text-primary-foreground/70 font-normal">Smart-Sell</span>
+                Smart-Sell
               </span>
             </div>
           </div>
