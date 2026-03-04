@@ -8,22 +8,22 @@ interface PackageSuggestionScreenProps {
   onVisualize: () => void;
 }
 
-const StockBadge = ({ status, days }: { status: string; days: number }) => {
+const StockBadge = ({ status, days }: {status: string;days: number;}) => {
   if (status === "dormant") {
     return (
       <span className="badge-dormant flex items-center gap-1">
         <Clock className="w-3 h-3" />
         Dormente · {days}d
-      </span>
-    );
+      </span>);
+
   }
   if (status === "obsolete") {
     return (
       <span className="badge-obsolete flex items-center gap-1">
         <AlertTriangle className="w-3 h-3" />
         Obsoleto · {Math.round(days / 30)}m
-      </span>
-    );
+      </span>);
+
   }
   return <span className="badge-available">Em estoque</span>;
 };
@@ -40,8 +40,8 @@ const PackageSuggestionScreen = ({ accessories, clientData, onAccessoryToggle, o
   const totalSavings = totalOriginal - total;
   const packageName = getPackageName(clientData.vehicleModel);
 
-  const dormantCount = accessories.filter(a => a.stockStatus === "dormant").length;
-  const obsoleteCount = accessories.filter(a => a.stockStatus === "obsolete").length;
+  const dormantCount = accessories.filter((a) => a.stockStatus === "dormant").length;
+  const obsoleteCount = accessories.filter((a) => a.stockStatus === "obsolete").length;
 
   return (
     <div className="min-h-screen p-6 md:p-8 app-container">
@@ -52,7 +52,7 @@ const PackageSuggestionScreen = ({ accessories, clientData, onAccessoryToggle, o
             <Sparkles className="w-4 h-4 text-sf-blue" />
             <span className="label-text text-sf-blue">Recomendação Personalizada</span>
           </div>
-          <h1 className="section-title">Pacote de Acessórios Recomendado pela IA</h1>
+          <h1 className="section-title">Pacote de Acessórios Recomendado</h1>
         </div>
 
         {/* Client Info Summary */}
@@ -77,8 +77,8 @@ const PackageSuggestionScreen = ({ accessories, clientData, onAccessoryToggle, o
         </div>
 
         {/* Stock Alert Banner */}
-        {(dormantCount > 0 || obsoleteCount > 0) && (
-          <div className="sf-card p-3 mb-5 slide-up border-l-4" style={{ borderLeftColor: "hsl(var(--amber))", animationDelay: "0.05s" }}>
+        {(dormantCount > 0 || obsoleteCount > 0) &&
+        <div className="sf-card p-3 mb-5 slide-up border-l-4" style={{ borderLeftColor: "hsl(var(--amber))", animationDelay: "0.05s" }}>
             <div className="flex items-start gap-3">
               <TrendingDown className="w-4 h-4 flex-shrink-0 mt-0.5" style={{ color: "hsl(var(--amber))" }} />
               <div>
@@ -92,7 +92,7 @@ const PackageSuggestionScreen = ({ accessories, clientData, onAccessoryToggle, o
               </div>
             </div>
           </div>
-        )}
+        }
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {/* Accessories List */}
@@ -121,22 +121,22 @@ const PackageSuggestionScreen = ({ accessories, clientData, onAccessoryToggle, o
                 </h3>
               </div>
               <div className="divide-y divide-border">
-                {accessories.map((item, index) => (
-                  <button
-                    key={item.id}
-                    onClick={() => onAccessoryToggle(item.id)}
-                    className={`w-full flex items-center justify-between px-4 py-3 text-left transition-colors duration-150 ${
-                      item.selected
-                        ? "bg-sf-light-blue"
-                        : index % 2 === 0
-                        ? "bg-card hover:bg-secondary/50"
-                        : "bg-secondary/30 hover:bg-secondary/60"
-                    }`}
-                  >
+                {accessories.map((item, index) =>
+                <button
+                  key={item.id}
+                  onClick={() => onAccessoryToggle(item.id)}
+                  className={`w-full flex items-center justify-between px-4 py-3 text-left transition-colors duration-150 ${
+                  item.selected ?
+                  "bg-sf-light-blue" :
+                  index % 2 === 0 ?
+                  "bg-card hover:bg-secondary/50" :
+                  "bg-secondary/30 hover:bg-secondary/60"}`
+                  }>
+                  
                     <div className="flex items-center gap-3 flex-1 min-w-0">
                       <div className={`w-5 h-5 rounded border flex items-center justify-center flex-shrink-0 transition-colors ${
-                        item.selected ? "bg-sf-blue border-accent text-primary-foreground" : "border-border bg-card"
-                      }`}>
+                    item.selected ? "bg-sf-blue border-accent text-primary-foreground" : "border-border bg-card"}`
+                    }>
                         {item.selected && <Check className="w-3 h-3" />}
                       </div>
                       <div className="min-w-0 flex-1">
@@ -150,8 +150,8 @@ const PackageSuggestionScreen = ({ accessories, clientData, onAccessoryToggle, o
                       </div>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0 ml-3">
-                      {item.discountPercent > 0 ? (
-                        <div className="text-right">
+                      {item.discountPercent > 0 ?
+                    <div className="text-right">
                           <span className="text-xs text-muted-foreground line-through block">
                             R$ {item.price.toLocaleString("pt-BR")}
                           </span>
@@ -159,15 +159,15 @@ const PackageSuggestionScreen = ({ accessories, clientData, onAccessoryToggle, o
                             R$ {getDiscountedPrice(item).toLocaleString("pt-BR")}
                           </span>
                           <span className="discount-tag ml-1">-{item.discountPercent}%</span>
-                        </div>
-                      ) : (
-                        <span className={`text-sm font-bold ${item.selected ? "text-sf-blue" : "text-muted-foreground"}`}>
+                        </div> :
+
+                    <span className={`text-sm font-bold ${item.selected ? "text-sf-blue" : "text-muted-foreground"}`}>
                           R$ {item.price.toLocaleString("pt-BR")}
                         </span>
-                      )}
+                    }
                     </div>
                   </button>
-                ))}
+                )}
               </div>
             </div>
           </div>
@@ -178,27 +178,27 @@ const PackageSuggestionScreen = ({ accessories, clientData, onAccessoryToggle, o
               <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-3">Resumo do Pacote</h3>
 
               <div className="space-y-2 mb-4">
-                {accessories.map((item) => (
-                  <div key={item.id} className={`flex justify-between text-xs transition-opacity ${
-                    item.selected ? "opacity-100" : "opacity-30 line-through"
-                  }`}>
+                {accessories.map((item) =>
+                <div key={item.id} className={`flex justify-between text-xs transition-opacity ${
+                item.selected ? "opacity-100" : "opacity-30 line-through"}`
+                }>
                     <span className="text-muted-foreground truncate max-w-[55%]">{item.name}</span>
                     <span className="font-medium text-foreground">
                       R$ {(item.selected && item.discountPercent > 0 ? getDiscountedPrice(item) : item.price).toLocaleString("pt-BR")}
                     </span>
                   </div>
-                ))}
+                )}
               </div>
 
               <div className="border-t border-border pt-3 mb-4">
-                {totalSavings > 0 && (
-                  <div className="flex justify-between items-center mb-1">
+                {totalSavings > 0 &&
+                <div className="flex justify-between items-center mb-1">
                     <span className="text-xs text-muted-foreground">Economia estoque</span>
                     <span className="text-xs font-bold" style={{ color: "hsl(var(--emerald))" }}>
                       - R$ {totalSavings.toLocaleString("pt-BR")}
                     </span>
                   </div>
-                )}
+                }
                 <div className="flex justify-between items-center">
                   <span className="text-sm font-semibold text-foreground">Total</span>
                   <span className="text-xl font-bold text-sf-blue">
@@ -208,11 +208,11 @@ const PackageSuggestionScreen = ({ accessories, clientData, onAccessoryToggle, o
                 <p className="text-[11px] text-muted-foreground mt-1">
                   ou 12x de R$ {Math.ceil(total / 12).toLocaleString("pt-BR")}
                 </p>
-                {selectedAccessories.length < accessories.length && (
-                  <p className="text-[11px] text-muted-foreground mt-1">
+                {selectedAccessories.length < accessories.length &&
+                <p className="text-[11px] text-muted-foreground mt-1">
                     {selectedAccessories.length} de {accessories.length} itens selecionados
                   </p>
-                )}
+                }
               </div>
 
               {/* Stock Legend */}
@@ -235,8 +235,8 @@ const PackageSuggestionScreen = ({ accessories, clientData, onAccessoryToggle, o
               <button
                 onClick={onVisualize}
                 disabled={selectedAccessories.length === 0}
-                className="btn-primary w-full flex items-center justify-center gap-2 text-sm h-10 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
+                className="btn-primary w-full flex items-center justify-center gap-2 text-sm h-10 disabled:opacity-50 disabled:cursor-not-allowed">
+                
                 <Eye className="w-4 h-4" />
                 Visualizar no Veículo
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -245,8 +245,8 @@ const PackageSuggestionScreen = ({ accessories, clientData, onAccessoryToggle, o
           </div>
         </div>
       </div>
-    </div>
-  );
+    </div>);
+
 };
 
 export default PackageSuggestionScreen;
