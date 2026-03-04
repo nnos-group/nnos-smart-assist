@@ -59,7 +59,7 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
         <div className="grid grid-cols-3 gap-2 mt-5">
           {[
           { icon: Shield, label: "Seguro" },
-          { icon: Cpu, label: "IA Integrada" },
+          { icon: Cpu, label: "Inteligência Integrada" },
           { icon: TrendingUp, label: "Resultados" }].
           map(({ icon: Icon, label }) =>
           <div key={label} className="flex flex-col items-center gap-1 py-2 px-2 rounded border border-border bg-card text-center">
