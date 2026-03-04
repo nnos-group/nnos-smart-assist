@@ -9,7 +9,7 @@ interface NavigationBarProps {
 
 const steps = [
   { id: 1, label: "Dados" },
-  { id: 2, label: "Pacote IA" },
+  { id: 2, label: "Pacote Acessórios" },
   { id: 3, label: "Visualização" },
   { id: 4, label: "Script" },
 ];
