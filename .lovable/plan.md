@@ -1,71 +1,75 @@
 
 
-# Plano: Redesign Inspirado no Salesforce Lightning
+# Plano: Redesign da Tela de Visualização Interativa de Acessórios
 
-## Referência Visual Capturada
+## Objetivo
+Transformar a `VehicleVisualizationScreen` em uma experiência de showroom digital imersiva, focada no produto, com seleção via checkboxes/switches, toggle "Antes/Depois", e CTA de destaque "Adicionar à Proposta".
 
-A página do Salesforce Help apresenta:
-- **Barra superior azul escuro** com logo e navegação principal
-- **Barra secundária clara** com links e dropdowns
-- **Fundo branco limpo** com conteúdo centralizado
-- **Tipografia profissional** com boa hierarquia
-- **Bordas finas e sutis**, sem sombras pesadas
-- **Cores**: azul Salesforce (#032D60 escuro, #0176D3 links), fundo branco puro, texto cinza escuro
+## Layout Proposto
 
-## Mudanças Planejadas
+```text
+┌─────────────────────────────────────────────────────────────┐
+│  HEADER: Modelo + Cor + Ano                                 │
+├───────────────────────────────────────┬─────────────────────┤
+│                                       │  PAINEL ACESSÓRIOS  │
+│                                       │                     │
+│     IMAGEM DO VEÍCULO                 │  ☑ Rack de Teto     │
+│     (área principal, ~70%)            │  ☑ Estribo Lateral  │
+│                                       │  ☐ Protetor Cárter  │
+│                                       │  ☐ Capota Marítima  │
+│                                       │                     │
+│  [Antes ○────● Depois]  [Girar 360°] │  ─────────────────  │
+│                                       │  Total: R$ 4.300    │
+│  Tags dos acessórios ativos           │                     │
+│                                       │  [Adicionar à       │
+│                                       │   Proposta]  🟠     │
+└───────────────────────────────────────┴─────────────────────┘
+```
 
-### 1. Paleta de Cores (index.css)
-Atualizar as variáveis CSS para refletir o estilo Salesforce Lightning:
-- `--primary`: azul Salesforce (#032D60 → HSL ~210 95% 19%)
-- `--accent`: azul ação (#0176D3 → HSL ~207 98% 41%)
-- Manter `--ram-red` para CTAs de destaque
-- Fundo mais branco e limpo (menos gradients mesh)
-- Cards com fundo branco puro, bordas finas cinza claro
+## Mudanças Detalhadas
 
-### 2. NavigationBar — Estilo Salesforce
-- Barra superior com fundo azul escuro sólido (sem blur/glass)
-- Logo branco no canto esquerdo
-- Steps/progress em pills brancas/transparentes sobre fundo escuro
-- Botão sair com ícone branco
+### 1. Arquivo: `src/components/VehicleVisualizationScreen.tsx` (rewrite completo)
 
-### 3. LoginScreen — Estilo Enterprise
-- Card centralizado sobre fundo branco/cinza claro
-- Logo acima do card com ícone de nuvem/cloud estilo SF
-- Inputs com bordas finas cinza, sem sombras internas
-- Botão azul sólido (sem gradiente vermelho)
+**Novo estado:**
+- `showBefore: boolean` — toggle entre visão "Antes" (veículo sem acessórios) e "Depois" (com acessórios selecionados)
+- Manter `rotation` e `isRotating` existentes
 
-### 4. ClientDataScreen — Layout Clean
-- Cards com borda fina `#e5e5e5`, fundo branco puro
-- Headers de seção com ícone azul + texto em bold
-- Dropdowns e inputs com estilo mais "flat" e corporativo
-- Remover gradientes decorativos, usar separadores horizontais finos
+**Seleção de acessórios — novo design:**
+- Cada acessório usa um **Checkbox** (de `@radix-ui/react-checkbox`) ao invés de botões simples
+- Mostrar nome + preço em cada linha
+- Visual limpo com bordas finas e hover sutil
 
-### 5. PackageSuggestionScreen — Tabela Profissional
-- Lista de acessórios em formato mais "table-like" com linhas alternadas
-- Badges de estoque mantidos mas com estilo mais flat
-- Summary card com bordas limpas, sem sombras pesadas
+**Toggle "Antes / Depois":**
+- Usar o componente `Switch` do Radix existente
+- Labels "Antes" / "Depois" ao lado do switch
+- Quando em "Antes": ocultar as tags de acessórios sobrepostas na imagem e aplicar um efeito visual sutil (ex: leve desaturação ou label "Original")
+- Quando em "Depois": mostrar normalmente com tags dos acessórios
 
-### 6. VehicleVisualizationScreen & SalesScriptScreen
-- Mesmo tratamento: fundo limpo, cards brancos, bordas finas
-- Tipografia mais sóbria, menos emojis decorativos
-- Botões azuis sólidos como CTAs principais
+**CTA "Adicionar à Proposta":**
+- Botão laranja proeminente (`bg-orange-500 hover:bg-orange-600`) no rodapé do painel lateral
+- Texto: "Adicionar à Proposta"
+- Ícone de carrinho (`ShoppingCart` do lucide)
+- Substitui o botão "Gerar Argumentação" atual (que passa a ser secundário ou mantido como link)
 
-### 7. Componentes de Estilo (index.css)
-- `.card-premium`: borda `1px solid #d8dde6`, sem gradiente de fundo
-- `.btn-primary`: azul sólido `#0176D3`, hover mais escuro, sem sombra glow
-- `.btn-accent`: manter vermelho para ações de destaque (fechar venda)
-- `.input-field`: borda `#d8dde6`, foco azul, sem rounded-xl (usar rounded-md)
-- Remover `pulse-glow`, `shimmer` e gradientes mesh do background
-- Adicionar `.sf-card` com estilo Salesforce Lightning card
+**Imagem principal:**
+- Manter o sistema de rotação 3D existente
+- Quando toggle está em "Antes": mostrar imagem com label overlay "ORIGINAL" e sem tags de acessórios
+- Quando em "Depois": mostrar tags dos acessórios selecionados como já funciona
+
+### 2. Arquivo: `src/index.css` (adição mínima)
+
+- Adicionar classe `.btn-cta-orange` para o botão laranja de CTA:
+  - `background: #f97316` (orange-500), hover `#ea580c` (orange-600)
+  - Texto branco, rounded, font-bold, sombra sutil
+
+### 3. Fluxo no `Index.tsx`
+
+- Adicionar novo callback `onAddToProposal` no `VehicleVisualizationScreen` que dispara o `SuccessModal` ou navega para o script
+- O botão "Gerar Argumentação" permanece como ação secundária
+- O novo CTA "Adicionar à Proposta" chama o callback principal
 
 ### Arquivos Afetados
-1. `src/index.css` — Paleta, variáveis, componentes globais
-2. `tailwind.config.ts` — Cores atualizadas
-3. `src/components/NavigationBar.tsx` — Barra azul escura SF-style
-4. `src/components/LoginScreen.tsx` — Layout enterprise
-5. `src/components/ClientDataScreen.tsx` — Cards clean
-6. `src/components/PackageSuggestionScreen.tsx` — Lista profissional
-7. `src/components/VehicleVisualizationScreen.tsx` — Visual limpo
-8. `src/components/SalesScriptScreen.tsx` — Script corporativo
-9. `src/components/SuccessModal.tsx` — Modal clean
+1. `src/components/VehicleVisualizationScreen.tsx` — redesign completo
+2. `src/index.css` — adicionar `.btn-cta-orange`
+3. `src/pages/Index.tsx` — adicionar handler `onAddToProposal`
 
