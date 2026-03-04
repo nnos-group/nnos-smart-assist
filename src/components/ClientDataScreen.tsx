@@ -233,7 +233,7 @@ const ClientDataScreen = ({ clientData, onClientDataChange, onGenerateSuggestion
         <div className="mt-6 flex justify-center slide-up" style={{ animationDelay: "0.25s" }}>
           <button onClick={onGenerateSuggestion} className="btn-primary flex items-center gap-2 text-sm px-8 py-3">
             <Sparkles className="w-4 h-4" />
-            Gerar Sugestão de IA
+            Gerar Sugestão de Acessórios
             <ArrowRight className="w-4 h-4" />
           </button>
         </div>
