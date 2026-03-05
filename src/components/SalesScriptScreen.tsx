@@ -77,6 +77,15 @@ const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScre
   const [objectionText, setObjectionText] = useState("");
   const [counterArgument, setCounterArgument] = useState<CounterArgument | null>(null);
   const [isRecordingObjection, setIsRecordingObjection] = useState(false);
+  const [focusedAccessoryIds, setFocusedAccessoryIds] = useState<string[]>(() => selectedAccessories.map(a => a.id));
+
+  const focusedAccessories = useMemo(() => selectedAccessories.filter(a => focusedAccessoryIds.includes(a.id)), [selectedAccessories, focusedAccessoryIds]);
+  const focusedTotal = useMemo(() => focusedAccessories.reduce((sum, a) => sum + a.price, 0), [focusedAccessories]);
+
+  const toggleFocusedAccessory = useCallback((id: string) => {
+    setFocusedAccessoryIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+    if (counterArgument) setCounterArgument(null);
+  }, [counterArgument]);
 
   const handleGenerateCounter = useCallback(() => {
     if (!objectionText.trim()) {
