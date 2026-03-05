@@ -1,6 +1,9 @@
-import { MessageSquare, CheckCircle, ArrowRight, Sparkles, Award, User, MapPin, Car, Package } from "lucide-react";
+import { MessageSquare, CheckCircle, ArrowRight, Sparkles, Award, User, MapPin, Car, Package, Shield, Mic, MicOff, Send } from "lucide-react";
 import { Accessory, ClientData, getPackageName } from "@/types/accessories";
-import { useMemo } from "react";
+import { useMemo, useState, useCallback } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 interface SalesScriptScreenProps {
   clientData: ClientData;
@@ -8,14 +11,110 @@ interface SalesScriptScreenProps {
   onClose: () => void;
 }
 
+interface CounterArgument {
+  title: string;
+  content: string;
+  technique: string;
+}
+
+const generateCounterArgument = (
+  objection: string,
+  clientData: ClientData,
+  selectedAccessories: Accessory[],
+  totalPrice: number,
+  packageName: string
+): CounterArgument => {
+  const text = objection.toLowerCase();
+  const firstName = clientData.clientName.split(" ")[0] || "Cliente";
+  const genderPrefix = clientData.clientGender?.toLowerCase().includes("fem") ? "Sra." : "Sr.";
+  const monthlyPayment = Math.ceil(totalPrice / 12).toLocaleString("pt-BR");
+  const accessoryNames = selectedAccessories.map(a => a.name).join(", ");
+
+  if (/caro|preço|prec|dinheiro|custo|valor alto|pagar|cust/.test(text)) {
+    return {
+      title: "Custo-Benefício e Parcelamento",
+      technique: "Parcelamento + Comparação de custo",
+      content: `"${genderPrefix} ${firstName}, financiando o ${packageName} junto ao veículo, o investimento fica em apenas R$ ${monthlyPayment}/mês. Sem a proteção adequada, um único reparo de pintura ou lataria do ${clientData.vehicleModel} pode custar mais do que o pacote inteiro. Estamos falando de proteger um investimento de dezenas de milhares de reais por uma fração do valor."`,
+    };
+  }
+
+  if (/não preciso|desnecessário|sem necessidade|não necessit|não uso|não vou usar/.test(text)) {
+    return {
+      title: "Necessidade Real de Proteção",
+      technique: "Ancoragem no perfil de uso",
+      content: `"${genderPrefix} ${firstName}, para uso em ${clientData.terrainType || "condições variadas"} na região ${clientData.state ? `do ${clientData.state}` : "informada"}, itens como ${accessoryNames} não são luxo — são necessidade. 8 em cada 10 clientes com o mesmo perfil de uso optam por esse pacote. ${clientData.climateCondition ? `Com ${clientData.climateCondition.toLowerCase()}, ` : ""}a proteção se torna ainda mais essencial."`,
+    };
+  }
+
+  if (/pensar|penso|depois|volto|ver depois|decidir|calma|tempo/.test(text)) {
+    return {
+      title: "Condição Exclusiva",
+      technique: "Urgência + Exclusividade",
+      content: `"${genderPrefix} ${firstName}, entendo perfeitamente. Porém, o ${packageName} tem uma condição especial vinculada à compra do ${clientData.vehicleModel}. Após a saída da concessionária, a instalação individual desses itens (${accessoryNames}) pode custar até 40% a mais, além de exigir agendamento separado. Esta é a melhor janela de oportunidade."`,
+    };
+  }
+
+  if (/já tenho|compro fora|aftermarket|paralelo|genéric|internet|mercado livre/.test(text)) {
+    return {
+      title: "Garantia e Procedência Original",
+      technique: "Garantia de fábrica + Segurança",
+      content: `"${genderPrefix} ${firstName}, acessórios originais mantêm a garantia de fábrica do ${clientData.vehicleModel} intacta. Itens paralelos podem comprometer a garantia, além de não oferecerem o mesmo encaixe e acabamento. O ${packageName} é homologado pelo fabricante, com instalação certificada e garantia própria."`,
+    };
+  }
+
+  return {
+    title: "Valor Personalizado",
+    technique: "Reforço de valor percebido",
+    content: `"${genderPrefix} ${firstName}, o ${packageName} foi montado especificamente para o perfil de uso do(a) senhor(a) com o ${clientData.vehicleModel} ${clientData.vehicleColor || ""}. Cada item — ${accessoryNames} — foi selecionado considerando sua região${clientData.state ? ` (${clientData.state})` : ""} e tipo de uso${clientData.terrainType ? ` (${clientData.terrainType})` : ""}. É uma solução completa, não um kit genérico."`,
+  };
+};
+
 const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScreenProps) => {
   const selectedAccessories = accessories.filter((a) => a.selected);
   const totalPrice = selectedAccessories.reduce((sum, a) => sum + a.price, 0);
   const packageName = getPackageName(clientData.vehicleModel);
 
+  const [objectionText, setObjectionText] = useState("");
+  const [counterArgument, setCounterArgument] = useState<CounterArgument | null>(null);
+  const [isRecordingObjection, setIsRecordingObjection] = useState(false);
+
+  const handleGenerateCounter = useCallback(() => {
+    if (!objectionText.trim()) {
+      toast.error("Digite ou dite a objeção do cliente primeiro.");
+      return;
+    }
+    const result = generateCounterArgument(objectionText, clientData, selectedAccessories, totalPrice, packageName);
+    setCounterArgument(result);
+    toast.success("Contra-argumentação gerada!");
+  }, [objectionText, clientData, selectedAccessories, totalPrice, packageName]);
+
+  const handleVoiceObjection = useCallback(() => {
+    const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognitionAPI) {
+      toast.error("Reconhecimento de voz não suportado neste navegador.");
+      return;
+    }
+    const recognition = new SpeechRecognitionAPI();
+    recognition.lang = "pt-BR";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onstart = () => setIsRecordingObjection(true);
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setObjectionText(prev => prev ? `${prev} ${transcript}` : transcript);
+      toast.success("Objeção capturada por voz!");
+    };
+    recognition.onerror = () => {
+      toast.error("Erro na captura de voz. Tente novamente.");
+      setIsRecordingObjection(false);
+    };
+    recognition.onend = () => setIsRecordingObjection(false);
+    recognition.start();
+  }, []);
+
   const dynamicArguments = useMemo(() => {
     const args: Array<{ title: string; items: string[]; content: string; icon: string }> = [];
-
     const protectionItems = selectedAccessories.filter(a => ["protetor", "friso", "santantonio", "capota"].includes(a.id));
     const performanceItems = selectedAccessories.filter(a => ["pneus", "estribo", "guincho", "engate"].includes(a.id));
     const utilityItems = selectedAccessories.filter(a => ["rack", "toolbox", "sensor", "farol"].includes(a.id));
@@ -28,7 +127,6 @@ const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScre
         icon: "🛡️",
       });
     }
-
     if (performanceItems.length > 0) {
       args.push({
         title: "Performance e Segurança",
@@ -37,7 +135,6 @@ const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScre
         icon: "⚡",
       });
     }
-
     if (utilityItems.length > 0) {
       args.push({
         title: "Praticidade",
@@ -46,7 +143,6 @@ const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScre
         icon: "🔧",
       });
     }
-
     if (args.length === 0 && selectedAccessories.length > 0) {
       args.push({
         title: "Pacote Completo",
@@ -55,7 +151,6 @@ const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScre
         icon: "📦",
       });
     }
-
     return args;
   }, [selectedAccessories, clientData, packageName]);
 
@@ -69,7 +164,7 @@ const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScre
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-1">
             <MessageSquare className="w-4 h-4 text-sf-blue" />
-            <span className="label-text text-sf-blue">Script de Vendas — IA</span>
+            <span className="label-text text-sf-blue">Script de Vendas</span>
           </div>
           <h1 className="section-title">Argumentação Consultiva</h1>
         </div>
@@ -170,7 +265,7 @@ const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScre
         </div>
 
         {/* Tips */}
-        <div className="sf-card p-4 mb-6 slide-up" style={{ animationDelay: "0.3s" }}>
+        <div className="sf-card p-4 mb-5 slide-up" style={{ animationDelay: "0.3s" }}>
           <div className="flex items-center gap-2 mb-2">
             <Award className="w-4 h-4 text-sf-blue" />
             <h4 className="font-semibold text-sm text-foreground">Dicas de Fechamento</h4>
@@ -188,6 +283,61 @@ const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScre
               </li>
             ))}
           </ul>
+        </div>
+
+        {/* Objection Handling Section */}
+        <div className="sf-card p-4 mb-6 slide-up border-l-4 border-l-ram-red" style={{ animationDelay: "0.35s" }}>
+          <div className="flex items-center gap-2 mb-3">
+            <Shield className="w-4 h-4 text-ram-red" />
+            <h4 className="font-semibold text-sm text-foreground">Quebra de Objeções</h4>
+          </div>
+          <p className="text-xs text-muted-foreground mb-3">
+            Descreva a objeção do cliente abaixo (digitando ou por voz) e receba uma contra-argumentação personalizada.
+          </p>
+
+          <div className="flex gap-2 mb-3">
+            <Textarea
+              value={objectionText}
+              onChange={(e) => {
+                setObjectionText(e.target.value);
+                if (counterArgument) setCounterArgument(null);
+              }}
+              placeholder="Ex: &quot;Está muito caro&quot;, &quot;Não preciso disso&quot;, &quot;Vou pensar&quot;..."
+              className="min-h-[60px] text-sm flex-1 resize-none"
+            />
+            <div className="flex flex-col gap-2">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={handleVoiceObjection}
+                className={`shrink-0 transition-colors ${isRecordingObjection ? "bg-ram-red text-white border-ram-red animate-pulse" : ""}`}
+                title={isRecordingObjection ? "Gravando..." : "Capturar objeção por voz"}
+              >
+                {isRecordingObjection ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+              </Button>
+              <Button
+                onClick={handleGenerateCounter}
+                size="icon"
+                className="shrink-0 bg-sf-blue hover:bg-sf-navy text-white"
+                title="Gerar contra-argumentação"
+                disabled={!objectionText.trim()}
+              >
+                <Send className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+
+          {counterArgument && (
+            <div className="bg-secondary/50 rounded-lg p-4 border border-border fade-in">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="px-2 py-0.5 bg-sf-blue/10 text-sf-blue text-[10px] font-semibold rounded-full">
+                  {counterArgument.technique}
+                </span>
+              </div>
+              <h5 className="font-bold text-sm text-foreground mb-2">{counterArgument.title}</h5>
+              <p className="text-sm text-foreground leading-relaxed italic">{counterArgument.content}</p>
+            </div>
+          )}
         </div>
 
         {/* CTA */}
