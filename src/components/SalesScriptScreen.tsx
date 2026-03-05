@@ -92,10 +92,14 @@ const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScre
       toast.error("Digite ou dite a objeção do cliente primeiro.");
       return;
     }
-    const result = generateCounterArgument(objectionText, clientData, selectedAccessories, totalPrice, packageName);
+    if (focusedAccessories.length === 0) {
+      toast.error("Selecione ao menos um acessório para personalizar a contra-argumentação.");
+      return;
+    }
+    const result = generateCounterArgument(objectionText, clientData, focusedAccessories, focusedTotal, packageName);
     setCounterArgument(result);
     toast.success("Contra-argumentação gerada!");
-  }, [objectionText, clientData, selectedAccessories, totalPrice, packageName]);
+  }, [objectionText, clientData, focusedAccessories, focusedTotal, packageName]);
 
   const handleVoiceObjection = useCallback(() => {
     const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
