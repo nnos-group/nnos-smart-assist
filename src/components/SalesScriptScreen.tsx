@@ -1,5 +1,6 @@
-import { MessageSquare, CheckCircle, ArrowRight, Sparkles, Award, User, MapPin, Car, Package, Shield, Mic, MicOff, Send } from "lucide-react";
+import { MessageSquare, CheckCircle, ArrowRight, Sparkles, Award, User, MapPin, Car, Package, Shield, Mic, MicOff, Send, MessageCircle } from "lucide-react";
 import { Accessory, ClientData, getPackageName } from "@/types/accessories";
+import { generateSalesArguments, CounterArgumentResult } from "@/lib/salesKnowledge";
 import { useMemo, useState, useCallback } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -11,71 +12,13 @@ interface SalesScriptScreenProps {
   onClose: () => void;
 }
 
-interface CounterArgument {
-  title: string;
-  content: string;
-  technique: string;
-}
-
-const generateCounterArgument = (
-  objection: string,
-  clientData: ClientData,
-  selectedAccessories: Accessory[],
-  totalPrice: number,
-  packageName: string
-): CounterArgument => {
-  const text = objection.toLowerCase();
-  const firstName = clientData.clientName.split(" ")[0] || "Cliente";
-  const genderPrefix = clientData.clientGender?.toLowerCase().includes("fem") ? "Sra." : "Sr.";
-  const monthlyPayment = Math.ceil(totalPrice / 12).toLocaleString("pt-BR");
-  const accessoryNames = selectedAccessories.map(a => a.name).join(", ");
-
-  if (/caro|preço|prec|dinheiro|custo|valor alto|pagar|cust/.test(text)) {
-    return {
-      title: "Custo-Benefício e Parcelamento",
-      technique: "Parcelamento + Comparação de custo",
-      content: `"${genderPrefix} ${firstName}, financiando o ${packageName} junto ao veículo, o investimento fica em apenas R$ ${monthlyPayment}/mês. Sem a proteção adequada, um único reparo de pintura ou lataria do ${clientData.vehicleModel} pode custar mais do que o pacote inteiro. Estamos falando de proteger um investimento de dezenas de milhares de reais por uma fração do valor."`,
-    };
-  }
-
-  if (/não preciso|desnecessário|sem necessidade|não necessit|não uso|não vou usar/.test(text)) {
-    return {
-      title: "Necessidade Real de Proteção",
-      technique: "Ancoragem no perfil de uso",
-      content: `"${genderPrefix} ${firstName}, para uso em ${clientData.terrainType || "condições variadas"} na região ${clientData.state ? `do ${clientData.state}` : "informada"}, itens como ${accessoryNames} não são luxo — são necessidade. 8 em cada 10 clientes com o mesmo perfil de uso optam por esse pacote. ${clientData.climateCondition ? `Com ${clientData.climateCondition.toLowerCase()}, ` : ""}a proteção se torna ainda mais essencial."`,
-    };
-  }
-
-  if (/pensar|penso|depois|volto|ver depois|decidir|calma|tempo/.test(text)) {
-    return {
-      title: "Condição Exclusiva",
-      technique: "Urgência + Exclusividade",
-      content: `"${genderPrefix} ${firstName}, entendo perfeitamente. Porém, o ${packageName} tem uma condição especial vinculada à compra do ${clientData.vehicleModel}. Após a saída da concessionária, a instalação individual desses itens (${accessoryNames}) pode custar até 40% a mais, além de exigir agendamento separado. Esta é a melhor janela de oportunidade."`,
-    };
-  }
-
-  if (/já tenho|compro fora|aftermarket|paralelo|genéric|internet|mercado livre/.test(text)) {
-    return {
-      title: "Garantia e Procedência Original",
-      technique: "Garantia de fábrica + Segurança",
-      content: `"${genderPrefix} ${firstName}, acessórios originais mantêm a garantia de fábrica do ${clientData.vehicleModel} intacta. Itens paralelos podem comprometer a garantia, além de não oferecerem o mesmo encaixe e acabamento. O ${packageName} é homologado pelo fabricante, com instalação certificada e garantia própria."`,
-    };
-  }
-
-  return {
-    title: "Valor Personalizado",
-    technique: "Reforço de valor percebido",
-    content: `"${genderPrefix} ${firstName}, o ${packageName} foi montado especificamente para o perfil de uso do(a) senhor(a) com o ${clientData.vehicleModel} ${clientData.vehicleColor || ""}. Cada item — ${accessoryNames} — foi selecionado considerando sua região${clientData.state ? ` (${clientData.state})` : ""} e tipo de uso${clientData.terrainType ? ` (${clientData.terrainType})` : ""}. É uma solução completa, não um kit genérico."`,
-  };
-};
-
 const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScreenProps) => {
   const selectedAccessories = accessories.filter((a) => a.selected);
   const totalPrice = selectedAccessories.reduce((sum, a) => sum + a.price, 0);
   const packageName = getPackageName(clientData.vehicleModel);
 
   const [objectionText, setObjectionText] = useState("");
-  const [counterArgument, setCounterArgument] = useState<CounterArgument | null>(null);
+  const [result, setResult] = useState<CounterArgumentResult | null>(null);
   const [isRecordingObjection, setIsRecordingObjection] = useState(false);
   const [focusedAccessoryIds, setFocusedAccessoryIds] = useState<string[]>(() => selectedAccessories.map(a => a.id));
 
@@ -84,21 +27,17 @@ const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScre
 
   const toggleFocusedAccessory = useCallback((id: string) => {
     setFocusedAccessoryIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
-    if (counterArgument) setCounterArgument(null);
-  }, [counterArgument]);
+    if (result) setResult(null);
+  }, [result]);
 
-  const handleGenerateCounter = useCallback(() => {
-    if (!objectionText.trim()) {
-      toast.error("Digite ou dite a objeção do cliente primeiro.");
-      return;
-    }
+  const handleGenerate = useCallback(() => {
     if (focusedAccessories.length === 0) {
-      toast.error("Selecione ao menos um acessório para personalizar a contra-argumentação.");
+      toast.error("Selecione ao menos um acessório para gerar a argumentação.");
       return;
     }
-    const result = generateCounterArgument(objectionText, clientData, focusedAccessories, focusedTotal, packageName);
-    setCounterArgument(result);
-    toast.success("Contra-argumentação gerada!");
+    const generated = generateSalesArguments(objectionText, clientData, focusedAccessories, focusedTotal, packageName);
+    setResult(generated);
+    toast.success("Argumentação gerada com sucesso!");
   }, [objectionText, clientData, focusedAccessories, focusedTotal, packageName]);
 
   const handleVoiceObjection = useCallback(() => {
@@ -111,7 +50,6 @@ const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScre
     recognition.lang = "pt-BR";
     recognition.continuous = false;
     recognition.interimResults = false;
-
     recognition.onstart = () => setIsRecordingObjection(true);
     recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
@@ -170,6 +108,12 @@ const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScre
   const firstName = clientData.clientName.split(" ")[0] || "Cliente";
   const genderPrefix = clientData.clientGender?.toLowerCase().includes("fem") ? "Sra." : "Sr.";
 
+  const pillarColors: Record<string, { bg: string; border: string; text: string; iconBg: string }> = {
+    security: { bg: "bg-blue-50 dark:bg-blue-950/30", border: "border-blue-200 dark:border-blue-800", text: "text-blue-700 dark:text-blue-300", iconBg: "bg-blue-100 dark:bg-blue-900/50" },
+    value: { bg: "bg-emerald-50 dark:bg-emerald-950/30", border: "border-emerald-200 dark:border-emerald-800", text: "text-emerald-700 dark:text-emerald-300", iconBg: "bg-emerald-100 dark:bg-emerald-900/50" },
+    lifestyle: { bg: "bg-amber-50 dark:bg-amber-950/30", border: "border-amber-200 dark:border-amber-800", text: "text-amber-700 dark:text-amber-300", iconBg: "bg-amber-100 dark:bg-amber-900/50" },
+  };
+
   return (
     <div className="min-h-screen p-6 md:p-8 app-container">
       <div className="max-w-4xl mx-auto fade-in">
@@ -177,7 +121,7 @@ const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScre
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-1">
             <MessageSquare className="w-4 h-4 text-sf-blue" />
-            <span className="label-text text-sf-blue">Script de Vendas</span>
+            <span className="label-text text-sf-blue">Assistente de Vendas</span>
           </div>
           <h1 className="section-title">Argumentação Consultiva</h1>
         </div>
@@ -265,7 +209,7 @@ const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScre
             <h4 className="font-semibold text-sm text-foreground">Acessórios & Quebra de Objeções</h4>
           </div>
           <p className="text-xs text-muted-foreground mb-3">
-            Selecione os itens sobre os quais o cliente tem objeção para personalizar a contra-argumentação.
+            Selecione os itens sobre os quais o cliente tem objeção e descreva a resistência (opcional). O assistente gerará argumentos nos 3 pilares: Segurança, Valorização e Estilo de Vida.
           </p>
 
           {/* Accessory Chips */}
@@ -309,9 +253,9 @@ const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScre
                 value={objectionText}
                 onChange={(e) => {
                   setObjectionText(e.target.value);
-                  if (counterArgument) setCounterArgument(null);
+                  if (result) setResult(null);
                 }}
-                placeholder='Ex: "Está muito caro", "Não preciso disso", "Vou pensar"...'
+                placeholder='Descreva a objeção do cliente (opcional). Ex: "Achou caro", "Não vê necessidade", "A esposa não gostou"...'
                 className="min-h-[60px] text-sm flex-1 resize-none"
               />
               <div className="flex flex-col gap-2">
@@ -325,26 +269,55 @@ const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScre
                   {isRecordingObjection ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
                 </Button>
                 <Button
-                  onClick={handleGenerateCounter}
+                  onClick={handleGenerate}
                   size="icon"
                   className="shrink-0 bg-sf-blue hover:bg-sf-navy text-white"
-                  title="Gerar contra-argumentação"
-                  disabled={!objectionText.trim() || focusedAccessories.length === 0}
+                  title="Gerar Argumentação"
+                  disabled={focusedAccessories.length === 0}
                 >
                   <Send className="w-4 h-4" />
                 </Button>
               </div>
             </div>
 
-            {counterArgument && (
-              <div className="bg-secondary/50 rounded-lg p-4 border border-border fade-in">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="px-2 py-0.5 bg-sf-blue/10 text-sf-blue text-[10px] font-semibold rounded-full">
-                    {counterArgument.technique}
-                  </span>
+            {/* 3-Pillar Results */}
+            {result && (
+              <div className="space-y-3 fade-in">
+                {result.arguments.map((arg) => {
+                  const colors = pillarColors[arg.category];
+                  return (
+                    <div key={arg.category} className={`rounded-lg p-4 border ${colors.bg} ${colors.border}`}>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-lg ${colors.iconBg}`}>
+                          {arg.icon}
+                        </span>
+                        <h5 className={`font-bold text-sm ${colors.text}`}>{arg.label}</h5>
+                      </div>
+                      <p className="text-xs font-semibold text-foreground mb-1">• {arg.hook}</p>
+                      <p className="text-xs text-muted-foreground leading-relaxed ml-3">{arg.content}</p>
+                    </div>
+                  );
+                })}
+
+                {/* Dialogue Script */}
+                <div className="rounded-lg p-4 border border-border bg-secondary/30">
+                  <div className="flex items-center gap-2 mb-2">
+                    <MessageCircle className="w-4 h-4 text-sf-blue" />
+                    <h5 className="font-bold text-sm text-foreground">Roteiro Sugerido</h5>
+                  </div>
+                  <p className="text-xs text-foreground leading-relaxed whitespace-pre-line italic">
+                    {result.dialogueScript}
+                  </p>
                 </div>
-                <h5 className="font-bold text-sm text-foreground mb-2">{counterArgument.title}</h5>
-                <p className="text-sm text-foreground leading-relaxed italic">{counterArgument.content}</p>
+
+                {/* Closing Phrase */}
+                <div className="rounded-lg p-3 border-2 border-sf-blue/30 bg-sf-light-blue/30">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Award className="w-4 h-4 text-sf-blue" />
+                    <h5 className="font-bold text-xs text-sf-blue">Frase de Fechamento</h5>
+                  </div>
+                  <p className="text-xs text-foreground leading-relaxed italic">{result.closingPhrase}</p>
+                </div>
               </div>
             )}
           </div>

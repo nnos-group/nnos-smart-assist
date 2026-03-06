@@ -1,83 +1,71 @@
 
 
-# Plano: Assistente de Vendas com IA Local Aprimorada — Quebra de Objeções por 3 Pilares
+# Plano: Redesign Inspirado no Salesforce Lightning
 
-## Objetivo
-Substituir a lógica simples de regex por um sistema local sofisticado que gera argumentos categorizados nos 3 pilares (Segurança, Valorização, Estilo de Vida) + roteiro de diálogo sugerido, com conhecimento específico por acessório e marca JEEP/RAM.
+## Referência Visual Capturada
 
-## Mudanças no `SalesScriptScreen.tsx`
+A página do Salesforce Help apresenta:
+- **Barra superior azul escuro** com logo e navegação principal
+- **Barra secundária clara** com links e dropdowns
+- **Fundo branco limpo** com conteúdo centralizado
+- **Tipografia profissional** com boa hierarquia
+- **Bordas finas e sutis**, sem sombras pesadas
+- **Cores**: azul Salesforce (#032D60 escuro, #0176D3 links), fundo branco puro, texto cinza escuro
 
-### 1. Nova estrutura de saída (substitui `CounterArgument`)
+## Mudanças Planejadas
 
-```text
-interface SalesArgument {
-  category: "security" | "value" | "lifestyle";
-  icon: string;
-  label: string;          // "Segurança e Proteção", "Valorização do Bem", "Estilo de Vida"
-  hook: string;           // Frase de impacto para o vendedor
-  content: string;        // Argumento detalhado
-}
+### 1. Paleta de Cores (index.css)
+Atualizar as variáveis CSS para refletir o estilo Salesforce Lightning:
+- `--primary`: azul Salesforce (#032D60 → HSL ~210 95% 19%)
+- `--accent`: azul ação (#0176D3 → HSL ~207 98% 41%)
+- Manter `--ram-red` para CTAs de destaque
+- Fundo mais branco e limpo (menos gradients mesh)
+- Cards com fundo branco puro, bordas finas cinza claro
 
-interface CounterArgumentResult {
-  arguments: SalesArgument[];      // 3 argumentos (1 por pilar)
-  dialogueScript: string;          // Roteiro sugerido de diálogo
-  closingPhrase: string;           // Frase de fechamento
-}
-```
+### 2. NavigationBar — Estilo Salesforce
+- Barra superior com fundo azul escuro sólido (sem blur/glass)
+- Logo branco no canto esquerdo
+- Steps/progress em pills brancas/transparentes sobre fundo escuro
+- Botão sair com ícone branco
 
-### 2. Base de conhecimento por acessório (`accessoryKnowledge`)
+### 3. LoginScreen — Estilo Enterprise
+- Card centralizado sobre fundo branco/cinza claro
+- Logo acima do card com ícone de nuvem/cloud estilo SF
+- Inputs com bordas finas cinza, sem sombras internas
+- Botão azul sólido (sem gradiente vermelho)
 
-Mapa local com argumentos específicos para cada `id` de acessório, cobrindo os 3 pilares. Exemplos:
+### 4. ClientDataScreen — Layout Clean
+- Cards com borda fina `#e5e5e5`, fundo branco puro
+- Headers de seção com ícone azul + texto em bold
+- Dropdowns e inputs com estilo mais "flat" e corporativo
+- Remover gradientes decorativos, usar separadores horizontais finos
 
-- **estribo**: Segurança (apoio para crianças/idosos, anti-escorregão) → Valorização (barreira contra portadas, +15% revenda) → Lifestyle (declaração de chegada, estribo elétrico recolhe automaticamente)
-- **protetor**: Segurança (armadura para motor/câmbio, evita prejuízo de R$20k+) → Valorização (manutenção preventiva, economia longo prazo) → Lifestyle (liberdade off-road sem preocupação)
-- **capota**: Segurança (proteção de carga contra furto/intempéries) → Valorização (RAM com capota original valoriza na revenda) → Lifestyle (versatilidade e praticidade)
-- **pneus**: Segurança (tração em chuva/terra, redução distância frenagem) → Valorização (dura 40% mais, economia com trocas) → Lifestyle (liberdade de pegar qualquer estrada)
-- **santantonio**: Segurança (proteção de cabine em capotamento) → Valorização (acessório original Mopar) → Lifestyle (visual imponente e robusto)
-- **rack/guincho/engate/sensor/farol/friso/toolbox**: argumentos equivalentes por pilar
+### 5. PackageSuggestionScreen — Tabela Profissional
+- Lista de acessórios em formato mais "table-like" com linhas alternadas
+- Badges de estoque mantidos mas com estilo mais flat
+- Summary card com bordas limpas, sem sombras pesadas
 
-### 3. Lógica de geração (`generateSalesArguments`)
+### 6. VehicleVisualizationScreen & SalesScriptScreen
+- Mesmo tratamento: fundo limpo, cards brancos, bordas finas
+- Tipografia mais sóbria, menos emojis decorativos
+- Botões azuis sólidos como CTAs principais
 
-1. Para cada acessório focado, buscar argumentos no `accessoryKnowledge`
-2. Cruzar com o tipo de objeção detectada (preço, necessidade, tempo, origem) para priorizar o pilar mais relevante
-3. Combinar argumentos dos acessórios selecionados em 3 blocos (1 por pilar)
-4. Personalizar com dados do cliente (nome, gênero, veículo, região, terreno, clima)
-5. Gerar roteiro de diálogo contextualizado: "Quando o cliente disser '[objeção]', você pode responder..."
-6. Campo de objeção passa a ser **opcional** — se vazio, gera argumentação proativa genérica
+### 7. Componentes de Estilo (index.css)
+- `.card-premium`: borda `1px solid #d8dde6`, sem gradiente de fundo
+- `.btn-primary`: azul sólido `#0176D3`, hover mais escuro, sem sombra glow
+- `.btn-accent`: manter vermelho para ações de destaque (fechar venda)
+- `.input-field`: borda `#d8dde6`, foco azul, sem rounded-xl (usar rounded-md)
+- Remover `pulse-glow`, `shimmer` e gradientes mesh do background
+- Adicionar `.sf-card` com estilo Salesforce Lightning card
 
-### 4. Nova UI da seção de resultado
-
-Substituir o card único de resposta por:
-
-```text
-┌─────────────────────────────────────────────┐
-│  🛡️ Segurança e Proteção                    │
-│  • [Frase de impacto / gancho]              │
-│  • [Argumento detalhado personalizado]       │
-├─────────────────────────────────────────────┤
-│  💰 Valorização do Bem                       │
-│  • [Frase de impacto / gancho]              │
-│  • [Argumento detalhado personalizado]       │
-├─────────────────────────────────────────────┤
-│  ✨ Estilo de Vida e Exclusividade           │
-│  • [Frase de impacto / gancho]              │
-│  • [Argumento detalhado personalizado]       │
-├─────────────────────────────────────────────┤
-│  💬 Roteiro Sugerido                         │
-│  "Quando o cliente disser '[X]',            │
-│   você pode responder: ..."                 │
-└─────────────────────────────────────────────┘
-```
-
-Cada bloco é um sub-card com ícone colorido, título do pilar, bullet points com gancho + argumento.
-
-### 5. Ajustes na UI existente
-
-- Botão "Send" muda label para "Gerar Argumentação" (mantém ícone `Send`)
-- Placeholder do textarea: `'Descreva a objeção do cliente (opcional). Ex: "Achou caro", "Não vê necessidade", "A esposa não gostou"...'`
-- Botão agora funciona **mesmo sem objeção digitada** (gera argumentação proativa se campo vazio)
-- Desabilitar botão apenas se nenhum acessório estiver focado
-
-### Arquivo afetado
-- `src/components/SalesScriptScreen.tsx` — único arquivo modificado
+### Arquivos Afetados
+1. `src/index.css` — Paleta, variáveis, componentes globais
+2. `tailwind.config.ts` — Cores atualizadas
+3. `src/components/NavigationBar.tsx` — Barra azul escura SF-style
+4. `src/components/LoginScreen.tsx` — Layout enterprise
+5. `src/components/ClientDataScreen.tsx` — Cards clean
+6. `src/components/PackageSuggestionScreen.tsx` — Lista profissional
+7. `src/components/VehicleVisualizationScreen.tsx` — Visual limpo
+8. `src/components/SalesScriptScreen.tsx` — Script corporativo
+9. `src/components/SuccessModal.tsx` — Modal clean
 
