@@ -1,6 +1,7 @@
 import { RotateCw, Car, Layers, ShoppingCart, MessageSquare, ArrowRight, Eye } from "lucide-react";
 import { useState, useMemo } from "react";
 import ramRampageImage from "@/assets/ram-rampage-rebel.jpg";
+import ramRampageAccessorizedImage from "@/assets/ram-rampage-rebel-accessorized.jpg";
 import { Accessory, ClientData } from "@/types/accessories";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
@@ -12,8 +13,6 @@ interface VehicleVisualizationScreenProps {
   onGenerateScript: () => void;
   onAddToProposal: () => void;
 }
-
-const getVehicleImage = (): string => ramRampageImage;
 
 const VehicleVisualizationScreen = ({ accessories, clientData, onAccessoryToggle, onGenerateScript, onAddToProposal }: VehicleVisualizationScreenProps) => {
   const [rotation, setRotation] = useState(0);
@@ -27,7 +26,9 @@ const VehicleVisualizationScreen = ({ accessories, clientData, onAccessoryToggle
   };
 
   const selectedAccessories = accessories.filter((a) => a.selected);
-  const vehicleImage = getVehicleImage();
+  const vehicleImage = showAfter && selectedAccessories.length > 0
+    ? ramRampageAccessorizedImage
+    : ramRampageImage;
 
   const depth3D = useMemo(() => {
     const radians = ((rotation % 360) * Math.PI) / 180;
@@ -73,9 +74,7 @@ const VehicleVisualizationScreen = ({ accessories, clientData, onAccessoryToggle
                   style={{
                     transform: `perspective(1500px) rotateY(${rotation}deg) translateZ(${depth3D.translateZ}px) scale(${0.95 + Math.abs(depth3D.scaleX) * 0.05})`,
                     transformStyle: "preserve-3d",
-                    filter: !showAfter
-                      ? `grayscale(0.3) drop-shadow(0 ${depth3D.shadow}px ${depth3D.shadow * 1.5}px rgba(0,0,0,0.3))`
-                      : `drop-shadow(0 ${depth3D.shadow}px ${depth3D.shadow * 1.5}px rgba(0,0,0,0.3))`,
+                    filter: `drop-shadow(0 ${depth3D.shadow}px ${depth3D.shadow * 1.5}px rgba(0,0,0,0.3))`,
                   }}
                 >
                   <img
@@ -96,14 +95,12 @@ const VehicleVisualizationScreen = ({ accessories, clientData, onAccessoryToggle
                   360° View
                 </div>
 
-                {/* Original overlay when "Before" */}
-                {!showAfter && (
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div className="bg-foreground/60 text-primary-foreground px-4 py-2 rounded text-sm font-bold uppercase tracking-widest">
-                      Original
-                    </div>
+                {/* Before/After label */}
+                <div className="absolute top-3 left-1/2 -translate-x-1/2 pointer-events-none">
+                  <div className={`px-3 py-1 rounded text-[10px] font-bold uppercase tracking-widest ${showAfter ? 'bg-sf-blue text-primary-foreground' : 'bg-foreground/70 text-primary-foreground'}`}>
+                    {showAfter ? 'Depois — Com Acessórios' : 'Antes — Original'}
                   </div>
-                )}
+                </div>
 
                 {/* Rotation angle */}
                 <div className="absolute bottom-3 left-3 bg-foreground/70 text-primary-foreground px-2 py-1 rounded text-xs font-medium flex items-center gap-1.5">
