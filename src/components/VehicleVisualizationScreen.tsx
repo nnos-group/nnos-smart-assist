@@ -1,7 +1,11 @@
-import { RotateCw, Car, Layers, ShoppingCart, MessageSquare, ArrowRight, Eye } from "lucide-react";
-import { useState, useMemo } from "react";
+import { RotateCw, Car, Layers, ShoppingCart, MessageSquare, ArrowRight, Eye, Play, Pause } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
 import ramRampageImage from "@/assets/ram-rampage-rebel.jpg";
 import ramRampageAccessorizedImage from "@/assets/ram-rampage-rebel-accessorized.jpg";
+import ramRampageFront from "@/assets/ram-rampage-front.png";
+import ramRampageFrontQuarter from "@/assets/ram-rampage-front-quarter.png";
+import ramRampageRear from "@/assets/ram-rampage-rear.png";
+import ramRampageRearQuarter from "@/assets/ram-rampage-rear-quarter.png";
 import { Accessory, ClientData } from "@/types/accessories";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
@@ -14,28 +18,101 @@ interface VehicleVisualizationScreenProps {
   onAddToProposal: () => void;
 }
 
+const ANGLES = [0, 45, 90, 135, 180, 225, 270, 315] as const;
+
 const VehicleVisualizationScreen = ({ accessories, clientData, onAccessoryToggle, onGenerateScript, onAddToProposal }: VehicleVisualizationScreenProps) => {
-  const [rotation, setRotation] = useState(0);
+  const [rotation, setRotation] = useState<number>(0);
   const [isRotating, setIsRotating] = useState(false);
+  const [isAutoSpin, setIsAutoSpin] = useState(false);
   const [showAfter, setShowAfter] = useState(true);
 
-  const handleRotate = () => {
+  // Auto-spin interval
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (isAutoSpin) {
+      interval = setInterval(() => {
+        setRotation((prev) => (prev + 45) % 360);
+      }, 1200);
+    }
+    return () => clearInterval(interval);
+  }, [isAutoSpin]);
+
+  const handleRotateNext = () => {
     setIsRotating(true);
     setRotation((prev) => (prev + 45) % 360);
-    setTimeout(() => setIsRotating(false), 700);
+    setTimeout(() => setIsRotating(false), 500);
   };
 
   const selectedAccessories = accessories.filter((a) => a.selected);
-  const vehicleImage = showAfter && selectedAccessories.length > 0
-    ? ramRampageAccessorizedImage
-    : ramRampageImage;
+
+  // Angle view configuration mapping each rotation angle to realistic perspective photography
+  const getAngleConfig = (deg: number) => {
+    const normalized = (deg % 360 + 360) % 360;
+    switch (normalized) {
+      case 0:
+        return {
+          title: "Vista Lateral (Perfil Direito)",
+          image: showAfter && selectedAccessories.length > 0 ? ramRampageAccessorizedImage : ramRampageImage,
+          flip: false,
+        };
+      case 45:
+        return {
+          title: "Vista Diagonal Dianteira (3/4)",
+          image: ramRampageFrontQuarter,
+          flip: false,
+        };
+      case 90:
+        return {
+          title: "Vista Frontal (Frente)",
+          image: ramRampageFront,
+          flip: false,
+        };
+      case 135:
+        return {
+          title: "Vista Diagonal Dianteira Oposta",
+          image: ramRampageFrontQuarter,
+          flip: true,
+        };
+      case 180:
+        return {
+          title: "Vista Lateral (Perfil Esquerdo)",
+          image: showAfter && selectedAccessories.length > 0 ? ramRampageAccessorizedImage : ramRampageImage,
+          flip: true,
+        };
+      case 225:
+        return {
+          title: "Vista Diagonal Traseira Oposta",
+          image: ramRampageRearQuarter,
+          flip: true,
+        };
+      case 270:
+        return {
+          title: "Vista Traseira (Caçamba)",
+          image: ramRampageRear,
+          flip: false,
+        };
+      case 315:
+        return {
+          title: "Vista Diagonal Traseira (3/4)",
+          image: ramRampageRearQuarter,
+          flip: false,
+        };
+      default:
+        return {
+          title: "Vista 360°",
+          image: ramRampageImage,
+          flip: false,
+        };
+    }
+  };
+
+  const currentAngleView = getAngleConfig(rotation);
 
   const depth3D = useMemo(() => {
     const radians = ((rotation % 360) * Math.PI) / 180;
     return {
       scaleX: Math.cos(radians),
-      translateZ: Math.sin(radians) * 50,
-      shadow: Math.abs(Math.sin(radians)) * 30 + 20,
+      shadow: Math.abs(Math.sin(radians)) * 25 + 15,
     };
   }, [rotation]);
 
@@ -43,12 +120,19 @@ const VehicleVisualizationScreen = ({ accessories, clientData, onAccessoryToggle
     <div className="min-h-screen p-6 md:p-8 app-container">
       <div className="max-w-7xl mx-auto fade-in">
         {/* Header */}
-        <div className="mb-5">
-          <p className="label-text text-sf-blue mb-1">Visualização Interativa</p>
-          <h1 className="section-title">{clientData.vehicleModel} — {clientData.vehicleColor}</h1>
-          <p className="text-muted-foreground text-xs mt-1">
-            Ano: {clientData.vehicleYear} · Cliente: {clientData.clientName}
-          </p>
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="label-text text-sf-blue mb-1">Visualização Interativa 360° Multi-Ângulo</p>
+            <h1 className="section-title">{clientData.vehicleModel} — {clientData.vehicleColor}</h1>
+            <p className="text-muted-foreground text-xs mt-1">
+              Ano: {clientData.vehicleYear} · Cliente: {clientData.clientName}
+            </p>
+          </div>
+          <div className="text-right">
+            <span className="text-xs font-semibold text-sf-blue bg-sf-light-blue px-3 py-1.5 rounded-full border border-sf-blue/20">
+              {currentAngleView.title}
+            </span>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
@@ -56,68 +140,65 @@ const VehicleVisualizationScreen = ({ accessories, clientData, onAccessoryToggle
           <div className="lg:col-span-8">
             <div className="sf-card p-5 slide-up">
               <div
-                className="relative aspect-video bg-secondary rounded overflow-hidden mb-4"
-                style={{ perspective: "1500px" }}
+                className="relative aspect-video bg-gradient-to-b from-secondary/40 via-secondary/70 to-secondary rounded-lg overflow-hidden mb-4 border border-border/50"
               >
-                {/* Floor shadow */}
+                {/* Floor shadow & studio stage lighting */}
                 <div
-                  className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[80%] h-[15%] bg-gradient-to-t from-foreground/15 to-transparent rounded-[50%] blur-xl transition-all duration-700"
+                  className="absolute bottom-2 left-1/2 -translate-x-1/2 w-[85%] h-[18%] bg-gradient-to-t from-foreground/25 to-transparent rounded-[50%] blur-xl transition-all duration-500"
                   style={{
-                    transform: `translateX(-50%) scaleX(${1 + Math.abs(depth3D.scaleX) * 0.2})`,
-                    opacity: 0.3 + Math.abs(depth3D.scaleX) * 0.3,
+                    transform: `translateX(-50%) scaleX(${0.9 + Math.abs(depth3D.scaleX) * 0.2})`,
+                    opacity: 0.4,
                   }}
                 />
 
-                {/* Vehicle Image */}
+                {/* Vehicle Multi-Angle Image */}
                 <div
-                  className={`absolute inset-0 flex items-center justify-center transition-all duration-700 ease-out p-4 ${isRotating ? 'blur-[1px]' : ''}`}
-                  style={{
-                    transform: `perspective(1500px) rotateY(${rotation}deg) translateZ(${depth3D.translateZ}px) scale(${0.95 + Math.abs(depth3D.scaleX) * 0.05})`,
-                    transformStyle: "preserve-3d",
-                    filter: `drop-shadow(0 ${depth3D.shadow}px ${depth3D.shadow * 1.5}px rgba(0,0,0,0.3))`,
-                  }}
+                  className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ease-out p-4 ${isRotating ? 'scale-[0.98] opacity-90' : 'scale-100 opacity-100'}`}
                 >
                   <img
-                    src={vehicleImage}
-                    alt={`${clientData.vehicleModel} ${clientData.vehicleColor}`}
-                    className="max-h-full max-w-full object-contain transition-all duration-700"
+                    src={currentAngleView.image}
+                    alt={`${clientData.vehicleModel} - ${currentAngleView.title}`}
+                    className="max-h-full max-w-full object-contain transition-all duration-500 drop-shadow-2xl"
+                    style={{
+                      transform: currentAngleView.flip ? 'scaleX(-1)' : 'none',
+                    }}
                   />
                 </div>
 
                 {/* Year Badge */}
-                <div className="absolute top-3 left-3 bg-sf-navy text-primary-foreground px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                <div className="absolute top-3 left-3 bg-sf-navy/90 backdrop-blur text-primary-foreground px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow">
                   <Car className="w-3 h-3" />
                   {clientData.vehicleYear}
                 </div>
 
                 {/* 360 Badge */}
-                <div className="absolute top-3 right-3 bg-sf-blue text-primary-foreground px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider">
-                  360° View
+                <div className="absolute top-3 right-3 bg-sf-blue text-primary-foreground px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider shadow">
+                  360° Real Angle View
                 </div>
 
                 {/* Before/After label */}
                 <div className="absolute top-3 left-1/2 -translate-x-1/2 pointer-events-none">
-                  <div className={`px-3 py-1 rounded text-[10px] font-bold uppercase tracking-widest ${showAfter ? 'bg-sf-blue text-primary-foreground' : 'bg-foreground/70 text-primary-foreground'}`}>
+                  <div className={`px-3 py-1 rounded text-[10px] font-bold uppercase tracking-widest shadow ${showAfter ? 'bg-sf-blue text-primary-foreground' : 'bg-foreground/70 text-primary-foreground'}`}>
                     {showAfter ? 'Depois — Com Acessórios' : 'Antes — Original'}
                   </div>
                 </div>
 
-                {/* Rotation angle */}
-                <div className="absolute bottom-3 left-3 bg-foreground/70 text-primary-foreground px-2 py-1 rounded text-xs font-medium flex items-center gap-1.5">
-                  <Layers className="w-3 h-3" />
-                  {rotation}°
+                {/* Rotation angle badge */}
+                <div className="absolute bottom-3 left-3 bg-foreground/80 backdrop-blur text-primary-foreground px-2.5 py-1 rounded text-xs font-semibold flex items-center gap-1.5 shadow">
+                  <Layers className="w-3.5 h-3.5" />
+                  {rotation}° · {currentAngleView.title}
                 </div>
 
                 {/* Selected accessory tags - only show in "After" mode */}
                 {showAfter && (
                   <div className="absolute bottom-3 right-3 flex flex-wrap justify-end gap-1 max-w-[60%]">
                     {selectedAccessories.slice(0, 3).map((acc) => (
-                      <span key={acc.id} className="px-2 py-0.5 bg-sf-navy/80 text-primary-foreground text-[10px] font-medium rounded">
+                      <span key={acc.id} className="px-2 py-0.5 bg-sf-navy/90 text-primary-foreground text-[10px] font-medium rounded backdrop-blur shadow">
                         {acc.name}
                       </span>
                     ))}
                     {selectedAccessories.length > 3 && (
-                      <span className="px-2 py-0.5 bg-ram-red/80 text-primary-foreground text-[10px] font-medium rounded">
+                      <span className="px-2 py-0.5 bg-ram-red/90 text-primary-foreground text-[10px] font-medium rounded shadow">
                         +{selectedAccessories.length - 3}
                       </span>
                     )}
@@ -125,8 +206,34 @@ const VehicleVisualizationScreen = ({ accessories, clientData, onAccessoryToggle
                 )}
               </div>
 
+              {/* Angle selector quick buttons bar */}
+              <div className="mb-4">
+                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Selecione o Ângulo de Visão:</p>
+                <div className="grid grid-cols-4 sm:grid-cols-8 gap-1.5">
+                  {ANGLES.map((deg) => {
+                    const active = rotation === deg;
+                    return (
+                      <button
+                        key={deg}
+                        onClick={() => {
+                          setIsAutoSpin(false);
+                          setRotation(deg);
+                        }}
+                        className={`py-1.5 px-1 rounded text-center transition-all ${
+                          active
+                            ? 'bg-sf-blue text-primary-foreground font-bold shadow-md scale-105'
+                            : 'bg-secondary hover:bg-secondary/80 text-foreground text-xs font-medium'
+                        }`}
+                      >
+                        <span className="text-[11px] block">{deg}°</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
               {/* Controls Bar */}
-              <div className="flex items-center justify-between flex-wrap gap-3">
+              <div className="flex items-center justify-between flex-wrap gap-3 border-t border-border/60 pt-3">
                 {/* Before/After Toggle */}
                 <div className="flex items-center gap-3">
                   <span className={`text-xs font-medium transition-colors ${!showAfter ? 'text-foreground' : 'text-muted-foreground'}`}>
@@ -141,15 +248,29 @@ const VehicleVisualizationScreen = ({ accessories, clientData, onAccessoryToggle
                   </span>
                 </div>
 
-                {/* Rotate Button */}
-                <button
-                  onClick={handleRotate}
-                  disabled={isRotating}
-                  className="btn-primary flex items-center gap-2 text-sm px-5 disabled:opacity-70"
-                >
-                  <RotateCw className={`w-4 h-4 transition-transform duration-700 ${isRotating ? 'animate-spin' : ''}`} />
-                  Girar 360°
-                </button>
+                {/* Rotate Buttons */}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setIsAutoSpin(!isAutoSpin)}
+                    className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded border transition-colors ${
+                      isAutoSpin
+                        ? 'bg-amber-500 text-white border-amber-600'
+                        : 'bg-secondary hover:bg-secondary/80 text-foreground border-border'
+                    }`}
+                  >
+                    {isAutoSpin ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
+                    {isAutoSpin ? 'Pausar Giro' : 'Giro Contínuo 360°'}
+                  </button>
+
+                  <button
+                    onClick={handleRotateNext}
+                    disabled={isRotating}
+                    className="btn-primary flex items-center gap-2 text-sm px-5 disabled:opacity-70"
+                  >
+                    <RotateCw className={`w-4 h-4 transition-transform duration-500 ${isRotating ? 'rotate-180' : ''}`} />
+                    Girar +45°
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -229,3 +350,4 @@ const VehicleVisualizationScreen = ({ accessories, clientData, onAccessoryToggle
 };
 
 export default VehicleVisualizationScreen;
+
