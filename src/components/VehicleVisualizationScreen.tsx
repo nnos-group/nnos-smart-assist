@@ -48,11 +48,15 @@ const VehicleVisualizationScreen = ({ accessories, clientData, onAccessoryToggle
   // Angle view configuration mapping each rotation angle to realistic perspective photography
   const getAngleConfig = (deg: number) => {
     const normalized = (deg % 360 + 360) % 360;
+    
+    // In "Depois" mode with selected accessories, use accessorized imagery and accessory overlays
+    const isAccessorized = showAfter && selectedAccessories.length > 0;
+
     switch (normalized) {
       case 0:
         return {
           title: "Vista Lateral (Perfil Direito)",
-          image: showAfter && selectedAccessories.length > 0 ? ramRampageAccessorizedImage : ramRampageImage,
+          image: isAccessorized ? ramRampageAccessorizedImage : ramRampageImage,
           flip: false,
         };
       case 45:
@@ -76,7 +80,7 @@ const VehicleVisualizationScreen = ({ accessories, clientData, onAccessoryToggle
       case 180:
         return {
           title: "Vista Lateral (Perfil Esquerdo)",
-          image: showAfter && selectedAccessories.length > 0 ? ramRampageAccessorizedImage : ramRampageImage,
+          image: isAccessorized ? ramRampageAccessorizedImage : ramRampageImage,
           flip: true,
         };
       case 225:
@@ -161,6 +165,9 @@ const VehicleVisualizationScreen = ({ accessories, clientData, onAccessoryToggle
                     className="max-h-full max-w-full object-contain transition-all duration-500 drop-shadow-2xl"
                     style={{
                       transform: currentAngleView.flip ? 'scaleX(-1)' : 'none',
+                      filter: showAfter && selectedAccessories.length > 0
+                        ? 'contrast(1.05) saturate(1.08)'
+                        : 'contrast(0.98) saturate(0.95)',
                     }}
                   />
                 </div>
@@ -178,8 +185,10 @@ const VehicleVisualizationScreen = ({ accessories, clientData, onAccessoryToggle
 
                 {/* Before/After label */}
                 <div className="absolute top-3 left-1/2 -translate-x-1/2 pointer-events-none">
-                  <div className={`px-3 py-1 rounded text-[10px] font-bold uppercase tracking-widest shadow ${showAfter ? 'bg-sf-blue text-primary-foreground' : 'bg-foreground/70 text-primary-foreground'}`}>
-                    {showAfter ? 'Depois — Com Acessórios' : 'Antes — Original'}
+                  <div className={`px-3.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest shadow-md transition-all ${showAfter ? 'bg-sf-blue text-primary-foreground ring-2 ring-sf-blue/30' : 'bg-slate-700 text-white'}`}>
+                    {showAfter
+                      ? `Depois — Com ${selectedAccessories.length} Acessórios`
+                      : 'Antes — Original (Sem Acessórios)'}
                   </div>
                 </div>
 
@@ -189,19 +198,30 @@ const VehicleVisualizationScreen = ({ accessories, clientData, onAccessoryToggle
                   {rotation}° · {currentAngleView.title}
                 </div>
 
-                {/* Selected accessory tags - only show in "After" mode */}
-                {showAfter && (
-                  <div className="absolute bottom-3 right-3 flex flex-wrap justify-end gap-1 max-w-[60%]">
-                    {selectedAccessories.slice(0, 3).map((acc) => (
-                      <span key={acc.id} className="px-2 py-0.5 bg-sf-navy/90 text-primary-foreground text-[10px] font-medium rounded backdrop-blur shadow">
-                        {acc.name}
-                      </span>
-                    ))}
-                    {selectedAccessories.length > 3 && (
-                      <span className="px-2 py-0.5 bg-ram-red/90 text-primary-foreground text-[10px] font-medium rounded shadow">
-                        +{selectedAccessories.length - 3}
+                {/* Selected accessory tags overlay - strictly active in "Depois" mode */}
+                {showAfter ? (
+                  <div className="absolute bottom-3 right-3 flex flex-wrap justify-end gap-1.5 max-w-[65%]">
+                    {selectedAccessories.length > 0 ? (
+                      <>
+                        {selectedAccessories.map((acc) => (
+                          <span
+                            key={acc.id}
+                            className="px-2.5 py-1 bg-sf-navy/90 border border-sf-blue/40 text-primary-foreground text-[10px] font-semibold rounded-md backdrop-blur shadow flex items-center gap-1 animate-fadeIn"
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                            {acc.name}
+                          </span>
+                        ))}
+                      </>
+                    ) : (
+                      <span className="px-2.5 py-1 bg-amber-500/90 text-white text-[10px] font-semibold rounded-md backdrop-blur shadow">
+                        Nenhum acessório selecionado
                       </span>
                     )}
+                  </div>
+                ) : (
+                  <div className="absolute bottom-3 right-3 bg-slate-800/80 backdrop-blur text-slate-200 text-[10px] font-medium px-2.5 py-1 rounded-md shadow">
+                    Versão Original de Fábrica
                   </div>
                 )}
               </div>
