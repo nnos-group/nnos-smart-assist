@@ -1,7 +1,7 @@
 import { MessageSquare, CheckCircle, ArrowRight, Sparkles, Award, User, MapPin, Car, Package, Shield, Mic, MicOff, Send, MessageCircle, Copy } from "lucide-react";
 import { Accessory, ClientData, getPackageName } from "@/types/accessories";
 import { generateSalesArguments, CounterArgumentResult } from "@/lib/salesKnowledge";
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
