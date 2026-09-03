@@ -146,23 +146,38 @@ const ClientDataScreen = ({ clientData, onClientDataChange, onGenerateSuggestion
 
             <div className="space-y-4">
               <div>
-                <label className="text-xs font-medium text-foreground block mb-1.5">Nome Completo</label>
-                <input type="text" value={clientData.clientName}
+                <label htmlFor="clientName" className="text-xs font-medium text-foreground block mb-1.5">Nome Completo</label>
+                <input
+                  id="clientName"
+                  type="text"
+                  value={clientData.clientName}
                   onChange={(e) => handleChange("clientName", e.target.value)}
-                  className="input-field h-9 text-sm" placeholder="Nome do cliente" />
+                  className="input-field h-9 text-sm"
+                  placeholder="Nome do cliente"
+                />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs font-medium text-foreground block mb-1.5">Idade</label>
-                  <input type="text" value={clientData.clientAge}
+                  <label htmlFor="clientAge" className="text-xs font-medium text-foreground block mb-1.5">Idade</label>
+                  <input
+                    id="clientAge"
+                    type="text"
+                    value={clientData.clientAge}
                     onChange={(e) => handleChange("clientAge", e.target.value)}
-                    className="input-field h-9 text-sm" placeholder="Ex: 35" />
+                    className="input-field h-9 text-sm"
+                    placeholder="Ex: 35"
+                  />
                 </div>
                 <div>
-                  <label className="text-xs font-medium text-foreground block mb-1.5">Gênero</label>
-                  <input type="text" value={clientData.clientGender}
+                  <label htmlFor="clientGender" className="text-xs font-medium text-foreground block mb-1.5">Gênero</label>
+                  <input
+                    id="clientGender"
+                    type="text"
+                    value={clientData.clientGender}
                     onChange={(e) => handleChange("clientGender", e.target.value)}
-                    className="input-field h-9 text-sm" placeholder="Ex: Masculino" />
+                    className="input-field h-9 text-sm"
+                    placeholder="Ex: Masculino"
+                  />
                 </div>
               </div>
             </div>

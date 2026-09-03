@@ -9,6 +9,7 @@ import ramRampageRearQuarter from "@/assets/ram-rampage-rear-quarter.png";
 import { Accessory, ClientData } from "@/types/accessories";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
+import { toast } from "sonner";
 
 interface VehicleVisualizationScreenProps {
   accessories: Accessory[];
@@ -315,29 +316,22 @@ const VehicleVisualizationScreen = ({ accessories, clientData, onAccessoryToggle
                   </div>
                 )}
 
-                {/* Year Badge */}
-                <div className="absolute top-3 left-3 bg-sf-navy/90 backdrop-blur text-primary-foreground px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 shadow z-20">
-                  <Car className="w-3 h-3" />
-                  {clientData.vehicleYear}
-                </div>
-
-                {/* 360 Badge */}
-                <div className="absolute top-3 right-3 bg-sf-blue text-primary-foreground px-2.5 py-1 rounded text-[10px] font-bold uppercase tracking-wider shadow z-20">
-                  360° Real Angle View
-                </div>
-
-                {/* Before/After label */}
-                <div className="absolute top-3 left-1/2 -translate-x-1/2 pointer-events-none z-20">
-                  <div className={`px-3.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-widest shadow-md transition-all ${showAfter ? 'bg-sf-blue text-primary-foreground ring-2 ring-sf-blue/30' : 'bg-slate-700 text-white'}`}>
+                {/* Clean Floating Before/After Badge */}
+                <div className="absolute top-3.5 left-1/2 -translate-x-1/2 pointer-events-none z-20">
+                  <div className={`px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider shadow-lg backdrop-blur-md transition-all ${
+                    showAfter
+                      ? 'bg-sf-navy/90 text-white border border-sf-blue/40 ring-1 ring-sf-blue/30'
+                      : 'bg-slate-900/85 text-slate-200 border border-slate-700/50'
+                  }`}>
                     {showAfter
-                      ? `Depois — Com ${selectedAccessories.length} Acessório${selectedAccessories.length !== 1 ? 's' : ''} Instalado${selectedAccessories.length !== 1 ? 's' : ''}`
-                      : 'Antes — Original (Sem Acessórios)'}
+                      ? `Depois · ${selectedAccessories.length} Acessório${selectedAccessories.length !== 1 ? 's' : ''}`
+                      : 'Antes · Original de Fábrica'}
                   </div>
                 </div>
 
                 {/* Rotation angle badge */}
-                <div className="absolute bottom-3 left-3 bg-foreground/80 backdrop-blur text-primary-foreground px-2.5 py-1 rounded text-xs font-semibold flex items-center gap-1.5 shadow z-20">
-                  <Layers className="w-3.5 h-3.5" />
+                <div className="absolute bottom-3 left-3 bg-slate-900/85 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-lg border border-white/10 z-20">
+                  <Layers className="w-3.5 h-3.5 text-sf-blue" />
                   {rotation}° · {currentAngleView.title}
                 </div>
 
@@ -349,7 +343,7 @@ const VehicleVisualizationScreen = ({ accessories, clientData, onAccessoryToggle
                         {selectedAccessories.map((acc) => (
                           <span
                             key={acc.id}
-                            className="px-2.5 py-1 bg-sf-navy/90 border border-sf-blue/40 text-primary-foreground text-[10px] font-semibold rounded-md backdrop-blur shadow flex items-center gap-1"
+                            className="px-2.5 py-1 bg-slate-900/85 border border-sf-blue/40 text-white text-[10px] font-semibold rounded-lg backdrop-blur shadow flex items-center gap-1.5"
                           >
                             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                             {acc.name}
@@ -357,82 +351,88 @@ const VehicleVisualizationScreen = ({ accessories, clientData, onAccessoryToggle
                         ))}
                       </>
                     ) : (
-                      <span className="px-2.5 py-1 bg-amber-500/90 text-white text-[10px] font-semibold rounded-md backdrop-blur shadow">
+                      <span className="px-2.5 py-1 bg-amber-500/90 text-white text-[10px] font-semibold rounded-lg backdrop-blur shadow">
                         Nenhum acessório selecionado
                       </span>
                     )}
                   </div>
                 ) : (
-                  <div className="absolute bottom-3 right-3 bg-slate-800/80 backdrop-blur text-slate-200 text-[10px] font-medium px-2.5 py-1 rounded-md shadow z-20">
+                  <div className="absolute bottom-3 right-3 bg-slate-900/85 backdrop-blur-md text-slate-300 text-[10px] font-medium px-2.5 py-1 rounded-lg shadow z-20 border border-white/10">
                     Versão Original de Fábrica
                   </div>
                 )}
               </div>
 
-              {/* Angle selector */}
-              <div className="mb-4">
-                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-2">Selecione o Ângulo de Visão:</p>
-                <div className="grid grid-cols-4 sm:grid-cols-8 gap-1.5">
-                  {ANGLES.map((deg) => {
-                    const active = rotation === deg;
-                    return (
-                      <button
-                        key={deg}
-                        onClick={() => {
-                          setIsAutoSpin(false);
-                          setRotation(deg);
-                        }}
-                        className={`py-1.5 px-1 rounded text-center transition-all ${
-                          active
-                            ? 'bg-sf-blue text-primary-foreground font-bold shadow-md scale-105'
-                            : 'bg-secondary hover:bg-secondary/80 text-foreground text-xs font-medium'
-                        }`}
-                      >
-                        <span className="text-[11px] block">{deg}°</span>
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+              {/* Unified Controls Bar (WCAG 2.2 Compliant - Min 44px Touch Targets) */}
+              <div className="space-y-3 pt-1">
+                <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-secondary/40 p-2.5 rounded-xl border border-border/70">
+                  {/* Quick Angle Selector */}
+                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0" role="radiogroup" aria-label="Ângulo de rotação do veículo">
+                    {ANGLES.map((deg) => {
+                      const active = rotation === deg;
+                      return (
+                        <button
+                          key={deg}
+                          type="button"
+                          role="radio"
+                          aria-checked={active}
+                          onClick={() => {
+                            setIsAutoSpin(false);
+                            setRotation(deg);
+                          }}
+                          className={`min-w-[44px] min-h-[44px] px-3.5 rounded-lg text-xs font-bold flex items-center justify-center transition-all ${
+                            active
+                              ? 'bg-sf-blue text-white shadow-md shadow-sf-blue/25 scale-[1.02]'
+                              : 'bg-card hover:bg-secondary text-foreground/80 hover:text-foreground border border-border/70'
+                          }`}
+                        >
+                          {deg}°
+                        </button>
+                      );
+                    })}
+                  </div>
 
-              {/* Controls Bar */}
-              <div className="flex items-center justify-between flex-wrap gap-3 border-t border-border/60 pt-3">
-                {/* Before/After Toggle */}
-                <div className="flex items-center gap-3">
-                  <span className={`text-xs font-medium transition-colors ${!showAfter ? 'text-foreground' : 'text-muted-foreground'}`}>
-                    Antes
-                  </span>
-                  <Switch
-                    checked={showAfter}
-                    onCheckedChange={setShowAfter}
-                  />
-                  <span className={`text-xs font-medium transition-colors ${showAfter ? 'text-foreground' : 'text-muted-foreground'}`}>
-                    Depois
-                  </span>
-                </div>
+                  {/* Actions & Before/After Toggle */}
+                  <div className="flex items-center justify-between md:justify-end gap-2.5 pt-2 md:pt-0 border-t md:border-t-0 border-border/50">
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-card border border-border/70 min-h-[44px]">
+                      <span className={`text-xs font-medium transition-colors ${!showAfter ? 'text-foreground font-semibold' : 'text-muted-foreground'}`}>
+                        Antes
+                      </span>
+                      <Switch
+                        checked={showAfter}
+                        onCheckedChange={setShowAfter}
+                        aria-label="Alternar visualização Antes e Depois dos acessórios"
+                      />
+                      <span className={`text-xs font-medium transition-colors ${showAfter ? 'text-foreground font-semibold' : 'text-muted-foreground'}`}>
+                        Depois
+                      </span>
+                    </div>
 
-                {/* Rotate Buttons */}
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => setIsAutoSpin(!isAutoSpin)}
-                    className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded border transition-colors ${
-                      isAutoSpin
-                        ? 'bg-amber-500 text-white border-amber-600'
-                        : 'bg-secondary hover:bg-secondary/80 text-foreground border-border'
-                    }`}
-                  >
-                    {isAutoSpin ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
-                    {isAutoSpin ? 'Pausar Giro' : 'Giro Contínuo 360°'}
-                  </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsAutoSpin(!isAutoSpin)}
+                      className={`min-h-[44px] px-3.5 rounded-lg text-xs font-semibold flex items-center gap-2 border transition-all ${
+                        isAutoSpin
+                          ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
+                          : 'bg-card hover:bg-secondary text-foreground border-border/70'
+                      }`}
+                      aria-label={isAutoSpin ? "Pausar giro automático" : "Iniciar giro automático"}
+                    >
+                      {isAutoSpin ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 text-sf-blue" />}
+                      <span className="hidden sm:inline">{isAutoSpin ? 'Pausar' : 'Auto 360°'}</span>
+                    </button>
 
-                  <button
-                    onClick={handleRotateNext}
-                    disabled={isRotating}
-                    className="btn-primary flex items-center gap-2 text-sm px-5 disabled:opacity-70"
-                  >
-                    <RotateCw className={`w-4 h-4 transition-transform duration-500 ${isRotating ? 'rotate-180' : ''}`} />
-                    Girar +45°
-                  </button>
+                    <button
+                      type="button"
+                      onClick={handleRotateNext}
+                      disabled={isRotating}
+                      className="btn-primary min-h-[44px] px-4 rounded-lg flex items-center gap-2 text-xs font-bold disabled:opacity-60 shadow-sm"
+                      aria-label="Girar 45 graus para a direita"
+                    >
+                      <RotateCw className={`w-4 h-4 transition-transform duration-500 ${isRotating ? 'rotate-180' : ''}`} />
+                      <span>+45°</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -493,12 +493,17 @@ const VehicleVisualizationScreen = ({ accessories, clientData, onAccessoryToggle
                 </button>
 
                 <button
-                  onClick={onGenerateScript}
-                  disabled={selectedAccessories.length === 0}
-                  className="w-full flex items-center justify-center gap-2 text-xs h-9 text-muted-foreground hover:text-foreground font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => {
+                    if (selectedAccessories.length === 0) {
+                      toast.warning("Selecione ao menos um acessório para gerar a argumentação.");
+                      return;
+                    }
+                    onGenerateScript();
+                  }}
+                  className="w-full flex items-center justify-center gap-2 text-xs font-semibold h-10 rounded-lg text-sf-blue bg-sf-light-blue hover:bg-sf-blue hover:text-white border border-sf-blue/30 transition-all shadow-sm active:scale-98"
                 >
-                  <MessageSquare className="w-3.5 h-3.5" />
-                  Gerar Argumentação
+                  <MessageSquare className="w-4 h-4" />
+                  <span>Gerar Argumentação Consultiva</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               </div>

@@ -1,4 +1,4 @@
-import { MessageSquare, CheckCircle, ArrowRight, Sparkles, Award, User, MapPin, Car, Package, Shield, Mic, MicOff, Send, MessageCircle } from "lucide-react";
+import { MessageSquare, CheckCircle, ArrowRight, Sparkles, Award, User, MapPin, Car, Package, Shield, Mic, MicOff, Send, MessageCircle, Copy } from "lucide-react";
 import { Accessory, ClientData, getPackageName } from "@/types/accessories";
 import { generateSalesArguments, CounterArgumentResult } from "@/lib/salesKnowledge";
 import { useMemo, useState, useCallback } from "react";
@@ -16,6 +16,8 @@ const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScre
   const selectedAccessories = accessories.filter((a) => a.selected);
   const totalPrice = selectedAccessories.reduce((sum, a) => sum + a.price, 0);
   const packageName = getPackageName(clientData.vehicleModel);
+  const firstName = (clientData?.clientName || "Cliente").trim().split(" ")[0] || "Cliente";
+  const genderPrefix = clientData?.clientGender?.toLowerCase().includes("fem") ? "Sra." : "Sr.";
 
   const [objectionText, setObjectionText] = useState("");
   const [result, setResult] = useState<CounterArgumentResult | null>(null);
@@ -26,9 +28,17 @@ const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScre
   const focusedTotal = useMemo(() => focusedAccessories.reduce((sum, a) => sum + a.price, 0), [focusedAccessories]);
 
   const toggleFocusedAccessory = useCallback((id: string) => {
-    setFocusedAccessoryIds(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
-    if (result) setResult(null);
-  }, [result]);
+    setFocusedAccessoryIds(prev => {
+      const next = prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id];
+      const nextAccessories = selectedAccessories.filter(a => next.includes(a.id));
+      const nextTotal = nextAccessories.reduce((sum, a) => sum + a.price, 0);
+      if (nextAccessories.length > 0) {
+        const generated = generateSalesArguments(objectionText, clientData, nextAccessories, nextTotal, packageName);
+        setResult(generated);
+      }
+      return next;
+    });
+  }, [selectedAccessories, objectionText, clientData, packageName]);
 
   const handleGenerate = useCallback(() => {
     if (focusedAccessories.length === 0) {
@@ -39,6 +49,14 @@ const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScre
     setResult(generated);
     toast.success("Argumentação gerada com sucesso!");
   }, [objectionText, clientData, focusedAccessories, focusedTotal, packageName]);
+
+  // Auto-gerar argumentação na montagem da tela se houver acessórios focados
+  useEffect(() => {
+    if (!result && focusedAccessories.length > 0) {
+      const generated = generateSalesArguments(objectionText, clientData, focusedAccessories, focusedTotal, packageName);
+      setResult(generated);
+    }
+  }, [focusedAccessories, focusedTotal, packageName, clientData]);
 
   const handleVoiceObjection = useCallback(() => {
     const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -105,8 +123,12 @@ const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScre
     return args;
   }, [selectedAccessories, clientData, packageName]);
 
-  const firstName = clientData.clientName.split(" ")[0] || "Cliente";
-  const genderPrefix = clientData.clientGender?.toLowerCase().includes("fem") ? "Sra." : "Sr.";
+  const handleCopyWhatsApp = useCallback(() => {
+    if (!result) return;
+    const message = `Olá, ${firstName}! Tudo bem?\n\nPreparando os detalhes do seu ${clientData.vehicleModel}, separamos esta proposta do pacote ${packageName}:\n\n${result.dialogueScript}\n\n${result.closingPhrase}`;
+    navigator.clipboard.writeText(message);
+    toast.success("Roteiro copiado para envio no WhatsApp!");
+  }, [result, firstName, clientData.vehicleModel, packageName]);
 
   const pillarColors: Record<string, { bg: string; border: string; text: string; iconBg: string }> = {
     security: { bg: "bg-blue-50 dark:bg-blue-950/30", border: "border-blue-200 dark:border-blue-800", text: "text-blue-700 dark:text-blue-300", iconBg: "bg-blue-100 dark:bg-blue-900/50" },
@@ -246,36 +268,44 @@ const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScre
             </span>
           </div>
 
-          {/* Objection Input */}
+          {/* Objection Input & Generation Bar */}
           <div className="border-t border-border pt-3">
-            <div className="flex gap-2 mb-3">
+            <div className="space-y-2.5 mb-4">
               <Textarea
                 value={objectionText}
-                onChange={(e) => {
-                  setObjectionText(e.target.value);
-                  if (result) setResult(null);
+                onChange={(e) => setObjectionText(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleGenerate();
+                  }
                 }}
                 placeholder='Descreva a objeção do cliente (opcional). Ex: "Achou caro", "Não vê necessidade", "A esposa não gostou"...'
-                className="min-h-[60px] text-sm flex-1 resize-none"
+                className="min-h-[72px] text-sm w-full resize-none rounded-lg"
               />
-              <div className="flex flex-col gap-2">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
                 <Button
+                  type="button"
                   variant="outline"
-                  size="icon"
                   onClick={handleVoiceObjection}
-                  className={`shrink-0 transition-colors ${isRecordingObjection ? "bg-ram-red text-white border-ram-red animate-pulse" : ""}`}
-                  title={isRecordingObjection ? "Gravando..." : "Capturar objeção por voz"}
+                  className={`flex items-center justify-center gap-2 text-xs font-semibold h-10 px-4 transition-colors ${
+                    isRecordingObjection ? "bg-ram-red text-white border-ram-red animate-pulse" : ""
+                  }`}
+                  title="Capturar fala do cliente via microfone"
                 >
-                  {isRecordingObjection ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                  {isRecordingObjection ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4 text-sf-blue" />}
+                  <span>{isRecordingObjection ? "Gravando voz..." : "Capturar Objeção por Voz"}</span>
                 </Button>
+
                 <Button
+                  type="button"
                   onClick={handleGenerate}
-                  size="icon"
-                  className="shrink-0 bg-sf-blue hover:bg-sf-navy text-white"
-                  title="Gerar Argumentação"
+                  className="btn-primary flex items-center justify-center gap-2 text-xs font-bold h-10 px-6 shadow-md shadow-sf-blue/20"
+                  title="Gerar ou atualizar argumentação consultiva"
                   disabled={focusedAccessories.length === 0}
                 >
-                  <Send className="w-4 h-4" />
+                  <Sparkles className="w-4 h-4" />
+                  <span>Gerar Argumentação</span>
                 </Button>
               </div>
             </div>
@@ -300,10 +330,24 @@ const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScre
                 })}
 
                 {/* Dialogue Script */}
-                <div className="rounded-lg p-4 border border-border bg-secondary/30">
-                  <div className="flex items-center gap-2 mb-2">
-                    <MessageCircle className="w-4 h-4 text-sf-blue" />
-                    <h5 className="font-bold text-sm text-foreground">Roteiro Sugerido</h5>
+                <div className="rounded-xl p-4 border border-border/80 bg-secondary/30">
+                  <div className="flex items-center justify-between gap-2 mb-2.5 flex-wrap">
+                    <div className="flex items-center gap-2">
+                      <MessageCircle className="w-4 h-4 text-sf-blue" />
+                      <h5 className="font-bold text-sm text-foreground">Roteiro Sugerido</h5>
+                      <span className="text-[10px] font-semibold text-sf-blue bg-sf-light-blue px-2 py-0.5 rounded border border-sf-blue/20">
+                        Rascunho Consultivo
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleCopyWhatsApp}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition-all active:scale-95"
+                      title="Copiar mensagem pronta para o WhatsApp"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>Copiar p/ WhatsApp</span>
+                    </button>
                   </div>
                   <p className="text-xs text-foreground leading-relaxed whitespace-pre-line italic">
                     {result.dialogueScript}

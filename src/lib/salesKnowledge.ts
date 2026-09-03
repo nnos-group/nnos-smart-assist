@@ -253,10 +253,10 @@ export const generateSalesArguments = (
   focusedTotal: number,
   packageName: string
 ): CounterArgumentResult => {
-  const firstName = clientData.clientName.split(" ")[0] || "Cliente";
-  const genderPrefix = clientData.clientGender?.toLowerCase().includes("fem") ? "Sra." : "Sr.";
-  const objectionType = objectionText.trim() ? detectObjectionType(objectionText) : "generic";
-  const priority = pillarPriority[objectionType];
+  const firstName = (clientData?.clientName || "Cliente").trim().split(" ")[0] || "Cliente";
+  const genderPrefix = clientData?.clientGender?.toLowerCase().includes("fem") ? "Sra." : "Sr.";
+  const objectionType = objectionText?.trim() ? detectObjectionType(objectionText) : "generic";
+  const priority = pillarPriority[objectionType] || pillarPriority.generic;
   const accessoryNames = focusedAccessories.map(a => a.name).join(", ");
 
   const pillarData: Record<"security" | "value" | "lifestyle", { hooks: string[]; contents: string[] }> = {

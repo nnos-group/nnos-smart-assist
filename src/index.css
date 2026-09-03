@@ -1,8 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=Salesforce+Sans:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=Salesforce+Sans:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 @layer base {
   :root {
@@ -134,20 +134,20 @@
     background: hsl(var(--background));
   }
 
-  /* SF Lightning Card */
+  /* SF Lightning Card - Refinado com bordas modernas e sombra sutil */
   .sf-card {
-    @apply bg-card rounded border border-border;
-    box-shadow: var(--shadow-sm);
+    @apply bg-card rounded-xl border border-border/70;
+    box-shadow: 0 1px 3px 0 hsl(210 29% 15% / 0.04), 0 1px 2px -1px hsl(210 29% 15% / 0.04);
   }
 
   /* Legacy card-premium mapped to SF style */
   .card-premium {
-    @apply bg-card rounded border border-border;
-    box-shadow: var(--shadow-sm);
+    @apply bg-card rounded-xl border border-border/70;
+    box-shadow: 0 1px 3px 0 hsl(210 29% 15% / 0.04);
   }
 
   .card-glass {
-    @apply bg-card rounded border border-border;
+    @apply bg-card/90 backdrop-blur-md rounded-xl border border-border/70;
     box-shadow: var(--shadow-xs);
   }
 
@@ -334,5 +334,17 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+/* WCAG 2.1 SC 2.3.3: Suporte a redução de movimento */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
