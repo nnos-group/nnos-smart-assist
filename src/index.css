@@ -310,8 +310,50 @@
     border-color: hsl(var(--sf-navy));
   }
 
-  .font-display {
-    font-family: 'Inter', -apple-system, sans-serif;
+  /* Fundo tecnológico aero-automotivo executivo */
+  .hero-tech-bg {
+    background-color: #f8faff;
+    background-image: 
+      radial-gradient(ellipse 90% 55% at 50% -10%, rgba(0, 102, 235, 0.08), transparent 70%),
+      radial-gradient(circle at 90% 25%, rgba(14, 165, 233, 0.06), transparent 50%),
+      radial-gradient(circle at 10% 80%, rgba(99, 102, 241, 0.05), transparent 50%),
+      radial-gradient(rgba(148, 163, 184, 0.22) 1.2px, transparent 1.2px);
+    background-size: 100% 100%, 100% 100%, 100% 100%, 28px 28px;
+  }
+
+  /* Linhas e grade sutis de blueprint */
+  .blueprint-grid {
+    background-image: linear-gradient(to right, rgba(148, 163, 184, 0.06) 1px, transparent 1px),
+                      linear-gradient(to bottom, rgba(148, 163, 184, 0.06) 1px, transparent 1px);
+    background-size: 64px 64px;
+  }
+
+  /* Brilho dinâmico suave */
+  .ambient-glow {
+    position: absolute;
+    pointer-events: none;
+    filter: blur(90px);
+    opacity: 0.55;
+    border-radius: 9999px;
+  }
+
+  .shimmer-btn {
+    position: relative;
+    overflow: hidden;
+  }
+  .shimmer-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 40%;
+    height: 200%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.32), transparent);
+    transform: rotate(25deg);
+    transition: all 0.75s ease-in-out;
+  }
+  .shimmer-btn:hover::after {
+    left: 130%;
   }
 }
 

@@ -1,15 +1,12 @@
-import { RotateCw, Car, Layers, ShoppingCart, MessageSquare, ArrowRight, Eye, Play, Pause } from "lucide-react";
-import { useState, useMemo, useEffect } from "react";
+import { useState } from "react";
+import { 
+  ShoppingCart, MessageSquare, ArrowRight, 
+  ChevronLeft, Video, Share2, BadgePercent, Tag, Award, Check, Zap, XCircle 
+} from "lucide-react";
 import ramRampageImage from "@/assets/ram-rampage-rebel.jpg";
-import ramRampageAccessorizedImage from "@/assets/ram-rampage-rebel-accessorized.jpg";
-import ramRampageFront from "@/assets/ram-rampage-front.png";
-import ramRampageFrontQuarter from "@/assets/ram-rampage-front-quarter.png";
-import ramRampageRear from "@/assets/ram-rampage-rear.png";
-import ramRampageRearQuarter from "@/assets/ram-rampage-rear-quarter.png";
 import { Accessory, ClientData } from "@/types/accessories";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Switch } from "@/components/ui/switch";
 import { toast } from "sonner";
+import { ProposalRejectedModal } from "./ProposalRejectedModal";
 
 interface VehicleVisualizationScreenProps {
   accessories: Accessory[];
@@ -17,482 +14,559 @@ interface VehicleVisualizationScreenProps {
   onAccessoryToggle: (id: string) => void;
   onGenerateScript: () => void;
   onAddToProposal: () => void;
+  onBack?: () => void;
 }
 
-const ANGLES = [0, 45, 90, 135, 180, 225, 270, 315] as const;
-
-const VehicleVisualizationScreen = ({ accessories, clientData, onAccessoryToggle, onGenerateScript, onAddToProposal }: VehicleVisualizationScreenProps) => {
-  const [rotation, setRotation] = useState<number>(0);
-  const [isRotating, setIsRotating] = useState(false);
-  const [isAutoSpin, setIsAutoSpin] = useState(false);
+const VehicleVisualizationScreen = ({
+  accessories,
+  clientData,
+  onAccessoryToggle,
+  onGenerateScript,
+  onAddToProposal,
+  onBack,
+}: VehicleVisualizationScreenProps) => {
   const [showAfter, setShowAfter] = useState(true);
+  const [sellerDiscount, setSellerDiscount] = useState<number>(0);
+  const [factoryBonus, setFactoryBonus] = useState<number>(0);
+  const [showRejectModal, setShowRejectModal] = useState(false);
 
-  // Auto-spin interval
-  useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isAutoSpin) {
-      interval = setInterval(() => {
-        setRotation((prev) => (prev + 45) % 360);
-      }, 1200);
+  const isRenegade = clientData.vehicleModel.toUpperCase().includes("RENEGADE");
+  const isRampage = clientData.vehicleModel.toUpperCase().includes("RAMPAGE");
+  const isCompass = clientData.vehicleModel.toUpperCase().includes("COMPASS");
+  const hasVideo = isRenegade || isRampage || isCompass;
+
+  const getVideoSrc = () => {
+    if (isRenegade) {
+      return showAfter ? "/videos/Jeep_Renegade_com.mp4" : "/videos/Jeep_Renegade_sem.mp4";
     }
-    return () => clearInterval(interval);
-  }, [isAutoSpin]);
+    if (isRampage) {
+      return showAfter ? "/videos/Ram_Rampage_com.mp4" : "/videos/Ram_Rampage_sem.mp4";
+    }
+    if (isCompass) {
+      return showAfter ? "/videos/Compass_com.mp4" : "/videos/Compass_sem.mp4";
+    }
+    return null;
+  };
 
-  const handleRotateNext = () => {
-    setIsRotating(true);
-    setRotation((prev) => (prev + 45) % 360);
-    setTimeout(() => setIsRotating(false), 500);
+  const getVehicleShortName = () => {
+    if (isRenegade) return "Jeep Renegade";
+    if (isRampage) return "RAM Rampage";
+    if (isCompass) return "Jeep Compass";
+    return clientData.vehicleModel;
   };
 
   const selectedAccessories = accessories.filter((a) => a.selected);
 
-  // Angle view configuration mapping each rotation angle to realistic perspective photography
-  const getAngleConfig = (deg: number) => {
-    const normalized = (deg % 360 + 360) % 360;
-    const isAccessorized = showAfter && selectedAccessories.length > 0;
-
-    switch (normalized) {
-      case 0:
-        return {
-          title: "Vista Lateral (Perfil Direito)",
-          image: isAccessorized ? ramRampageAccessorizedImage : ramRampageImage,
-          flip: false,
-        };
-      case 45:
-        return {
-          title: "Vista Diagonal Dianteira (3/4)",
-          image: ramRampageFrontQuarter,
-          flip: false,
-        };
-      case 90:
-        return {
-          title: "Vista Frontal (Frente)",
-          image: ramRampageFront,
-          flip: false,
-        };
-      case 135:
-        return {
-          title: "Vista Diagonal Dianteira Oposta",
-          image: ramRampageFrontQuarter,
-          flip: true,
-        };
-      case 180:
-        return {
-          title: "Vista Lateral (Perfil Esquerdo)",
-          image: isAccessorized ? ramRampageAccessorizedImage : ramRampageImage,
-          flip: true,
-        };
-      case 225:
-        return {
-          title: "Vista Diagonal Traseira Oposta",
-          image: ramRampageRearQuarter,
-          flip: true,
-        };
-      case 270:
-        return {
-          title: "Vista Traseira (Caçamba)",
-          image: ramRampageRear,
-          flip: false,
-        };
-      case 315:
-        return {
-          title: "Vista Diagonal Traseira (3/4)",
-          image: ramRampageRearQuarter,
-          flip: false,
-        };
-      default:
-        return {
-          title: "Vista 360°",
-          image: ramRampageImage,
-          flip: false,
-        };
-    }
+  const getDiscountedPrice = (item: Accessory) => {
+    return Math.round(item.price * (1 - item.discountPercent / 100));
   };
 
-  // Helper: calculate overlay position for each accessory per viewing angle
-  const getAccessoryOverlayProps = (accId: string, angle: number) => {
-    const norm = (angle % 360 + 360) % 360;
+  // Cálculos financeiros idênticos aos da tela de Pacote de Acessórios
+  const subtotalWithStockDiscounts = selectedAccessories.reduce(
+    (sum, item) => sum + getDiscountedPrice(item), 
+    0
+  );
+  const totalOriginal = selectedAccessories.reduce((sum, item) => sum + item.price, 0);
+  const stockSavings = totalOriginal - subtotalWithStockDiscounts;
 
-    switch (accId) {
-      case "protetor":
-        if (norm === 0)   return { top: "40%", left: "62%", width: "25%", height: "9%"  };
-        if (norm === 180) return { top: "40%", left: "13%", width: "25%", height: "9%"  };
-        if (norm === 270) return { top: "45%", left: "22%", width: "56%", height: "22%" };
-        if (norm === 315) return { top: "44%", left: "40%", width: "36%", height: "17%" };
-        if (norm === 225) return { top: "44%", left: "24%", width: "36%", height: "17%" };
-        if (norm === 45)  return { top: "45%", left: "66%", width: "22%", height: "12%" };
-        if (norm === 135) return { top: "45%", left: "12%", width: "22%", height: "12%" };
-        return { top: "42%", left: "60%", width: "22%", height: "10%" };
+  const extraDiscount = Math.min(sellerDiscount, subtotalWithStockDiscounts);
+  const factoryBonusAmount = Math.min(factoryBonus, Math.max(0, subtotalWithStockDiscounts - extraDiscount));
+  const totalFinal = Math.max(0, subtotalWithStockDiscounts - extraDiscount - factoryBonusAmount);
+  const totalAllSavings = stockSavings + extraDiscount + factoryBonusAmount;
 
-      case "capota":
-        if (norm === 0)   return { top: "37%", left: "61%", width: "27%", height: "7%"  };
-        if (norm === 180) return { top: "37%", left: "12%", width: "27%", height: "7%"  };
-        if (norm === 270) return { top: "42%", left: "20%", width: "60%", height: "12%" };
-        if (norm === 315) return { top: "39%", left: "39%", width: "38%", height: "14%" };
-        if (norm === 225) return { top: "39%", left: "23%", width: "38%", height: "14%" };
-        return { top: "39%", left: "60%", width: "24%", height: "9%" };
+  const cdcMonthly = (totalFinal * 0.0235).toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 
-      case "santantonio":
-        if (norm === 0)   return { top: "30%", left: "56%", width: "12%", height: "18%" };
-        if (norm === 180) return { top: "30%", left: "32%", width: "12%", height: "18%" };
-        if (norm === 270) return { top: "32%", left: "26%", width: "48%", height: "18%" };
-        if (norm === 315) return { top: "31%", left: "37%", width: "22%", height: "20%" };
-        if (norm === 225) return { top: "31%", left: "41%", width: "22%", height: "20%" };
-        return { top: "31%", left: "55%", width: "16%", height: "18%" };
+  const handleShareWhatsApp = () => {
+    const accessoriesList = selectedAccessories.length > 0
+      ? selectedAccessories.map((a) => `• ${a.name} (R$ ${getDiscountedPrice(a).toLocaleString("pt-BR")})`).join("\n")
+      : "Nenhum acessório selecionado";
 
-      case "estribo":
-        if (norm === 0)   return { top: "64%", left: "33%", width: "38%", height: "6%" };
-        if (norm === 180) return { top: "64%", left: "29%", width: "38%", height: "6%" };
-        if (norm === 45)  return { top: "65%", left: "37%", width: "33%", height: "6%" };
-        if (norm === 135) return { top: "65%", left: "30%", width: "33%", height: "6%" };
-        return { top: "64%", left: "34%", width: "34%", height: "6%" };
+    // Link interativo exclusivo para o cliente visualizar o veículo montado sem necessidade de acesso ao sistema
+    const accIds = selectedAccessories.map((a) => a.id).join(",");
+    const interactive3dUrl = `${window.location.origin}/visualizacao?client=${encodeURIComponent(clientData.clientName || "Cliente")}&model=${encodeURIComponent(clientData.vehicleModel)}&color=${encodeURIComponent(clientData.vehicleColor)}&acc=${encodeURIComponent(accIds)}&total=${totalFinal}&cdc=${encodeURIComponent(cdcMonthly)}`;
 
-      case "friso":
-        if (norm === 0)   return { top: "54%", left: "34%", width: "36%", height: "3%" };
-        if (norm === 180) return { top: "54%", left: "30%", width: "36%", height: "3%" };
-        if (norm === 45)  return { top: "54%", left: "36%", width: "30%", height: "3%" };
-        if (norm === 135) return { top: "54%", left: "34%", width: "30%", height: "3%" };
-        return { top: "54%", left: "34%", width: "34%", height: "3%" };
+    const message = 
+      `Olá ${clientData.clientName || ""}!\n\n` +
+      `Aqui está a proposta e a *Visualização 3D Interativa* do seu *${clientData.vehicleModel}* (${clientData.vehicleColor}) com os acessórios originais Mopar selecionados:\n\n` +
+      `*Acessórios Selecionados:*\n${accessoriesList}\n\n` +
+      `*Condições Especiais:*\n` +
+      `• Total à Vista: R$ ${totalFinal.toLocaleString("pt-BR")}\n` +
+      `• Parcelamento Concessionária: 12x de R$ ${Math.ceil(totalFinal / 12).toLocaleString("pt-BR")} s/ juros\n` +
+      `• Diluição CDC Jeep: + apenas R$ ${cdcMonthly}/mês na parcela do veículo\n\n` +
+      `🔗 *Acesse a Visualização 3D Interativa em tempo real:* \n${interactive3dUrl}\n\n` +
+      `Qualquer dúvida ou ajuste que desejar, estou à disposição!`;
 
-      case "pneus":
-        if (norm === 0)   return { top: "59%", left: "17%", width: "67%", height: "20%" };
-        if (norm === 180) return { top: "59%", left: "16%", width: "67%", height: "20%" };
-        if (norm === 90)  return { top: "62%", left: "20%", width: "60%", height: "18%" };
-        if (norm === 270) return { top: "62%", left: "20%", width: "60%", height: "18%" };
-        return { top: "60%", left: "18%", width: "64%", height: "19%" };
-
-      default:
-        return { top: "50%", left: "50%", width: "20%", height: "10%" };
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(interactive3dUrl).catch(() => {});
     }
+
+    const text = encodeURIComponent(message);
+    window.open(`https://api.whatsapp.com/send?text=${text}`, "_blank");
+    toast.success("Link interativo 3D e proposta enviados ao WhatsApp!");
   };
-
-  const currentAngleView = getAngleConfig(rotation);
-
-  const depth3D = useMemo(() => {
-    const radians = ((rotation % 360) * Math.PI) / 180;
-    return {
-      scaleX: Math.cos(radians),
-      shadow: Math.abs(Math.sin(radians)) * 25 + 15,
-    };
-  }, [rotation]);
 
   return (
-    <div className="min-h-screen p-6 md:p-8 app-container">
-      <div className="max-w-7xl mx-auto fade-in">
-        {/* Header */}
-        <div className="mb-5 flex flex-wrap items-end justify-between gap-4">
+    <div className="min-h-full flex flex-col font-sans text-slate-800 bg-slate-100 antialiased selection:bg-blue-100 selection:text-blue-900">
+      {/* BEGIN: PageContent */}
+      <main className="flex-1 max-w-[1720px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col space-y-4">
+        {/* BEGIN: ContextBreadcrumbAndTitle */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
-            <p className="label-text text-sf-blue mb-1">Visualização Interativa 360° Multi-Ângulo</p>
-            <h1 className="section-title">{clientData.vehicleModel} — {clientData.vehicleColor}</h1>
-            <p className="text-muted-foreground text-xs mt-1">
-              Ano: {clientData.vehicleYear} · Cliente: {clientData.clientName}
+            <div className="flex items-center space-x-3 mb-1">
+              {onBack ? (
+                <button
+                  type="button"
+                  onClick={onBack}
+                  className="inline-flex items-center text-xs font-semibold text-blue-600 hover:text-blue-800 transition cursor-pointer"
+                >
+                  <ChevronLeft className="w-4 h-4 mr-1" />
+                  Voltar para Pacote Acessórios
+                </button>
+              ) : (
+                <span className="text-xs font-semibold text-slate-500">
+                  Etapa 3 · Visualização
+                </span>
+              )}
+            </div>
+
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
+              {clientData.vehicleModel} — {clientData.vehicleColor}
+              <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-200 text-slate-700">
+                {isRampage ? "Turbo Diesel 4x4" : "Tração 4x4 Integral"}
+              </span>
+            </h1>
+
+            <p className="text-xs text-slate-500 mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
+              <span>
+                Ano: <strong className="text-slate-700">{clientData.vehicleYear || "2025/2026"}</strong>
+              </span>
+              <span>•</span>
+              <span>
+                Cliente: <strong className="text-slate-700">{clientData.clientName || "João Silva Sauro"}</strong>
+              </span>
+              <span>•</span>
+              <span>
+                Proposta: <strong className="text-slate-700">#RAM-84920-F&amp;I</strong>
+              </span>
+              <span>•</span>
+              <span className="inline-flex items-center text-emerald-600 font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 mr-1 animate-pulse" />
+                Vídeo Oficial Mopar Conectado
+              </span>
             </p>
           </div>
-          <div className="text-right">
-            <span className="text-xs font-semibold text-sf-blue bg-sf-light-blue px-3 py-1.5 rounded-full border border-sf-blue/20">
-              {currentAngleView.title}
-            </span>
-          </div>
         </div>
+        {/* END: ContextBreadcrumbAndTitle */}
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-          {/* Vehicle Display - Main Area */}
-          <div className="lg:col-span-8">
-            <div className="sf-card p-5 slide-up">
-              <div className="relative aspect-video bg-gradient-to-b from-secondary/40 via-secondary/70 to-secondary rounded-lg overflow-hidden mb-4 border border-border/50 select-none">
-
-                {/* Floor shadow */}
-                <div
-                  className="absolute bottom-2 left-1/2 -translate-x-1/2 w-[85%] h-[18%] bg-gradient-to-t from-foreground/25 to-transparent rounded-[50%] blur-xl transition-all duration-500"
-                  style={{
-                    transform: `translateX(-50%) scaleX(${0.9 + Math.abs(depth3D.scaleX) * 0.2})`,
-                    opacity: 0.4,
-                  }}
-                />
-
-                {/* Vehicle Multi-Angle Image */}
-                <div
-                  className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ease-out p-4 ${isRotating ? 'scale-[0.98] opacity-90' : 'scale-100 opacity-100'}`}
-                >
-                  <img
-                    src={currentAngleView.image}
-                    alt={`${clientData.vehicleModel} - ${currentAngleView.title}`}
-                    className="max-h-full max-w-full object-contain transition-all duration-500 drop-shadow-2xl"
-                    style={{
-                      transform: currentAngleView.flip ? 'scaleX(-1)' : 'none',
-                      filter: showAfter && selectedAccessories.length > 0
-                        ? 'contrast(1.06) saturate(1.1)'
-                        : 'contrast(0.98) saturate(0.95)',
-                    }}
+        {/* BEGIN: MainShowcaseGrid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+          {/* LEFT COLUMN: Interactive Vehicle Viewport & Dynamic Controls (Col 8/12) */}
+          <section aria-label="Visualizador Interativo do Veículo" className="lg:col-span-8 flex flex-col space-y-3">
+            {/* Main Interactive Visual Container */}
+            <div className="relative bg-slate-900 rounded-2xl overflow-hidden border border-slate-300 shadow-xl group">
+              {/* Base Vehicle Viewport */}
+              <div className="relative w-full aspect-[16/9] bg-slate-950 flex items-center justify-center overflow-hidden select-none">
+                {hasVideo ? (
+                  /* High-Definition Official Video */
+                  <video
+                    key={`${isCompass ? "compass" : isRenegade ? "renegade" : "rampage"}-video-${showAfter ? "com" : "sem"}`}
+                    src={getVideoSrc() || undefined}
+                    autoPlay
+                    loop
+                    muted
+                    playsInline
+                    className="w-full h-full object-cover object-center transition-opacity duration-300"
                   />
-                </div>
-
-                {/* Dynamic Accessory Overlays - only shown in "Depois" mode */}
-                {showAfter && selectedAccessories.length > 0 && (
-                  <div className="absolute inset-0 pointer-events-none">
-                    {selectedAccessories.map((acc) => {
-                      const pos = getAccessoryOverlayProps(acc.id, rotation);
-
-                      if (acc.id === "protetor") {
-                        return (
-                          <div
-                            key={acc.id}
-                            className="absolute transition-all duration-500 z-10"
-                            style={{ top: pos.top, left: pos.left, width: pos.width, height: pos.height }}
-                          >
-                            <div className="w-full h-full rounded border-2 border-slate-900/80 bg-gradient-to-r from-slate-900/90 via-slate-800/80 to-slate-900/90 shadow-2xl relative overflow-hidden flex items-center justify-center">
-                              <div className="absolute inset-0 opacity-40 bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:4px_4px]" />
-                              <span className="relative z-10 px-1.5 py-0.5 bg-sf-navy/95 text-white text-[9px] font-extrabold tracking-wider uppercase rounded shadow border border-amber-400/50 flex items-center gap-1">
-                                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping" />
-                                🛡️ Protetor de Caçamba HD
-                              </span>
-                            </div>
-                          </div>
-                        );
-                      }
-
-                      if (acc.id === "capota") {
-                        return (
-                          <div
-                            key={acc.id}
-                            className="absolute transition-all duration-500 z-10"
-                            style={{ top: pos.top, left: pos.left, width: pos.width, height: pos.height }}
-                          >
-                            <div className="w-full h-full rounded border-t-2 border-slate-950 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 shadow-2xl flex items-center justify-center">
-                              <span className="px-1.5 py-0.5 bg-black/80 text-white text-[8px] font-bold uppercase rounded border border-slate-700">
-                                🔒 Capota Marítima Retrátil
-                              </span>
-                            </div>
-                          </div>
-                        );
-                      }
-
-                      if (acc.id === "santantonio") {
-                        return (
-                          <div
-                            key={acc.id}
-                            className="absolute transition-all duration-500 z-10"
-                            style={{ top: pos.top, left: pos.left, width: pos.width, height: pos.height }}
-                          >
-                            <div className="w-full h-full border-t-4 border-x-4 border-slate-800 rounded-t-lg bg-slate-900/30 flex items-center justify-center">
-                              <span className="px-1.5 py-0.5 bg-slate-900/90 text-white text-[8px] font-bold uppercase rounded border border-amber-500/40">
-                                🏋️ Santo Antônio
-                              </span>
-                            </div>
-                          </div>
-                        );
-                      }
-
-                      if (acc.id === "estribo") {
-                        return (
-                          <div
-                            key={acc.id}
-                            className="absolute transition-all duration-500 z-10"
-                            style={{ top: pos.top, left: pos.left, width: pos.width, height: pos.height }}
-                          >
-                            <div className="w-full h-full rounded-full border-b-2 border-slate-400 bg-gradient-to-r from-slate-700 via-slate-300 to-slate-700 shadow-lg flex items-center justify-center">
-                              <span className="px-1 py-0.5 bg-sf-navy text-white text-[8px] font-bold uppercase rounded">
-                                🚗 Estribo Lateral
-                              </span>
-                            </div>
-                          </div>
-                        );
-                      }
-
-                      // Default pin callout for other accessories
-                      return (
-                        <div
-                          key={acc.id}
-                          className="absolute transition-all duration-500 z-10"
-                          style={{ top: pos.top, left: pos.left }}
-                        >
-                          <div className="flex items-center gap-1 bg-sf-navy/90 text-white px-2 py-0.5 rounded text-[9px] font-bold shadow-lg border border-sf-blue/40 backdrop-blur">
-                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                            {acc.name}
-                          </div>
-                        </div>
-                      );
-                    })}
+                ) : (
+                  /* Fallback to vehicle image */
+                  <div className="relative w-full h-full flex items-center justify-center">
+                    <img
+                      src={ramRampageImage}
+                      alt={clientData.vehicleModel}
+                      className="max-h-full max-w-full object-contain drop-shadow-2xl"
+                    />
                   </div>
                 )}
 
-                {/* Clean Floating Before/After Badge */}
-                <div className="absolute top-3.5 left-1/2 -translate-x-1/2 pointer-events-none z-20">
-                  <div className={`px-4 py-1.5 rounded-full text-[11px] font-bold uppercase tracking-wider shadow-lg backdrop-blur-md transition-all ${
-                    showAfter
-                      ? 'bg-sf-navy/90 text-white border border-sf-blue/40 ring-1 ring-sf-blue/30'
-                      : 'bg-slate-900/85 text-slate-200 border border-slate-700/50'
-                  }`}>
-                    {showAfter
-                      ? `Depois · ${selectedAccessories.length} Acessório${selectedAccessories.length !== 1 ? 's' : ''}`
-                      : 'Antes · Original de Fábrica'}
-                  </div>
-                </div>
+                {/* Gradient Overlays for UI readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/25 pointer-events-none" />
 
-                {/* Rotation angle badge */}
-                <div className="absolute bottom-3 left-3 bg-slate-900/85 backdrop-blur-md text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 shadow-lg border border-white/10 z-20">
-                  <Layers className="w-3.5 h-3.5 text-sf-blue" />
-                  {rotation}° · {currentAngleView.title}
-                </div>
-
-                {/* Accessory tags (bottom right) */}
-                {showAfter ? (
-                  <div className="absolute bottom-3 right-3 flex flex-wrap justify-end gap-1.5 max-w-[65%] z-20">
-                    {selectedAccessories.length > 0 ? (
+                {/* Top Overlay Badge: Estado Atual */}
+                <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20">
+                  <span
+                    className="inline-flex items-center space-x-2 bg-slate-900/90 text-white backdrop-blur-md px-5 py-2 rounded-full text-xs font-extrabold uppercase tracking-wider border border-white/20 shadow-lg ring-1 ring-black/40"
+                    id="badge-status-stage"
+                  >
+                    {showAfter ? (
                       <>
-                        {selectedAccessories.map((acc) => (
-                          <span
-                            key={acc.id}
-                            className="px-2.5 py-1 bg-slate-900/85 border border-sf-blue/40 text-white text-[10px] font-semibold rounded-lg backdrop-blur shadow flex items-center gap-1.5"
-                          >
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                            {acc.name}
-                          </span>
-                        ))}
+                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                        <span>DEPOIS • {selectedAccessories.length} ACESSÓRIOS</span>
                       </>
                     ) : (
-                      <span className="px-2.5 py-1 bg-amber-500/90 text-white text-[10px] font-semibold rounded-lg backdrop-blur shadow">
-                        Nenhum acessório selecionado
-                      </span>
+                      <>
+                        <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
+                        <span>ORIGINAL DE FÁBRICA • SEM ACESSÓRIOS</span>
+                      </>
                     )}
-                  </div>
-                ) : (
-                  <div className="absolute bottom-3 right-3 bg-slate-900/85 backdrop-blur-md text-slate-300 text-[10px] font-medium px-2.5 py-1 rounded-lg shadow z-20 border border-white/10">
-                    Versão Original de Fábrica
+                  </span>
+                </div>
+
+                {/* Interactive Hotspot Tags (Pinned to accessories - shown in "Depois" mode) */}
+                {showAfter && selectedAccessories.length > 0 && (
+                  <div className="absolute bottom-16 inset-x-0 flex flex-wrap items-center justify-center gap-2 px-4 z-20 pointer-events-auto">
+                    {selectedAccessories.map((acc) => (
+                      <button
+                        key={acc.id}
+                        type="button"
+                        onClick={() => onAccessoryToggle(acc.id)}
+                        className="bg-slate-900/90 hover:bg-blue-600 text-white text-[11px] font-bold px-3 py-1 rounded shadow-lg border border-slate-600 backdrop-blur-sm transition flex items-center space-x-1.5 cursor-pointer"
+                        title={`Clique para desmarcar ${acc.name}`}
+                      >
+                        <span className="w-2 h-2 rounded-full bg-blue-400" />
+                        <span>{acc.name}</span>
+                      </button>
+                    ))}
                   </div>
                 )}
-              </div>
 
-              {/* Unified Controls Bar (WCAG 2.2 Compliant - Min 44px Touch Targets) */}
-              <div className="space-y-3 pt-1">
-                <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 bg-secondary/40 p-2.5 rounded-xl border border-border/70">
-                  {/* Quick Angle Selector */}
-                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0" role="radiogroup" aria-label="Ângulo de rotação do veículo">
-                    {ANGLES.map((deg) => {
-                      const active = rotation === deg;
-                      return (
-                        <button
-                          key={deg}
-                          type="button"
-                          role="radio"
-                          aria-checked={active}
-                          onClick={() => {
-                            setIsAutoSpin(false);
-                            setRotation(deg);
-                          }}
-                          className={`min-w-[44px] min-h-[44px] px-3.5 rounded-lg text-xs font-bold flex items-center justify-center transition-all ${
-                            active
-                              ? 'bg-sf-blue text-white shadow-md shadow-sf-blue/25 scale-[1.02]'
-                              : 'bg-card hover:bg-secondary text-foreground/80 hover:text-foreground border border-border/70'
-                          }`}
-                        >
-                          {deg}°
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* Actions & Before/After Toggle */}
-                  <div className="flex items-center justify-between md:justify-end gap-2.5 pt-2 md:pt-0 border-t md:border-t-0 border-border/50">
-                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-card border border-border/70 min-h-[44px]">
-                      <span className={`text-xs font-medium transition-colors ${!showAfter ? 'text-foreground font-semibold' : 'text-muted-foreground'}`}>
-                        Antes
-                      </span>
-                      <Switch
-                        checked={showAfter}
-                        onCheckedChange={setShowAfter}
-                        aria-label="Alternar visualização Antes e Depois dos acessórios"
-                      />
-                      <span className={`text-xs font-medium transition-colors ${showAfter ? 'text-foreground font-semibold' : 'text-muted-foreground'}`}>
-                        Depois
-                      </span>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => setIsAutoSpin(!isAutoSpin)}
-                      className={`min-h-[44px] px-3.5 rounded-lg text-xs font-semibold flex items-center gap-2 border transition-all ${
-                        isAutoSpin
-                          ? 'bg-amber-500 text-white border-amber-600 shadow-sm'
-                          : 'bg-card hover:bg-secondary text-foreground border-border/70'
-                      }`}
-                      aria-label={isAutoSpin ? "Pausar giro automático" : "Iniciar giro automático"}
-                    >
-                      {isAutoSpin ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 text-sf-blue" />}
-                      <span className="hidden sm:inline">{isAutoSpin ? 'Pausar' : 'Auto 360°'}</span>
-                    </button>
-
-                    <button
-                      type="button"
-                      onClick={handleRotateNext}
-                      disabled={isRotating}
-                      className="btn-primary min-h-[44px] px-4 rounded-lg flex items-center gap-2 text-xs font-bold disabled:opacity-60 shadow-sm"
-                      aria-label="Girar 45 graus para a direita"
-                    >
-                      <RotateCw className={`w-4 h-4 transition-transform duration-500 ${isRotating ? 'rotate-180' : ''}`} />
-                      <span>+45°</span>
-                    </button>
+                {/* Bottom Left Floating Quick Pill: Vídeo Oficial */}
+                <div className="absolute bottom-4 left-4 z-20">
+                  <div className="inline-flex items-center space-x-2 bg-slate-900/90 text-white text-xs font-semibold px-3 py-2 rounded-lg border border-slate-700/80 shadow-md backdrop-blur-sm">
+                    <Video className="w-4 h-4 text-blue-400" />
+                    <span>Vídeo Oficial {getVehicleShortName()}</span>
+                    <span className="bg-blue-600 text-[10px] uppercase px-1.5 py-0.5 rounded font-bold text-white">4K</span>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          {/* Accessories Panel */}
-          <div className="lg:col-span-4">
-            <div className="sf-card p-5 slide-up flex flex-col" style={{ animationDelay: "0.1s" }}>
-              <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wide mb-4 flex items-center gap-1.5">
-                <Eye className="w-3.5 h-3.5" />
-                Acessórios Disponíveis
-              </h3>
-
-              {/* Accessory list */}
-              <div className="space-y-1 mb-5 max-h-[340px] overflow-y-auto pr-1">
-                {accessories.map((acc) => (
-                  <label
-                    key={acc.id}
-                    className={`flex items-center gap-3 p-2.5 rounded border cursor-pointer transition-colors ${
-                      acc.selected
-                        ? "bg-sf-light-blue border-accent"
-                        : "bg-card border-border hover:bg-secondary/50"
-                    }`}
-                  >
-                    <Checkbox
-                      checked={acc.selected}
-                      onCheckedChange={() => onAccessoryToggle(acc.id)}
-                      className="flex-shrink-0"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <span className="text-xs font-medium text-foreground block truncate">{acc.name}</span>
-                    </div>
-                    <span className="text-xs font-semibold text-sf-blue whitespace-nowrap">
-                      R$ {acc.price.toLocaleString("pt-BR")}
-                    </span>
-                  </label>
-                ))}
+            {/* Demonstration Switcher Control Bar (Card inferior) */}
+            <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                  <Video className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-slate-800">
+                    Demonstração Dinâmica {getVehicleShortName()}
+                  </h4>
+                  <p className="text-xs text-slate-500">
+                    Alterne "Antes / Depois" para comparar a transformação com o cliente
+                  </p>
+                </div>
               </div>
 
-              {/* Total + Actions */}
-              <div className="border-t border-border pt-4 mt-auto">
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-xs text-muted-foreground font-medium">
-                    {selectedAccessories.length} {selectedAccessories.length === 1 ? 'item selecionado' : 'itens selecionados'}
-                  </span>
-                  <span className="text-lg font-bold text-sf-blue">
-                    R$ {selectedAccessories.reduce((sum, a) => sum + a.price, 0).toLocaleString("pt-BR")}
-                  </span>
+              {/* Dynamic Before/After Pill Switcher */}
+              <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setShowAfter(false)}
+                  className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition cursor-pointer ${
+                    !showAfter
+                      ? "font-bold text-slate-900 bg-white shadow-sm border border-slate-200"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                  id="btn-switch-antes"
+                >
+                  Antes
+                </button>
+
+                <div
+                  onClick={() => setShowAfter(!showAfter)}
+                  className={`w-11 h-6 rounded-full flex items-center p-0.5 cursor-pointer mx-1 transition ${
+                    showAfter ? "bg-slate-900 justify-end" : "bg-slate-300 justify-start"
+                  }`}
+                  id="visual-toggle-rail"
+                  role="switch"
+                  aria-checked={showAfter}
+                  aria-label="Alternar visualização Antes e Depois"
+                >
+                  <span className="w-5 h-5 bg-white rounded-full shadow-md transition-transform" />
                 </div>
 
                 <button
+                  type="button"
+                  onClick={() => setShowAfter(true)}
+                  className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition cursor-pointer ${
+                    showAfter
+                      ? "font-bold text-slate-900 bg-white shadow-sm border border-slate-200"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                  id="btn-switch-depois"
+                >
+                  Depois
+                </button>
+              </div>
+            </div>
+          </section>
+          {/* END: Interactive Vehicle Viewport */}
+
+          {/* RIGHT COLUMN: Resumo Comercial & Acessórios Interativos (Mesmo Layout do Pacote de Acessórios) */}
+          <aside aria-label="Resumo Comercial e F&I" className="lg:col-span-4 space-y-4">
+            <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-md sticky top-20 space-y-4">
+              {/* Header do Resumo */}
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div>
+                  <h3 className="font-extrabold text-slate-900 text-sm tracking-tight uppercase">Resumo do Pacote</h3>
+                  <p className="text-xs text-slate-400 font-medium">Condição especial balcão / CDC</p>
+                </div>
+                <span className="inline-flex items-center px-2 py-1 rounded-md text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-100">
+                  {selectedAccessories.length} selecionados
+                </span>
+              </div>
+
+              {/* Lista de Acessórios com Checkboxes Selecionáveis */}
+              <div className="space-y-1 text-xs max-h-[280px] overflow-y-auto pr-1">
+                {accessories.map((item) => {
+                  const isChecked = item.selected;
+                  const finalPrice = getDiscountedPrice(item);
+
+                  return (
+                    <label
+                      key={item.id}
+                      className={`flex items-center justify-between px-2.5 py-1.5 rounded-lg transition cursor-pointer select-none ${
+                        isChecked
+                          ? "bg-slate-50/90 hover:bg-slate-100/80"
+                          : "opacity-45 hover:opacity-80 hover:bg-slate-50/50"
+                      }`}
+                    >
+                      <div className="flex items-center space-x-2.5 min-w-0 pr-2">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => onAccessoryToggle(item.id)}
+                          className="w-4 h-4 rounded text-blue-600 border-slate-300 focus:ring-blue-500 cursor-pointer shrink-0"
+                        />
+                        <span
+                          className={`truncate max-w-[210px] text-xs ${
+                            !isChecked
+                              ? "text-slate-400 line-through"
+                              : item.stockStatus === "dormant"
+                              ? "text-amber-800 font-semibold"
+                              : item.stockStatus === "obsolete"
+                              ? "text-rose-800 font-semibold"
+                              : "text-slate-700 font-medium"
+                          }`}
+                          title={item.name}
+                        >
+                          {item.name}
+                        </span>
+                      </div>
+                      <span
+                        className={`font-semibold font-mono text-xs whitespace-nowrap shrink-0 ${
+                          !isChecked ? "text-slate-400 line-through" : "text-slate-800"
+                        }`}
+                      >
+                        R$ {finalPrice.toLocaleString("pt-BR")}
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+
+              {/* Ajustes Comerciais: Desconto Concessionária & Bônus Montadora */}
+              <div className="bg-slate-50/90 rounded-xl p-3.5 border border-slate-200/90 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                    <BadgePercent className="w-4 h-4 text-blue-600" />
+                    Condições Comerciais do Vendedor
+                  </span>
+                  {(sellerDiscount > 0 || factoryBonus > 0) && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSellerDiscount(0);
+                        setFactoryBonus(0);
+                      }}
+                      className="text-[10px] font-semibold text-slate-400 hover:text-red-500 transition cursor-pointer"
+                      title="Zerar descontos manuais"
+                    >
+                      Limpar
+                    </button>
+                  )}
+                </div>
+
+                <div className="space-y-2.5">
+                  {/* Campo Desconto Vendedor / Concessionária */}
+                  <div>
+                    <label
+                      htmlFor="vis-seller-discount"
+                      className="block text-[11px] font-semibold text-slate-600 mb-1 flex items-center gap-1"
+                    >
+                      <Tag className="w-3 h-3 text-blue-600" />
+                      Desconto Adicional Concessionária
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
+                        R$
+                      </span>
+                      <input
+                        id="vis-seller-discount"
+                        type="number"
+                        min="0"
+                        max={subtotalWithStockDiscounts}
+                        step="50"
+                        value={sellerDiscount || ""}
+                        onChange={(e) => {
+                          const val = Math.max(0, Number(e.target.value));
+                          setSellerDiscount(val);
+                        }}
+                        placeholder="0,00"
+                        className="w-full pl-8 pr-2.5 py-1.5 text-xs font-semibold text-slate-800 bg-white border border-slate-300 rounded-lg shadow-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 placeholder:text-slate-300"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Campo Bônus da Montadora */}
+                  <div>
+                    <label
+                      htmlFor="vis-factory-bonus"
+                      className="block text-[11px] font-semibold text-slate-600 mb-1 flex items-center gap-1"
+                    >
+                      <Award className="w-3 h-3 text-purple-600" />
+                      Bônus da Montadora (Stellantis)
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
+                        R$
+                      </span>
+                      <input
+                        id="vis-factory-bonus"
+                        type="number"
+                        min="0"
+                        max={subtotalWithStockDiscounts}
+                        step="50"
+                        value={factoryBonus || ""}
+                        onChange={(e) => {
+                          const val = Math.max(0, Number(e.target.value));
+                          setFactoryBonus(val);
+                        }}
+                        placeholder="0,00"
+                        className="w-full pl-8 pr-2.5 py-1.5 text-xs font-semibold text-slate-800 bg-white border border-slate-300 rounded-lg shadow-xs focus:ring-2 focus:ring-purple-500 focus:border-purple-500 placeholder:text-slate-300"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Detalhamento de Descontos e Economias */}
+              {(stockSavings > 0 || extraDiscount > 0 || factoryBonusAmount > 0) && (
+                <div className="border-t border-dashed border-slate-200 pt-3 space-y-1.5 text-xs">
+                  {stockSavings > 0 && (
+                    <div className="flex items-center justify-between text-slate-600">
+                      <span className="font-medium text-emerald-700 flex items-center">
+                        <Check className="w-3.5 h-3.5 mr-1 text-emerald-600" />
+                        Giro de Estoque
+                      </span>
+                      <span className="font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                        - R$ {stockSavings.toLocaleString("pt-BR")}
+                      </span>
+                    </div>
+                  )}
+                  {extraDiscount > 0 && (
+                    <div className="flex items-center justify-between text-slate-600">
+                      <span className="font-medium text-blue-700 flex items-center">
+                        <Tag className="w-3.5 h-3.5 mr-1 text-blue-600" />
+                        Desc. Concessionária
+                      </span>
+                      <span className="font-bold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-200">
+                        - R$ {extraDiscount.toLocaleString("pt-BR")}
+                      </span>
+                    </div>
+                  )}
+                  {factoryBonusAmount > 0 && (
+                    <div className="flex items-center justify-between text-slate-600">
+                      <span className="font-medium text-purple-700 flex items-center">
+                        <Award className="w-3.5 h-3.5 mr-1 text-purple-600" />
+                        Bônus Montadora
+                      </span>
+                      <span className="font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded border border-purple-200">
+                        - R$ {factoryBonusAmount.toLocaleString("pt-BR")}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between pt-1 border-t border-slate-100 font-bold text-emerald-800">
+                    <span>Economia Total:</span>
+                    <span>- R$ {totalAllSavings.toLocaleString("pt-BR")}</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Totalizador */}
+              <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 space-y-2">
+                <div className="flex items-baseline justify-between">
+                  <span className="text-xs font-bold uppercase text-slate-500 tracking-wider">Total à Vista</span>
+                  <span className="text-2xl lg:text-3xl font-black text-blue-600 tracking-tight">
+                    R$ {totalFinal.toLocaleString("pt-BR")}
+                  </span>
+                </div>
+                <div className="border-t border-slate-200/80 pt-2 space-y-1">
+                  <div className="text-xs text-slate-700 flex justify-between">
+                    <span>Parcelamento Cartão Concessionária:</span>
+                    <span className="font-bold text-slate-900">
+                      12x de R$ {Math.ceil(totalFinal / 12).toLocaleString("pt-BR")}{" "}
+                      <span className="font-normal text-[10px] text-slate-500">s/ juros</span>
+                    </span>
+                  </div>
+                  <div className="text-xs text-blue-800 bg-blue-50/70 p-2 rounded-lg border border-blue-100 flex items-start gap-1.5 mt-1.5">
+                    <Zap className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                    <div className="leading-tight">
+                      <strong className="font-bold">Diluição CDC Jeep Financiamento:</strong>
+                      <span className="block text-[11px] text-blue-900 mt-0.5">
+                        + apenas <strong>R$ {cdcMonthly} / mês</strong> nas parcelas do carro.
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Legenda dos Selos de Estoque */}
+              <div className="bg-slate-50/90 rounded-xl p-3.5 border border-slate-200/90 space-y-2 text-[11px] text-slate-600">
+                <span className="block font-bold text-[10px] text-slate-400 uppercase tracking-wider mb-1">
+                  Legenda dos Selos de Estoque
+                </span>
+                <div className="flex items-center space-x-2.5">
+                  <span
+                    className="w-3 h-3 rounded-full shrink-0"
+                    style={{ backgroundColor: "#10b981", boxShadow: "0 0 0 2px #a7f3d0" }}
+                  />
+                  <span><strong>Disponível (Verde):</strong> Preço regular de tabela Mopar</span>
+                </div>
+                <div className="flex items-center space-x-2.5">
+                  <span
+                    className="w-3 h-3 rounded-full shrink-0"
+                    style={{ backgroundColor: "#f59e0b", boxShadow: "0 0 0 2px #fde68a" }}
+                  />
+                  <span><strong>Dormente (&gt;180d - Âmbar):</strong> Desconto de 10% a 20% aplicado</span>
+                </div>
+                <div className="flex items-center space-x-2.5">
+                  <span
+                    className="w-3 h-3 rounded-full shrink-0"
+                    style={{ backgroundColor: "#f43f5e", boxShadow: "0 0 0 2px #fecdd3" }}
+                  />
+                  <span><strong>Obsoleto (&gt;1 ano - Vermelho):</strong> Desconto agressivo 25% a 35%</span>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="space-y-2.5 pt-1">
+                {/* Primary Action: Adicionar à Proposta */}
+                <button
+                  type="button"
                   onClick={onAddToProposal}
                   disabled={selectedAccessories.length === 0}
-                  className="btn-cta-orange w-full flex items-center justify-center gap-2 text-sm h-11 mb-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full bg-[#ff6200] hover:bg-[#e65800] disabled:opacity-50 disabled:cursor-not-allowed text-white font-extrabold text-sm py-3.5 px-4 rounded-xl shadow-lg shadow-orange-500/25 flex items-center justify-center space-x-2 transition transform active:scale-[0.99] cursor-pointer"
                 >
-                  <ShoppingCart className="w-4 h-4" />
-                  Adicionar à Proposta
+                  <ShoppingCart className="w-5 h-5" />
+                  <span>Adicionar à Proposta</span>
                 </button>
 
+                {/* Secondary Action: Gerar Argumentação Consultiva */}
                 <button
+                  type="button"
                   onClick={() => {
                     if (selectedAccessories.length === 0) {
                       toast.warning("Selecione ao menos um acessório para gerar a argumentação.");
@@ -500,17 +574,83 @@ const VehicleVisualizationScreen = ({ accessories, clientData, onAccessoryToggle
                     }
                     onGenerateScript();
                   }}
-                  className="w-full flex items-center justify-center gap-2 text-xs font-semibold h-10 rounded-lg text-sf-blue bg-sf-light-blue hover:bg-sf-blue hover:text-white border border-sf-blue/30 transition-all shadow-sm active:scale-98"
+                  className="w-full bg-white hover:bg-blue-50/50 text-blue-600 hover:text-blue-700 font-bold text-xs py-2.5 px-4 rounded-xl border border-blue-200 shadow-sm flex items-center justify-center space-x-2 transition cursor-pointer"
                 >
-                  <MessageSquare className="w-4 h-4" />
+                  <MessageSquare className="w-4 h-4 text-blue-500" />
                   <span>Gerar Argumentação Consultiva</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
+
+                {/* Tertiary Action: Proposta Recusada (Reaquecer Lead) */}
+                <button
+                  type="button"
+                  onClick={() => setShowRejectModal(true)}
+                  className="w-full bg-slate-50 hover:bg-rose-50 text-slate-600 hover:text-rose-700 font-bold text-xs py-2.5 px-4 rounded-xl border border-slate-200 hover:border-rose-200 shadow-xs flex items-center justify-center space-x-2 transition cursor-pointer"
+                  title="Registrar recusa e direcionar este cliente para a base de reaquecimento de leads"
+                >
+                  <XCircle className="w-4 h-4 text-rose-500" />
+                  <span>Proposta Recusada (Reaquecer Lead)</span>
+                </button>
+
+                {/* Quick Action: Share to WhatsApp */}
+                <button
+                  type="button"
+                  onClick={handleShareWhatsApp}
+                  className="w-full text-slate-500 hover:text-slate-800 font-medium text-[11px] py-1 flex items-center justify-center space-x-1.5 transition cursor-pointer"
+                >
+                  <Share2 className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Enviar visualização 3D ao WhatsApp do Cliente</span>
+                </button>
               </div>
             </div>
+
+            {/* Modal de Registro de Proposta Recusada */}
+            <ProposalRejectedModal
+              isOpen={showRejectModal}
+              onClose={() => setShowRejectModal(false)}
+              clientData={clientData}
+              selectedAccessories={selectedAccessories}
+              totalProposalValue={totalFinal}
+              cdcMonthlyEstimate={cdcMonthly}
+            />
+
+            {/* Mopar Certified Quality Seal */}
+            <div className="p-3.5 rounded-xl bg-gradient-to-r from-slate-900 to-slate-800 text-white flex items-center justify-between border border-slate-700 shadow-sm">
+              <div className="flex items-center space-x-2.5">
+                <div className="w-7 h-7 rounded bg-blue-600 flex items-center justify-center text-xs font-black shadow-inner">
+                  M
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-white">Garantia Original Mopar Stellantis</p>
+                  <p className="text-[10px] text-slate-400">Instalação certificada preserva garantia de 3 anos</p>
+                </div>
+              </div>
+              <span className="text-[10px] bg-slate-800 border border-slate-700 text-slate-300 px-2 py-0.5 rounded font-mono">
+                100% OK
+              </span>
+            </div>
+          </aside>
+          {/* END: RIGHT COLUMN */}
+        </div>
+        {/* END: MainShowcaseGrid */}
+      </main>
+      {/* END: PageContent */}
+
+      {/* BEGIN: MainFooter */}
+      <footer className="mt-auto border-t border-slate-200 bg-white py-3.5 text-xs text-slate-500">
+        <div className="max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <div className="flex items-center space-x-3">
+            <span className="text-slate-400 text-[11px]">Ambiente Seguro Concessionária</span>
+          </div>
+          <div className="flex items-center space-x-4 text-[11px]">
+            <span className="inline-flex items-center text-emerald-700 font-semibold">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 mr-1.5" />
+              Sistemas 100% Operacionais (DMS &amp; F&amp;I Integrados)
+            </span>
           </div>
         </div>
-      </div>
+      </footer>
+      {/* END: MainFooter */}
     </div>
   );
 };

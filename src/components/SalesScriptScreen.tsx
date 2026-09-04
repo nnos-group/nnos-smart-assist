@@ -1,40 +1,134 @@
-import { MessageSquare, CheckCircle, ArrowRight, Sparkles, Award, User, MapPin, Car, Package, Shield, Mic, MicOff, Send, MessageCircle, Copy } from "lucide-react";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { 
+  ArrowLeft, Sparkles, Volume2, Copy, Check, ShieldCheck, 
+  Car, MapPin, BadgePercent, Mic, MicOff, Send, Share2, 
+  FileText, ArrowRight, Lightbulb, User, CheckCircle, Zap, ShieldAlert, X
+} from "lucide-react";
 import { Accessory, ClientData, getPackageName } from "@/types/accessories";
 import { generateSalesArguments, CounterArgumentResult } from "@/lib/salesKnowledge";
-import { useMemo, useState, useCallback, useEffect } from "react";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 interface SalesScriptScreenProps {
   clientData: ClientData;
   accessories: Accessory[];
   onClose: () => void;
+  onBack?: () => void;
 }
 
-const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScreenProps) => {
-  const selectedAccessories = accessories.filter((a) => a.selected);
-  const totalPrice = selectedAccessories.reduce((sum, a) => sum + a.price, 0);
+const PRESET_OBJECTIONS = [
+  {
+    id: "expensive",
+    label: '💰 "Achou caro / Fora do orçamento agora"',
+    query: "O cliente disse que achou os itens caros para o orçamento atual e prefere deixar para depois.",
+  },
+  {
+    id: "no-need",
+    label: '⚡ "Não vê necessidade imediata no uso"',
+    query: "O cliente disse que não vê necessidade imediata de instalar esses acessórios na sua região.",
+  },
+  {
+    id: "aftermarket",
+    label: '🔧 "Quer pesquisar em autopeças de rua"',
+    query: "O cliente comentou que pretende cotar e colocar itens similares em lojas de autopeças fora da concessionária.",
+  },
+  {
+    id: "consult-partner",
+    label: '👥 "Precisa consultar a esposa / sócio"',
+    query: "A esposa não acha necessário neste momento e preciso consultar a família.",
+  },
+];
+
+const SalesScriptScreen = ({
+  clientData,
+  accessories,
+  onClose,
+  onBack,
+}: SalesScriptScreenProps) => {
+  const selectedAccessories = useMemo(
+    () => accessories.filter((a) => a.selected),
+    [accessories]
+  );
+
+  const totalPrice = useMemo(
+    () =>
+      selectedAccessories.reduce((sum, a) => {
+        const discounted = Math.round(a.price * (1 - a.discountPercent / 100));
+        return sum + discounted;
+      }, 0),
+    [selectedAccessories]
+  );
+
   const packageName = getPackageName(clientData.vehicleModel);
-  const firstName = (clientData?.clientName || "Cliente").trim().split(" ")[0] || "Cliente";
-  const genderPrefix = clientData?.clientGender?.toLowerCase().includes("fem") ? "Sra." : "Sr.";
+  const firstName = (clientData.clientName || "Cliente").trim().split(" ")[0] || "Cliente";
+  const initials = (clientData.clientName || "JS")
+    .split(" ")
+    .slice(0, 2)
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase();
 
-  const [objectionText, setObjectionText] = useState("");
-  const [result, setResult] = useState<CounterArgumentResult | null>(null);
+  const cdcMonthly = (totalPrice * 0.0235).toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  const [objectionText, setObjectionText] = useState(
+    `O cliente disse: "Achei o valor dos acessórios muito elevado para agora, posso colocar mais tarde fora da loja."`
+  );
+  const [selectedPresetId, setSelectedPresetId] = useState<string>("expensive");
   const [isRecordingObjection, setIsRecordingObjection] = useState(false);
-  const [focusedAccessoryIds, setFocusedAccessoryIds] = useState<string[]>(() => selectedAccessories.map(a => a.id));
+  const [focusedAccessoryIds, setFocusedAccessoryIds] = useState<string[]>(
+    () => selectedAccessories.map((a) => a.id)
+  );
+  const [isCopiedOpening, setIsCopiedOpening] = useState(false);
+  const [isCopiedResponse, setIsCopiedResponse] = useState(false);
 
-  const focusedAccessories = useMemo(() => selectedAccessories.filter(a => focusedAccessoryIds.includes(a.id)), [selectedAccessories, focusedAccessoryIds]);
-  const focusedTotal = useMemo(() => focusedAccessories.reduce((sum, a) => sum + a.price, 0), [focusedAccessories]);
+  const focusedAccessories = useMemo(
+    () => selectedAccessories.filter((a) => focusedAccessoryIds.includes(a.id)),
+    [selectedAccessories, focusedAccessoryIds]
+  );
+
+  const focusedTotal = useMemo(
+    () =>
+      focusedAccessories.reduce((sum, a) => {
+        const discounted = Math.round(a.price * (1 - a.discountPercent / 100));
+        return sum + discounted;
+      }, 0),
+    [focusedAccessories]
+  );
+
+  // Inicialização determinística sem risco de loop infinito
+  const [result, setResult] = useState<CounterArgumentResult | null>(() => {
+    if (focusedAccessories.length > 0) {
+      return generateSalesArguments(
+        `O cliente disse: "Achei o valor dos acessórios muito elevado para agora, posso colocar mais tarde fora da loja."`,
+        clientData,
+        focusedAccessories,
+        focusedTotal,
+        packageName
+      );
+    }
+    return null;
+  });
 
   const toggleFocusedAccessory = useCallback((id: string) => {
-    setFocusedAccessoryIds(prev => {
-      const next = prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id];
-      const nextAccessories = selectedAccessories.filter(a => next.includes(a.id));
-      const nextTotal = nextAccessories.reduce((sum, a) => sum + a.price, 0);
+    setFocusedAccessoryIds((prev) => {
+      const next = prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id];
+      const nextAccessories = selectedAccessories.filter((a) => next.includes(a.id));
+      const nextTotal = nextAccessories.reduce((sum, a) => {
+        const discounted = Math.round(a.price * (1 - a.discountPercent / 100));
+        return sum + discounted;
+      }, 0);
       if (nextAccessories.length > 0) {
-        const generated = generateSalesArguments(objectionText, clientData, nextAccessories, nextTotal, packageName);
-        setResult(generated);
+        setResult(
+          generateSalesArguments(
+            objectionText,
+            clientData,
+            nextAccessories,
+            nextTotal,
+            packageName
+          )
+        );
       }
       return next;
     });
@@ -45,21 +139,35 @@ const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScre
       toast.error("Selecione ao menos um acessório para gerar a argumentação.");
       return;
     }
-    const generated = generateSalesArguments(objectionText, clientData, focusedAccessories, focusedTotal, packageName);
+    const generated = generateSalesArguments(
+      objectionText,
+      clientData,
+      focusedAccessories,
+      focusedTotal,
+      packageName
+    );
     setResult(generated);
-    toast.success("Argumentação gerada com sucesso!");
+    toast.success("Contra-argumento gerado pelo Sales Copilot!");
   }, [objectionText, clientData, focusedAccessories, focusedTotal, packageName]);
 
-  // Auto-gerar argumentação na montagem da tela se houver acessórios focados
-  useEffect(() => {
-    if (!result && focusedAccessories.length > 0) {
-      const generated = generateSalesArguments(objectionText, clientData, focusedAccessories, focusedTotal, packageName);
+  const handleSelectPreset = (preset: typeof PRESET_OBJECTIONS[0]) => {
+    setSelectedPresetId(preset.id);
+    setObjectionText(preset.query);
+    if (focusedAccessories.length > 0) {
+      const generated = generateSalesArguments(
+        preset.query,
+        clientData,
+        focusedAccessories,
+        focusedTotal,
+        packageName
+      );
       setResult(generated);
     }
-  }, [focusedAccessories, focusedTotal, packageName, clientData]);
+  };
 
   const handleVoiceObjection = useCallback(() => {
-    const SpeechRecognitionAPI = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecognitionAPI =
+      (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!SpeechRecognitionAPI) {
       toast.error("Reconhecimento de voz não suportado neste navegador.");
       return;
@@ -71,7 +179,7 @@ const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScre
     recognition.onstart = () => setIsRecordingObjection(true);
     recognition.onresult = (event: any) => {
       const transcript = event.results[0][0].transcript;
-      setObjectionText(prev => prev ? `${prev} ${transcript}` : transcript);
+      setObjectionText((prev) => (prev ? `${prev} ${transcript}` : transcript));
       toast.success("Objeção capturada por voz!");
     };
     recognition.onerror = () => {
@@ -82,304 +190,573 @@ const SalesScriptScreen = ({ clientData, accessories, onClose }: SalesScriptScre
     recognition.start();
   }, []);
 
-  const dynamicArguments = useMemo(() => {
-    const args: Array<{ title: string; items: string[]; content: string; icon: string }> = [];
-    const protectionItems = selectedAccessories.filter(a => ["protetor", "friso", "santantonio", "capota"].includes(a.id));
-    const performanceItems = selectedAccessories.filter(a => ["pneus", "estribo", "guincho", "engate"].includes(a.id));
-    const utilityItems = selectedAccessories.filter(a => ["rack", "toolbox", "sensor", "farol"].includes(a.id));
+  const openingScriptText = `Sr. ${firstName}, com base no seu perfil de uso aqui nas estradas de ${
+    clientData.state?.replace(/\s*\(.*\)/, "") || "sua região"
+  } e na potência do seu ${clientData.vehicleModel} ${clientData.vehicleColor}, o pacote ${packageName} não é apenas um adicional estético — ele é uma necessidade real para blindar o seu investimento contra o desgaste severo e assegurar a máxima valorização do seu patrimônio na revenda futura.`;
 
-    if (protectionItems.length > 0) {
-      args.push({
-        title: "Proteção do Investimento",
-        items: protectionItems.map(a => a.name),
-        content: `${protectionItems.map(a => a.name).join(" e ")} ${protectionItems.length > 1 ? 'são essenciais' : 'é essencial'} para proteger seu ${clientData.vehicleModel} das condições em ${clientData.state || "sua região"}. ${clientData.terrainType ? `Para uso em ${clientData.terrainType.toLowerCase()}, ` : ''}esses itens preservam o valor de revenda.`,
-        icon: "🛡️",
-      });
+  const handleSpeakOpening = () => {
+    if (!("speechSynthesis" in window)) {
+      toast.error("Síntese de voz não suportada neste navegador.");
+      return;
     }
-    if (performanceItems.length > 0) {
-      args.push({
-        title: "Performance e Segurança",
-        items: performanceItems.map(a => a.name),
-        content: `Para ${clientData.terrainType || "uso diversificado"} em ${clientData.state || "sua região"}, ${performanceItems.map(a => a.name).join(" e ")} ${performanceItems.length > 1 ? 'garantem' : 'garante'} máxima segurança. ${clientData.climateCondition ? `Com ${clientData.climateCondition.toLowerCase()}, ` : ''}essa configuração é ideal.`,
-        icon: "⚡",
-      });
-    }
-    if (utilityItems.length > 0) {
-      args.push({
-        title: "Praticidade",
-        items: utilityItems.map(a => a.name),
-        content: `${utilityItems.map(a => a.name).join(" e ")} ${utilityItems.length > 1 ? 'trazem' : 'traz'} praticidade ao dia a dia com seu ${clientData.vehicleModel}.`,
-        icon: "🔧",
-      });
-    }
-    if (args.length === 0 && selectedAccessories.length > 0) {
-      args.push({
-        title: "Pacote Completo",
-        items: selectedAccessories.map(a => a.name),
-        content: `O ${packageName} foi configurado para o ${clientData.vehicleModel} considerando seu perfil em ${clientData.state || "sua região"}.`,
-        icon: "📦",
-      });
-    }
-    return args;
-  }, [selectedAccessories, clientData, packageName]);
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(openingScriptText);
+    utterance.lang = "pt-BR";
+    utterance.rate = 1.0;
+    window.speechSynthesis.speak(utterance);
+    toast.info("Reproduzindo síntese de voz da argumentação...");
+  };
 
-  const handleCopyWhatsApp = useCallback(() => {
+  const handleCopyOpening = () => {
+    navigator.clipboard.writeText(openingScriptText);
+    setIsCopiedOpening(true);
+    toast.success("Script de abertura copiado para a área de transferência!");
+    setTimeout(() => setIsCopiedOpening(false), 2500);
+  };
+
+  const handleCopyResponse = () => {
     if (!result) return;
-    const message = `Olá, ${firstName}! Tudo bem?\n\nPreparando os detalhes do seu ${clientData.vehicleModel}, separamos esta proposta do pacote ${packageName}:\n\n${result.dialogueScript}\n\n${result.closingPhrase}`;
-    navigator.clipboard.writeText(message);
-    toast.success("Roteiro copiado para envio no WhatsApp!");
-  }, [result, firstName, clientData.vehicleModel, packageName]);
+    const fullText = `*Script Recomendado para o Consultor*\n\n1. Validação Empática: "${result.empathicValidation}"\n\n2. Quebra Técnica: "${result.technicalRefutation}"\n\n3. Fechamento F&I: "${result.closingFi}"`;
+    navigator.clipboard.writeText(fullText);
+    setIsCopiedResponse(true);
+    toast.success("Contra-argumento copiado!");
+    setTimeout(() => setIsCopiedResponse(false), 2500);
+  };
 
-  const pillarColors: Record<string, { bg: string; border: string; text: string; iconBg: string }> = {
-    security: { bg: "bg-blue-50 dark:bg-blue-950/30", border: "border-blue-200 dark:border-blue-800", text: "text-blue-700 dark:text-blue-300", iconBg: "bg-blue-100 dark:bg-blue-900/50" },
-    value: { bg: "bg-emerald-50 dark:bg-emerald-950/30", border: "border-emerald-200 dark:border-emerald-800", text: "text-emerald-700 dark:text-emerald-300", iconBg: "bg-emerald-100 dark:bg-emerald-900/50" },
-    lifestyle: { bg: "bg-amber-50 dark:bg-amber-950/30", border: "border-amber-200 dark:border-amber-800", text: "text-amber-700 dark:text-amber-300", iconBg: "bg-amber-100 dark:bg-amber-900/50" },
+  const handleShareWhatsApp = () => {
+    const text = encodeURIComponent(
+      `Olá ${firstName}! Tudo bem? Segue a síntese da proposta de acessórios homologados Mopar para o seu ${clientData.vehicleModel}:\n\n` +
+      `Pacote: ${packageName}\n` +
+      `Valor Total: R$ ${totalPrice.toLocaleString("pt-BR")} (ou +R$ ${cdcMonthly}/mês diluído no financiamento)\n\n` +
+      `Itens com garantia total preservada de 3 anos de fábrica.\n` +
+      `Podemos aprovar a ordem de instalação?`
+    );
+    window.open(`https://api.whatsapp.com/send?text=${text}`, "_blank");
   };
 
   return (
-    <div className="min-h-screen p-6 md:p-8 app-container">
-      <div className="max-w-4xl mx-auto fade-in">
-        {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-center gap-2 mb-1">
-            <MessageSquare className="w-4 h-4 text-sf-blue" />
-            <span className="label-text text-sf-blue">Assistente de Vendas</span>
-          </div>
-          <h1 className="section-title">Argumentação Consultiva</h1>
-        </div>
-
-        {/* Summary Bar */}
-        <div className="sf-card p-3 mb-5 slide-up">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
-            <div className="flex items-center gap-2">
-              <User className="w-3.5 h-3.5 text-sf-blue" />
-              <div>
-                <span className="text-muted-foreground block">Cliente</span>
-                <span className="font-medium text-foreground">{clientData.clientName}</span>
-              </div>
+    <div className="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col selection:bg-blue-600 selection:text-white">
+      {/* BEGIN: MainContent */}
+      <main className="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        {/* Sub-header & Context Title */}
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <div className="inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-wider uppercase text-blue-700 bg-blue-100/60 px-2.5 py-0.5 rounded-md border border-blue-200">
+              <Sparkles className="w-3.5 h-3.5 text-blue-600" />
+              Assistente de Vendas
             </div>
-            <div className="flex items-center gap-2">
-              <Car className="w-3.5 h-3.5 text-sf-blue" />
-              <div>
-                <span className="text-muted-foreground block">Veículo</span>
-                <span className="font-medium text-foreground">{clientData.vehicleModel}</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <MapPin className="w-3.5 h-3.5 text-sf-blue" />
-              <div>
-                <span className="text-muted-foreground block">Região</span>
-                <span className="font-medium text-foreground">{clientData.state}</span>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Package className="w-3.5 h-3.5 text-sf-blue" />
-              <div>
-                <span className="text-muted-foreground block">Pacote</span>
-                <span className="font-medium text-foreground">R$ {totalPrice.toLocaleString("pt-BR")}</span>
-              </div>
-            </div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 mt-1 tracking-tight">
+              Argumentação Consultiva &amp; Quebra de Objeções
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-600 mt-0.5">
+              Scripts altamente persuasivos formulados para o perfil do comprador, telemetria regional e proteções selecionadas.
+            </p>
           </div>
         </div>
 
-        {/* Intro Card */}
-        <div className="sf-card p-4 mb-5 slide-up border-l-4 border-l-sf-navy">
-          <div className="flex items-start gap-3">
-            <Sparkles className="w-5 h-5 text-sf-blue flex-shrink-0 mt-0.5" />
-            <div>
-              <h3 className="font-bold text-sm text-foreground mb-1">Abertura Consultiva</h3>
-              <p className="text-sm text-foreground leading-relaxed">
-                "{genderPrefix} <span className="font-semibold text-sf-blue">{firstName}</span>, com base no seu perfil
-                e na região {clientData.state ? `do ${clientData.state}` : "informada"},
-                o <span className="font-semibold text-sf-blue">{packageName}</span> para seu{" "}
-                <span className="font-semibold text-sf-blue">{clientData.vehicleModel} {clientData.vehicleColor}</span> é uma{" "}
-                <span className="font-semibold text-ram-red">necessidade para proteger seu investimento</span>."
+        {/* BEGIN: DealSummaryBar */}
+        <section aria-label="Resumo do Negócio" className="bg-white border border-slate-200 rounded-xl shadow-sm p-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-100">
+            {/* Cliente Card */}
+            <div className="flex items-center space-x-3.5 pt-2 sm:pt-0 sm:pr-4">
+              <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 font-bold shrink-0">
+                {initials}
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-semibold uppercase text-slate-400">Cliente</span>
+                  <span className="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-1.5 py-0.2 rounded">
+                    Score Prime
+                  </span>
+                </div>
+                <div className="text-sm font-bold text-slate-900 truncate">
+                  {clientData.clientName || "Cliente"}
+                </div>
+                <div className="text-xs text-slate-500 truncate">
+                  {clientData.terrainType || "Uso Misto"} • {clientData.state?.replace(/\s*\(.*\)/, "") || "Brasil"}
+                </div>
+              </div>
+            </div>
+
+            {/* Veículo Card */}
+            <div className="flex items-center space-x-3.5 pt-3 sm:pt-0 sm:px-4">
+              <div className="w-10 h-10 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 shrink-0">
+                <Car className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <span className="text-xs font-semibold uppercase text-slate-400">Veículo Selecionado</span>
+                <div className="text-sm font-bold text-slate-900 truncate uppercase">
+                  {clientData.vehicleModel}
+                </div>
+                <div className="text-xs text-slate-500 truncate">
+                  {clientData.vehicleColor} • {clientData.vehicleYear || "2025/2026"}
+                </div>
+              </div>
+            </div>
+
+            {/* Região & Solo Card */}
+            <div className="flex items-center space-x-3.5 pt-3 sm:pt-0 sm:px-4">
+              <div className="w-10 h-10 rounded-lg bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 shrink-0">
+                <MapPin className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <span className="text-xs font-semibold uppercase text-slate-400">Região &amp; Solo</span>
+                <div className="text-sm font-bold text-slate-900 truncate">
+                  {clientData.state || "Brasil"}
+                </div>
+                <div className="text-xs text-slate-500 truncate">
+                  {clientData.terrainType || "Uso Misto"} • {clientData.climateCondition || "Normal"}
+                </div>
+              </div>
+            </div>
+
+            {/* Pacote F&I Card */}
+            <div className="flex items-center space-x-3.5 pt-3 sm:pt-0 sm:pl-4">
+              <div className="w-10 h-10 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 shrink-0">
+                <BadgePercent className="w-5 h-5" />
+              </div>
+              <div className="min-w-0">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold uppercase text-slate-400">Total Pacote</span>
+                  <span className="text-[10px] bg-blue-100 text-blue-800 font-bold px-1 rounded">
+                    Mopar Safe
+                  </span>
+                </div>
+                <div className="text-base font-extrabold text-blue-700">
+                  R$ {totalPrice.toLocaleString("pt-BR")}
+                </div>
+                <div className="text-xs text-emerald-700 font-semibold truncate">
+                  + R$ {cdcMonthly}/mês no CDC
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        {/* END: DealSummaryBar */}
+
+        {/* BEGIN: ConsultativeOpening */}
+        <section className="bg-gradient-to-br from-[#0a1e3f] via-[#0a3277] to-slate-900 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden border border-blue-700/60">
+          {/* Decorative Background Aura */}
+          <div className="absolute -top-24 -right-24 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 right-1/3 w-48 h-48 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+
+          <div className="relative z-10 space-y-4">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center space-x-2.5">
+                <div className="w-8 h-8 rounded-lg bg-blue-500/30 border border-blue-400/40 flex items-center justify-center text-blue-300">
+                  <Sparkles className="w-4.5 h-4.5" />
+                </div>
+                <div>
+                  <h2 className="text-base font-semibold text-white tracking-tight flex items-center gap-2">
+                    Abertura Consultiva Personalizada
+                    <span className="text-[11px] font-medium bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                      Confiança IA: 96%
+                    </span>
+                  </h2>
+                  <p className="text-xs text-slate-300">Direcionamento inicial calibrado para o perfil do cliente e telemetria regional.</p>
+                </div>
+              </div>
+
+              {/* Quick Audio / Helper Controls */}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleSpeakOpening}
+                  className="inline-flex items-center gap-1.5 text-xs font-medium bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg backdrop-blur-sm transition-all border border-white/10 active:scale-95 cursor-pointer"
+                >
+                  <Volume2 className="w-3.5 h-3.5 text-blue-300" />
+                  <span>Ouvir Síntese por Voz</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCopyOpening}
+                  className="inline-flex items-center gap-1.5 text-xs font-medium bg-blue-600 hover:bg-blue-500 text-white px-3 py-1.5 rounded-lg shadow-sm transition-all active:scale-95 cursor-pointer"
+                >
+                  {isCopiedOpening ? <Check className="w-3.5 h-3.5 text-emerald-300" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{isCopiedOpening ? "Copiado!" : "Copiar Script"}</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Script Quote Box */}
+            <div className="bg-black/30 backdrop-blur-md rounded-xl p-5 border border-white/10">
+              <p className="text-base sm:text-lg font-normal text-slate-100 leading-relaxed font-sans italic">
+                "Sr. <span className="font-bold text-white not-italic underline decoration-blue-400 decoration-2 underline-offset-4">{firstName}</span>, com base no seu perfil de uso aqui nas estradas de <span className="font-semibold text-blue-200 not-italic">{clientData.state?.replace(/\s*\(.*\)/, "") || "sua região"}</span> e na extrema confiabilidade do seu novo <span className="font-semibold text-white not-italic">{clientData.vehicleModel} {clientData.vehicleColor}</span>, o pacote <span className="font-semibold text-blue-300 not-italic">{packageName}</span> não é apenas um adicional estético — ele é uma <span className="font-bold text-emerald-400 not-italic uppercase tracking-wide">necessidade real para blindar o seu investimento</span> contra o desgaste severo e assegurar a máxima valorização do seu patrimônio na revenda futura."
               </p>
             </div>
-          </div>
-        </div>
 
-        {/* Arguments */}
-        <div className="space-y-3 mb-6">
-          {dynamicArguments.map((arg, index) => (
-            <div key={arg.title} className="sf-card p-4 slide-up" style={{ animationDelay: `${0.1 + index * 0.08}s` }}>
-              <div className="flex items-start gap-3">
-                <span className="text-2xl flex-shrink-0">{arg.icon}</span>
-                <div className="flex-1">
-                  <h3 className="font-bold text-sm text-foreground mb-1">
-                    Argumento {index + 1}: {arg.title}
-                  </h3>
-                  <div className="flex flex-wrap gap-1 mb-2">
-                    {arg.items.map((item) => (
-                      <span key={item} className="px-1.5 py-0.5 bg-sf-light-blue text-sf-navy text-[10px] font-medium rounded">
-                        {item}
-                      </span>
-                    ))}
+            {/* Footnote and Quick Trigger */}
+            <div className="flex flex-wrap items-center justify-between text-xs text-slate-300 pt-1">
+              <div className="flex items-center gap-2">
+                <span className="inline-block w-2 h-2 rounded-full bg-emerald-400" />
+                <span>Gatilho Psicológico: <strong>Aversão à Perda Patrimonial + Orgulho de Conquista</strong></span>
+              </div>
+              <span className="text-slate-400">Tempo estimado de fala: 18 segundos</span>
+            </div>
+          </div>
+        </section>
+        {/* END: ConsultativeOpening */}
+
+        {/* BEGIN: ValuePillars */}
+        <section aria-labelledby="pillars-heading" className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2 tracking-tight" id="pillars-heading">
+              <span className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+              Pilares de Argumentação de Alto Impacto
+            </h2>
+            <span className="text-xs font-medium text-slate-500">Baseado em dados de telemetria e histórico MOPAR</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {/* Pillar 1: Proteção & Revenda */}
+            <div className="bg-white rounded-xl border border-slate-200/90 shadow-sm hover:shadow-md transition-shadow p-5 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center space-x-3 mb-3">
+                  <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center shrink-0">
+                    <ShieldCheck className="w-5 h-5" />
                   </div>
-                  <p className="text-sm text-muted-foreground leading-relaxed italic">"{arg.content}"</p>
+                  <div>
+                    <span className="text-[10px] font-bold tracking-wider uppercase text-blue-600">Pilar 01</span>
+                    <h3 className="text-sm font-bold text-slate-900 leading-snug">Proteção do Investimento &amp; Revenda</h3>
+                  </div>
                 </div>
-              </div>
-            </div>
-          ))}
-        </div>
 
-        {/* Unified: Acessórios & Quebra de Objeções */}
-        <div className="sf-card p-4 mb-6 slide-up border-l-4 border-l-sf-navy" style={{ animationDelay: "0.25s" }}>
-          <div className="flex items-center gap-2 mb-3">
-            <Package className="w-4 h-4 text-sf-blue" />
-            <Shield className="w-4 h-4 text-ram-red" />
-            <h4 className="font-semibold text-sm text-foreground">Acessórios & Quebra de Objeções</h4>
-          </div>
-          <p className="text-xs text-muted-foreground mb-3">
-            Selecione os itens sobre os quais o cliente tem objeção e descreva a resistência (opcional). O assistente gerará argumentos nos 3 pilares: Segurança, Valorização e Estilo de Vida.
-          </p>
-
-          {/* Accessory Chips */}
-          <div className="flex flex-wrap gap-2 mb-3">
-            {selectedAccessories.map((acc) => {
-              const isFocused = focusedAccessoryIds.includes(acc.id);
-              return (
-                <button
-                  key={acc.id}
-                  onClick={() => toggleFocusedAccessory(acc.id)}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all border ${
-                    isFocused
-                      ? "bg-sf-blue text-white border-sf-blue shadow-sm"
-                      : "bg-secondary/50 text-muted-foreground border-border hover:border-sf-blue/50"
-                  }`}
-                >
-                  <CheckCircle className={`w-3 h-3 ${isFocused ? "opacity-100" : "opacity-0"}`} />
-                  {acc.name}
-                  <span className={`ml-1 ${isFocused ? "text-white/80" : "text-muted-foreground/60"}`}>
-                    R$ {acc.price.toLocaleString("pt-BR")}
+                <div className="flex flex-wrap gap-1.5 mb-3.5">
+                  <span className="text-[11px] font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">
+                    Protetor &amp; Blindagem
                   </span>
-                </button>
-              );
-            })}
-          </div>
+                  <span className="text-[11px] font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">
+                    Friso Lateral
+                  </span>
+                </div>
 
-          {/* Focused Total */}
-          <div className="flex justify-between items-center text-xs mb-4 px-1">
-            <span className="text-muted-foreground">
-              {focusedAccessories.length} de {selectedAccessories.length} itens selecionados
-            </span>
-            <span className="font-bold text-sf-blue text-sm">
-              R$ {focusedTotal.toLocaleString("pt-BR")}
-            </span>
-          </div>
+                <p className="text-xs text-slate-600 leading-relaxed italic mb-4">
+                  "As laterais e a parte inferior são as áreas mais expostas em estradas e no uso diário. O Protetor e os Frisos com padrão original de fábrica evitam riscos profundos e amassados, preservando a lataria intacta e garantindo até <strong className="text-slate-900 not-italic">12% a mais no valor residual</strong> na troca futura."
+                </p>
+              </div>
 
-          {/* Objection Input & Generation Bar */}
-          <div className="border-t border-border pt-3">
-            <div className="space-y-2.5 mb-4">
-              <Textarea
-                value={objectionText}
-                onChange={(e) => setObjectionText(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                    handleGenerate();
-                  }
-                }}
-                placeholder='Descreva a objeção do cliente (opcional). Ex: "Achou caro", "Não vê necessidade", "A esposa não gostou"...'
-                className="min-h-[72px] text-sm w-full resize-none rounded-lg"
-              />
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleVoiceObjection}
-                  className={`flex items-center justify-center gap-2 text-xs font-semibold h-10 px-4 transition-colors ${
-                    isRecordingObjection ? "bg-ram-red text-white border-ram-red animate-pulse" : ""
-                  }`}
-                  title="Capturar fala do cliente via microfone"
-                >
-                  {isRecordingObjection ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4 text-sf-blue" />}
-                  <span>{isRecordingObjection ? "Gravando voz..." : "Capturar Objeção por Voz"}</span>
-                </Button>
-
-                <Button
-                  type="button"
-                  onClick={handleGenerate}
-                  className="btn-primary flex items-center justify-center gap-2 text-xs font-bold h-10 px-6 shadow-md shadow-sf-blue/20"
-                  title="Gerar ou atualizar argumentação consultiva"
-                  disabled={focusedAccessories.length === 0}
-                >
-                  <Sparkles className="w-4 h-4" />
-                  <span>Gerar Argumentação</span>
-                </Button>
+              <div className="bg-amber-50/70 border border-amber-200 rounded-lg p-2.5 text-[11px] text-amber-900">
+                <div className="font-bold flex items-center gap-1 mb-0.5">
+                  <Lightbulb className="w-3.5 h-3.5 text-amber-600" />
+                  Dica Contra Preço Alto:
+                </div>
+                Destaque que o custo de repintura e funilaria pós-uso sem proteção supera R$ 3.800 em oficinas especializadas.
               </div>
             </div>
 
-            {/* 3-Pillar Results */}
-            {result && (
-              <div className="space-y-3 fade-in">
-                {result.arguments.map((arg) => {
-                  const colors = pillarColors[arg.category];
+            {/* Pillar 2: Performance & Segurança */}
+            <div className="bg-white rounded-xl border border-slate-200/90 shadow-sm hover:shadow-md transition-shadow p-5 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center space-x-3 mb-3">
+                  <div className="w-9 h-9 rounded-lg bg-orange-50 text-orange-600 border border-orange-100 flex items-center justify-center shrink-0">
+                    <Zap className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold tracking-wider uppercase text-orange-600">Pilar 02</span>
+                    <h3 className="text-sm font-bold text-slate-900 leading-snug">Segurança &amp; Performance Operacional</h3>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-1.5 mb-3.5">
+                  <span className="text-[11px] font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">
+                    Estribo Lateral
+                  </span>
+                  <span className="text-[11px] font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">
+                    Pneus All-Terrain
+                  </span>
+                </div>
+
+                <p className="text-xs text-slate-600 leading-relaxed italic mb-4">
+                  "Em chuvas intensas e trechos de baixa aderência, os pneus adequados reduzem drasticamente o risco de aquaplanagem, enquanto o estribo robusto oferece <strong className="text-slate-900 not-italic">embarque ergonômico e seguro</strong> para você e sua família com base antiderrapante."
+                </p>
+              </div>
+
+              <div className="bg-blue-50/70 border border-blue-200 rounded-lg p-2.5 text-[11px] text-blue-900">
+                <div className="font-bold flex items-center gap-1 mb-0.5">
+                  <User className="w-3.5 h-3.5 text-blue-600" />
+                  Argumento Família:
+                </div>
+                O estribo é o item com maior índice de aprovação por acompanhantes e crianças na altura elevada do veículo.
+              </div>
+            </div>
+
+            {/* Pillar 3: F&I & Diluição */}
+            <div className="bg-white rounded-xl border border-slate-200/90 shadow-sm hover:shadow-md transition-shadow p-5 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center space-x-3 mb-3">
+                  <div className="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center shrink-0">
+                    <BadgePercent className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold tracking-wider uppercase text-emerald-600">Pilar 03</span>
+                    <h3 className="text-sm font-bold text-slate-900 leading-snug">Facilidade F&amp;I &amp; Diluição no CDC</h3>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap gap-1.5 mb-3.5">
+                  <span className="text-[11px] font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">
+                    Diluição no CDC
+                  </span>
+                  <span className="text-[11px] font-semibold bg-slate-100 text-slate-700 px-2 py-0.5 rounded border border-slate-200">
+                    Garantia 3 Anos de Fábrica
+                  </span>
+                </div>
+
+                <p className="text-xs text-slate-600 leading-relaxed italic mb-4">
+                  "Em vez de desembolsar R$ {totalPrice.toLocaleString("pt-BR")} à vista no cartão ou balcão, o senhor inclui tudo na operação do banco por meros <strong className="text-slate-900 not-italic">+ R$ {cdcMonthly} ao mês</strong>. O carro já sai montado por técnicos certificados e protegido pela garantia integral."
+                </p>
+              </div>
+
+              <div className="bg-emerald-50/70 border border-emerald-200 rounded-lg p-2.5 text-[11px] text-emerald-900">
+                <div className="font-bold flex items-center gap-1 mb-0.5">
+                  <CheckCircle className="w-3.5 h-3.5 text-emerald-600" />
+                  Efeito Diário:
+                </div>
+                Diga: "Sr. {firstName}, isso representa menos de R$ 7,00 por dia para rodar com o carro completo sem dor de cabeça."
+              </div>
+            </div>
+          </div>
+        </section>
+        {/* END: ValuePillars */}
+
+        {/* BEGIN: ObjectionHandlingModule */}
+        <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
+          {/* Section Title & Status */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-slate-100">
+            <div className="flex items-center space-x-3">
+              <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-700">
+                <ShieldAlert className="w-4 h-4" />
+              </div>
+              <div>
+                <h2 className="text-base font-bold text-slate-900">Acessórios &amp; Quebra de Objeções em Tempo Real</h2>
+                <p className="text-xs text-slate-500">Selecione os itens em debate e especifique a resistência do comprador para gerar resposta técnica imediata.</p>
+              </div>
+            </div>
+            <div className="text-right">
+              <span className="text-xs text-slate-500">Valor do Pacote Selecionado</span>
+              <div className="text-lg font-extrabold text-blue-700 font-mono">
+                R$ {totalPrice.toLocaleString("pt-BR")}
+              </div>
+            </div>
+          </div>
+
+          {/* Selected Accessories Pills (Interactive Toggles) */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-xs font-semibold text-slate-700">
+              <span>Itens em discussão no fechamento:</span>
+              <span className="text-slate-400 font-normal">
+                {focusedAccessories.length} de {selectedAccessories.length} itens selecionados
+              </span>
+            </div>
+
+            <div className="flex flex-wrap gap-2.5">
+              {selectedAccessories.map((acc) => {
+                const isFocused = focusedAccessoryIds.includes(acc.id);
+                const discounted = Math.round(acc.price * (1 - acc.discountPercent / 100));
+
+                return (
+                  <button
+                    key={acc.id}
+                    type="button"
+                    onClick={() => toggleFocusedAccessory(acc.id)}
+                    className={`inline-flex items-center gap-2 text-xs font-medium px-3 py-2 rounded-lg shadow-sm transition border cursor-pointer ${
+                      isFocused
+                        ? "bg-blue-600 text-white border-blue-600 hover:bg-blue-700"
+                        : "bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200"
+                    }`}
+                  >
+                    <CheckCircle className={`w-4 h-4 ${isFocused ? "text-white" : "text-slate-400"}`} />
+                    <span>{acc.name}</span>
+                    <span className={`px-1.5 py-0.5 rounded text-[11px] font-semibold ${
+                      isFocused ? "bg-blue-700 text-white" : "bg-slate-200 text-slate-600"
+                    }`}>
+                      R$ {discounted.toLocaleString("pt-BR")}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Objection Simulator Form */}
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 sm:p-5 space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
+                Qual a objeção declarada pelo Sr. {firstName}?
+              </label>
+
+              {/* Objection Preset Quick-Pills */}
+              <div className="flex flex-wrap gap-2 mb-3">
+                {PRESET_OBJECTIONS.map((preset) => {
+                  const isSelected = selectedPresetId === preset.id;
                   return (
-                    <div key={arg.category} className={`rounded-lg p-4 border ${colors.bg} ${colors.border}`}>
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-lg ${colors.iconBg}`}>
-                          {arg.icon}
-                        </span>
-                        <h5 className={`font-bold text-sm ${colors.text}`}>{arg.label}</h5>
-                      </div>
-                      <p className="text-xs font-semibold text-foreground mb-1">• {arg.hook}</p>
-                      <p className="text-xs text-muted-foreground leading-relaxed ml-3">{arg.content}</p>
-                    </div>
+                    <button
+                      key={preset.id}
+                      type="button"
+                      onClick={() => handleSelectPreset(preset)}
+                      className={`text-xs font-medium px-2.5 py-1 rounded-full border transition-colors shadow-2xs cursor-pointer ${
+                        isSelected
+                          ? "bg-blue-100/80 text-blue-900 border-blue-300 ring-1 ring-blue-400/40"
+                          : "bg-white text-slate-700 border-slate-200 hover:text-blue-700 hover:border-blue-300"
+                      }`}
+                    >
+                      {preset.label}
+                    </button>
                   );
                 })}
+              </div>
 
-                {/* Dialogue Script */}
-                <div className="rounded-xl p-4 border border-border/80 bg-secondary/30">
-                  <div className="flex items-center justify-between gap-2 mb-2.5 flex-wrap">
-                    <div className="flex items-center gap-2">
-                      <MessageCircle className="w-4 h-4 text-sf-blue" />
-                      <h5 className="font-bold text-sm text-foreground">Roteiro Sugerido</h5>
-                      <span className="text-[10px] font-semibold text-sf-blue bg-sf-light-blue px-2 py-0.5 rounded border border-sf-blue/20">
-                        Rascunho Consultivo
-                      </span>
-                    </div>
+              {/* Input + Action Button */}
+              <div className="flex flex-col sm:flex-row gap-2.5">
+                <div className="relative flex-grow">
+                  <input
+                    type="text"
+                    value={objectionText}
+                    onChange={(e) => setObjectionText(e.target.value)}
+                    placeholder="Descreva com as palavras do cliente ou clique em uma das sugestões acima..."
+                    className="w-full text-xs sm:text-sm bg-white border-slate-300 rounded-lg shadow-inner py-2.5 pl-3.5 pr-16 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-slate-800 placeholder-slate-400"
+                  />
+                  {objectionText && (
                     <button
                       type="button"
-                      onClick={handleCopyWhatsApp}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition-all active:scale-95"
-                      title="Copiar mensagem pronta para o WhatsApp"
+                      onClick={() => setObjectionText("")}
+                      className="absolute right-9 top-2.5 text-slate-400 hover:text-slate-600 cursor-pointer"
+                      title="Limpar texto"
                     >
-                      <Copy className="w-3.5 h-3.5" />
-                      <span>Copiar p/ WhatsApp</span>
+                      <X className="w-4 h-4" />
                     </button>
-                  </div>
-                  <p className="text-xs text-foreground leading-relaxed whitespace-pre-line italic">
-                    {result.dialogueScript}
-                  </p>
+                  )}
+                  <button
+                    type="button"
+                    onClick={handleVoiceObjection}
+                    className={`absolute right-2.5 top-2 text-slate-400 hover:text-blue-600 p-1 rounded transition cursor-pointer ${
+                      isRecordingObjection ? "text-rose-600 animate-pulse bg-rose-50" : ""
+                    }`}
+                    title="Capturar fala por voz"
+                  >
+                    {isRecordingObjection ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+                  </button>
                 </div>
 
-                {/* Closing Phrase */}
-                <div className="rounded-lg p-3 border-2 border-sf-blue/30 bg-sf-light-blue/30">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Award className="w-4 h-4 text-sf-blue" />
-                    <h5 className="font-bold text-xs text-sf-blue">Frase de Fechamento</h5>
-                  </div>
-                  <p className="text-xs text-foreground leading-relaxed italic">{result.closingPhrase}</p>
+                <button
+                  type="button"
+                  onClick={handleGenerate}
+                  className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs sm:text-sm px-5 py-2.5 rounded-lg shadow-sm transition whitespace-nowrap active:scale-98 cursor-pointer"
+                >
+                  <Sparkles className="w-4 h-4 text-amber-300 animate-pulse" />
+                  <span>Gerar Contra-Argumento IA</span>
+                </button>
+              </div>
+            </div>
+
+            {/* AI Generated Response Card */}
+            <div className="bg-white rounded-xl border border-blue-200/80 p-4 shadow-sm relative overflow-hidden">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2 mb-3">
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex p-1 rounded bg-blue-100 text-blue-700">
+                    <Lightbulb className="w-3.5 h-3.5" />
+                  </span>
+                  <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">
+                    Script Recomendado para o Consultor
+                  </h3>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                    Probabilidade de Conversão: {result?.conversionProbability || 84}%
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleCopyResponse}
+                    className="text-slate-400 hover:text-blue-600 p-1 cursor-pointer transition"
+                    title="Copiar resposta"
+                  >
+                    {isCopiedResponse ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+                  </button>
                 </div>
               </div>
+
+              {/* The Script Content Dinâmico */}
+              <div className="space-y-3 text-xs sm:text-sm text-slate-700 leading-relaxed font-sans">
+                <p>
+                  <strong className="text-slate-900 font-bold block sm:inline">1. Validação Empática:</strong>{" "}
+                  <span>"{result?.empathicValidation || `Entendo perfeitamente, Sr. ${firstName}. Quando olhamos o valor isolado, a primeira reação é buscar adiar ou avaliar alternativas no mercado paralelo.`}"</span>
+                </p>
+                <p>
+                  <strong className="text-slate-900 font-bold block sm:inline">2. Quebra Técnica de Objeção:</strong>{" "}
+                  <span>"{result?.technicalRefutation || `Porém, no caso dos acessórios genuínos Mopar, eles são calibrados e testados especificamente para a eletrônica de bordo, sensores de segurança e suspensão do ${clientData.vehicleModel}. Peças de prateleira externa não contam com homologação e podem invalidar a garantia de fábrica de 3 anos.`}"</span>
+                </p>
+                <p>
+                  <strong className="text-slate-900 font-bold block sm:inline">3. Fechamento de Valor F&amp;I:</strong>{" "}
+                  <span>"{result?.closingFi || `Além disso, instalando hoje aqui na concessionária, o senhor não descapitaliza seu caixa: diluímos os itens em + apenas R$ ${cdcMonthly} na parcela mensal do financiamento. Podemos emitir a ordem de serviço com a aprovação imediata?`}"</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+        {/* END: ObjectionHandlingModule */}
+      </main>
+      {/* END: MainContent */}
+
+      {/* BEGIN: BottomStickyBar */}
+      <footer className="sticky bottom-0 z-40 bg-white border-t border-slate-200 shadow-2xl py-3.5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            {/* Left Link */}
+            {onBack ? (
+              <button
+                type="button"
+                onClick={onBack}
+                className="text-xs font-semibold text-slate-600 hover:text-blue-700 flex items-center gap-1.5 transition-colors order-2 sm:order-1 cursor-pointer"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>Voltar para Visualização 3D</span>
+              </button>
+            ) : (
+              <span className="text-xs text-slate-400 order-2 sm:order-1">Etapa 4 · Fechamento</span>
             )}
+
+            {/* Right Call to Actions */}
+            <div className="flex items-center gap-3 w-full sm:w-auto order-1 sm:order-2 justify-end">
+              {/* Secondary CTA: Compartilhar no WhatsApp */}
+              <button
+                type="button"
+                onClick={handleShareWhatsApp}
+                className="inline-flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs sm:text-sm font-semibold px-4 py-2.5 rounded-lg border border-slate-300 transition active:scale-95 cursor-pointer"
+              >
+                <Share2 className="w-4 h-4 text-emerald-600" />
+                <span>Enviar Síntese no WhatsApp</span>
+              </button>
+
+              {/* Primary Hero CTA: Concluir e Enviar */}
+              <button
+                type="button"
+                onClick={onClose}
+                className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-bold px-6 py-2.5 rounded-lg shadow-lg shadow-blue-600/30 transition transform active:scale-95 group cursor-pointer"
+              >
+                <CheckCircle className="w-4 h-4 text-blue-200 group-hover:scale-110 transition-transform" />
+                <span>Concluir e Enviar para Aprovação F&amp;I</span>
+                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              </button>
+            </div>
           </div>
         </div>
+      </footer>
+      {/* END: BottomStickyBar */}
 
-        {/* CTA */}
-        <div className="flex justify-center slide-up" style={{ animationDelay: "0.35s" }}>
-          <button onClick={onClose} className="btn-accent flex items-center gap-2 text-sm px-8 py-3">
-            <CheckCircle className="w-5 h-5" />
-            Fechar Venda
-            <ArrowRight className="w-4 h-4" />
-          </button>
+      {/* BEGIN: InstitutionalFooter */}
+      <aside className="bg-slate-100 border-t border-slate-200 py-3 text-center text-[11px] text-slate-400">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <div className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+            <span>Ambiente Seguro Concessionária (DMS &amp; F&amp;I Integrados)</span>
+          </div>
+          <div>
+            <span>Dados de Conformidade LGPD</span>
+          </div>
         </div>
-
-        <p className="text-center text-[11px] text-muted-foreground mt-4">
-          O sistema registrará a venda de {clientData.clientName} e enviará os dados para o CRM
-        </p>
-      </div>
+      </aside>
+      {/* END: InstitutionalFooter */}
     </div>
   );
 };

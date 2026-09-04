@@ -6,13 +6,16 @@ import VehicleVisualizationScreen from "@/components/VehicleVisualizationScreen"
 import SalesScriptScreen from "@/components/SalesScriptScreen";
 import NavigationBar from "@/components/NavigationBar";
 import SuccessModal from "@/components/SuccessModal";
+import { ReheatedLeadsModal } from "@/components/ReheatedLeadsModal";
 import { Accessory, ClientData, defaultClientData, getAccessoriesForVehicle } from "@/types/accessories";
+import { ReheatedLead } from "@/types/leads";
 
 type Screen = "login" | "data" | "package" | "visualization" | "script";
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>("login");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showReheatedLeadsModal, setShowReheatedLeadsModal] = useState(false);
   const [clientData, setClientData] = useState<ClientData>(defaultClientData);
   const [accessories, setAccessories] = useState<Accessory[]>(getAccessoriesForVehicle(defaultClientData.vehicleModel));
 
@@ -78,6 +81,12 @@ const Index = () => {
     setShowSuccessModal(true);
   };
 
+  const handleResumeLead = (lead: ReheatedLead) => {
+    setClientData(lead.clientData);
+    setAccessories(lead.selectedAccessories);
+    setCurrentScreen("visualization");
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation Bar - Only show when not on login */}
@@ -87,6 +96,7 @@ const Index = () => {
           onBack={handleBack}
           onLogout={handleLogout}
           showBack={currentScreen !== "data"}
+          onOpenReheatedLeads={() => setShowReheatedLeadsModal(true)}
         />
       )}
 
@@ -110,6 +120,7 @@ const Index = () => {
             clientData={clientData}
             onAccessoryToggle={handleAccessoryToggle}
             onVisualize={() => setCurrentScreen("visualization")}
+            onBack={handleBack}
           />
         )}
 
@@ -120,6 +131,7 @@ const Index = () => {
             onAccessoryToggle={handleAccessoryToggle}
             onGenerateScript={() => setCurrentScreen("script")}
             onAddToProposal={handleCloseSale}
+            onBack={handleBack}
           />
         )}
 
@@ -128,6 +140,7 @@ const Index = () => {
             clientData={clientData}
             accessories={accessories}
             onClose={handleCloseSale} 
+            onBack={() => setCurrentScreen("visualization")}
           />
         )}
       </div>
@@ -137,6 +150,13 @@ const Index = () => {
         isOpen={showSuccessModal}
         onClose={() => setShowSuccessModal(false)}
         onNewSale={handleNewSale}
+      />
+
+      {/* Reheated Leads Modal (CRM Retargeting) */}
+      <ReheatedLeadsModal
+        isOpen={showReheatedLeadsModal}
+        onClose={() => setShowReheatedLeadsModal(false)}
+        onResumeLead={handleResumeLead}
       />
     </div>
   );

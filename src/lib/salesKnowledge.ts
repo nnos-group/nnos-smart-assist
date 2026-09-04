@@ -12,6 +12,10 @@ export interface CounterArgumentResult {
   arguments: SalesArgument[];
   dialogueScript: string;
   closingPhrase: string;
+  empathicValidation: string;
+  technicalRefutation: string;
+  closingFi: string;
+  conversionProbability: number;
 }
 
 interface AccessoryPillar {
@@ -138,6 +142,20 @@ const accessoryKnowledge: Record<string, AccessoryKnowledgeEntry> = {
       content: "O guincho é o que separa quem olha a trilha de quem entra nela. É a confiança de explorar territórios selvagens sabendo que você tem capacidade de auto-resgate. Aventura de verdade exige equipamento de verdade.",
     },
   },
+  bagageiro: {
+    security: {
+      hook: "Bagagens seguras e interior 100% desobstruído.",
+      content: "O bagageiro de teto fechado com chave antifurto e vedação hermética protege sua bagagem contra chuva, poeira e furto. Além disso, elimina o risco perigoso de bagagens soltas no interior da cabine que podem ser projetadas contra os ocupantes em frenagens de emergência.",
+    },
+    value: {
+      hook: "Espaço ampliado mantendo a agilidade e o design do seu SUV.",
+      content: "Adiciona até 450 litros extras de capacidade de carga com acessório homologado Mopar de baixo arrasto aerodinâmico. Evita a necessidade de trocar de veículo por um maior apenas por falta de porta-malas em viagens, economizando dezenas de milhares de reais.",
+    },
+    lifestyle: {
+      hook: "Viajar com a família sem abrir mão do conforto de ninguém.",
+      content: "Malas, pranchas, barracas e equipamentos vão no teto com total proteção, deixando o interior livre, espaçoso e silencioso para quem viaja com você. É a liberdade definitiva para explorar novos destinos em qualquer época do ano.",
+    },
+  },
   engate: {
     security: {
       hook: "Reboque com segurança certificada.",
@@ -196,19 +214,21 @@ const accessoryKnowledge: Record<string, AccessoryKnowledgeEntry> = {
   },
 };
 
-type ObjectionType = "price" | "necessity" | "time" | "origin" | "aesthetic" | "generic";
+type ObjectionType = "price" | "necessity" | "time" | "origin" | "partner" | "aesthetic" | "generic";
 
 const detectObjectionType = (text: string): ObjectionType => {
   const t = text.toLowerCase();
-  if (/caro|preço|prec|dinheiro|custo|valor alto|pagar|cust|orçamento|budget/.test(t)) return "price";
-  if (/não preciso|desnecessário|sem necessidade|não necessit|não uso|não vou usar|não vejo/.test(t)) return "necessity";
-  if (/pensar|penso|depois|volto|ver depois|decidir|calma|tempo|ainda não/.test(t)) return "time";
-  if (/já tenho|compro fora|aftermarket|paralelo|genéric|internet|mercado livre|mais barato fora/.test(t)) return "origin";
-  if (/feio|não gost|estética|visual|esposa|mulher|aparência|design/.test(t)) return "aesthetic";
+  if (/esposa|mulher|marido|cônjuge|conjuge|sócio|socio|parceiro|família|familia|consultar/.test(t)) return "partner";
+  if (/caro|preço|preco|prec|dinheiro|custo|valor alto|pagar|cust|orçamento|orcamento|budget/.test(t)) return "price";
+  if (/não preciso|nao preciso|desnecessário|desnecessario|sem necessidade|necessidade|necessit|não uso|nao uso|não vou usar|nao vou usar|não vejo|nao vejo|não vê|nao ve/.test(t)) return "necessity";
+  if (/pensar|penso|depois|volto|ver depois|decidir|calma|tempo|ainda não|ainda nao/.test(t)) return "time";
+  if (/já tenho|ja tenho|compro fora|aftermarket|paralelo|genéric|generic|internet|mercado livre|mais barato fora|autopeça|autopeca|auto peça|auto peca|oficina/.test(t)) return "origin";
+  if (/feio|não gost|nao gost|estética|estetica|visual|aparência|aparencia|design/.test(t)) return "aesthetic";
   return "generic";
 };
 
 const pillarPriority: Record<ObjectionType, ("security" | "value" | "lifestyle")[]> = {
+  partner: ["security", "lifestyle", "value"],
   price: ["value", "security", "lifestyle"],
   necessity: ["security", "value", "lifestyle"],
   time: ["value", "security", "lifestyle"],
@@ -218,6 +238,9 @@ const pillarPriority: Record<ObjectionType, ("security" | "value" | "lifestyle")
 };
 
 const dialogueTemplates: Record<ObjectionType, (firstName: string, genderPrefix: string, accessoryNames: string, vehicleModel: string) => string> = {
+  partner: (fn, gp, acc, vm) =>
+    `Quando o cliente disser que precisa consultar a esposa ou sócio, você pode responder:\n\n"${gp} ${fn}, a decisão compartilhada com quem está ao seu lado é o passo mais inteligente. Esses itens (${acc}) trazem exatamente o conforto e a segurança que a sua família vai usufruir todos os dias no ${vm}. Posso preparar uma demonstração rápida com fotos e condições para vocês avaliarem juntos?"`,
+
   price: (fn, gp, acc, vm) =>
     `Quando o cliente disser "Está muito caro", você pode responder:\n\n"${gp} ${fn}, eu entendo a preocupação com o investimento. Mas vamos fazer uma conta rápida: financiando ${acc} junto ao ${vm}, estamos falando de poucos reais por dia. Agora, sem essa proteção, um único incidente pode custar mais do que o pacote inteiro. O senhor(a) prefere investir um pouco agora ou arriscar um prejuízo muito maior depois?"`,
 
@@ -238,6 +261,7 @@ const dialogueTemplates: Record<ObjectionType, (firstName: string, genderPrefix:
 };
 
 const closingPhrases: Record<ObjectionType, string> = {
+  partner: "\"Que tal enviarmos a apresentação no WhatsApp para ela conferir hoje à noite? Se aprovarem, já deixo a ordem de instalação programada.\"",
   price: "\"Vamos incluir no financiamento? Assim o senhor(a) sai hoje com o veículo completo e protegido, sem sentir no bolso.\"",
   necessity: "\"Posso incluir para o senhor(a) experimentar com a tranquilidade da garantia? Tenho certeza de que em uma semana já não vai querer ficar sem.\"",
   time: "\"Para garantir essa condição especial, posso reservar agora e deixamos tudo pronto para a entrega. O que acha?\"",
@@ -257,7 +281,9 @@ export const generateSalesArguments = (
   const genderPrefix = clientData?.clientGender?.toLowerCase().includes("fem") ? "Sra." : "Sr.";
   const objectionType = objectionText?.trim() ? detectObjectionType(objectionText) : "generic";
   const priority = pillarPriority[objectionType] || pillarPriority.generic;
-  const accessoryNames = focusedAccessories.map(a => a.name).join(", ");
+  const accessoryNames = focusedAccessories.length > 0
+    ? focusedAccessories.map(a => a.name).join(", ")
+    : "acessórios selecionados";
 
   const pillarData: Record<"security" | "value" | "lifestyle", { hooks: string[]; contents: string[] }> = {
     security: { hooks: [], contents: [] },
@@ -305,5 +331,76 @@ export const generateSalesArguments = (
   const dialogueScript = dialogueTemplates[objectionType](firstName, genderPrefix, accessoryNames, clientData.vehicleModel);
   const closingPhrase = closingPhrases[objectionType];
 
-  return { arguments: args, dialogueScript, closingPhrase };
+  const cdcEstimate = (focusedTotal * 0.0235).toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  // Geração personalizada dos 3 blocos de contra-argumento
+  let empathicValidation = "";
+  let technicalRefutation = "";
+  let closingFi = "";
+  let conversionProbability = 84;
+
+  switch (objectionType) {
+    case "partner":
+      empathicValidation = `Entendo perfeitamente, ${genderPrefix} ${firstName}. A decisão em conjunto com a sua família ou cônjuge é fundamental e demonstra zelo pelo patrimônio que estão adquirindo juntos.`;
+      technicalRefutation = `Para quem viaja com o senhor, o que mais conta é a ergonomia de embarque (como o estribo para crianças e passageiros) e a tranquilidade de rodar com itens 100% originais Mopar, que preservam a garantia total de 3 anos de fábrica do seu ${clientData.vehicleModel}, sem risco de manutenções imprevistas.`;
+      closingFi = `Além disso, o valor de R$ ${focusedTotal.toLocaleString("pt-BR")} diluído no financiamento representa apenas + R$ ${cdcEstimate} por mês. Que tal enviarmos a visualização 3D oficial agora mesmo para ela conferir no WhatsApp?`;
+      conversionProbability = 88;
+      break;
+
+    case "price":
+      empathicValidation = `Entendo perfeitamente, ${genderPrefix} ${firstName}. Quando olhamos o valor isolado, a primeira reação natural é avaliar como um custo extra no momento da compra do carro.`;
+      technicalRefutation = `Porém, no caso dos acessórios Mopar para o ${clientData.vehicleModel}, eles funcionam como uma blindagem: um único dano em caçamba ou cárter supera R$ 3.800 em funilaria. Além disso, veículos completos com itens originais garantem até 12% a mais de valor na revenda futura.`;
+      closingFi = `Instalando hoje aqui na concessionária, o senhor não descapitaliza seu caixa: diluímos os itens em + apenas R$ ${cdcEstimate} na parcela mensal do financiamento (ou em até 12x sem juros no cartão). Podemos aprovar a ordem de instalação?`;
+      conversionProbability = 82;
+      break;
+
+    case "necessity":
+      empathicValidation = `Compreendo o seu ponto, ${genderPrefix} ${firstName}. É bastante comum no início achar que o veículo original atende a todas as situações do dia a dia.`;
+      technicalRefutation = `No entanto, nas estradas e condições climáticas de ${clientData.state?.replace(/\s*\(.*\)/, "") || "sua região"}, os itens (${accessoryNames}) evitam que o desgaste severo e a poeira afetem o veículo desde o km zero. Retirar o carro já protegido evita que os primeiros riscos aconteçam logo nas primeiras semanas de uso.`;
+      closingFi = `Na compra do carro zero o senhor aproveita a condição de balcão com bônus e mão de obra homologada inclusa por + R$ ${cdcEstimate}/mês. Podemos incluir na proposta de entrega?`;
+      conversionProbability = 86;
+      break;
+
+    case "origin":
+      empathicValidation = `Compreendo perfeitamente que buscar opções no mercado paralelo pareça atrativo à primeira vista, ${genderPrefix} ${firstName}.`;
+      technicalRefutation = `Porém, no caso dos acessórios genuínos Mopar, eles são calibrados e testados especificamente para a eletrônica de bordo, sensores de segurança e suspensão do ${clientData.vehicleModel}. Peças de prateleira externa não contam com homologação e podem invalidar a garantia de fábrica de 3 anos do trem de força.`;
+      closingFi = `Aqui na concessionária o senhor conta com instalação certificada e parcelamento por + apenas R$ ${cdcEstimate} por mês no CDC. Vale a pena arriscar a garantia do carro por uma pequena diferença?`;
+      conversionProbability = 91;
+      break;
+
+    case "time":
+      empathicValidation = `Faz todo o sentido querer pensar com calma, ${genderPrefix} ${firstName}. É um investimento importante e respeitamos muito o seu tempo.`;
+      technicalRefutation = `Apenas gostaria de ponderar que os preços promocionais com bônus de montadora e montagem gratuita são válidos exclusivamente para a montagem antes do faturamento do veículo. Após a entrega, os valores avulsos de oficina sofrem acréscimo de até 35% de tabela.`;
+      closingFi = `Para garantir que o senhor não perca essa margem, podemos deixar reservado por + apenas R$ ${cdcEstimate} ao mês. Se até a entrega mudar de ideia, nós cancelamos sem qualquer custo. Podemos garantir?`;
+      conversionProbability = 80;
+      break;
+
+    case "aesthetic":
+      empathicValidation = `Respeito muito a sua opinião estética, ${genderPrefix} ${firstName}. A harmonia visual do seu ${clientData.vehicleModel} é prioridade absoluta.`;
+      technicalRefutation = `Os acessórios Mopar foram desenvolvidos exatamente pelo mesmo estúdio de design do veículo, acompanhando as linhas da carroceria com encaixe milimétrico. Ao vivo no carro, o visual agrega robustez e sofisticação incomparáveis.`;
+      closingFi = `Podemos incluir para o senhor conferir pessoalmente na entrega técnica. Com a diluição de + R$ ${cdcEstimate}/mês, a satisfação visual e a proteção estão 100% garantidas. O que acha?`;
+      conversionProbability = 85;
+      break;
+
+    default:
+      empathicValidation = `Entendo a sua colocação, ${genderPrefix} ${firstName}. Toda decisão que envolve personalização merece ser avaliada com precisão.`;
+      technicalRefutation = `A grande vantagem dos acessórios homologados Mopar (${accessoryNames}) é que foram concebidos sob medida para o ${clientData.vehicleModel}, assegurando durabilidade mecânica extrema e preservando 100% da garantia original de fábrica.`;
+      closingFi = `Com a diluição no financiamento por + apenas R$ ${cdcEstimate} mensais, o senhor protege o carro desde o dia zero sem impacto financeiro imediato. Podemos seguir com a aprovação?`;
+      conversionProbability = 84;
+      break;
+  }
+
+  return { 
+    arguments: args, 
+    dialogueScript, 
+    closingPhrase,
+    empathicValidation,
+    technicalRefutation,
+    closingFi,
+    conversionProbability,
+  };
 };
+

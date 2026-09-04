@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 interface VoiceInputButtonProps {
   onDataExtracted: (data: Partial<ClientData>) => void;
+  hideLabel?: boolean;
 }
 
 // Simple NLP to extract data from speech
@@ -168,7 +169,7 @@ const extractDataFromSpeech = (transcript: string): Partial<ClientData> => {
   return data;
 };
 
-const VoiceInputButton = ({ onDataExtracted }: VoiceInputButtonProps) => {
+const VoiceInputButton = ({ onDataExtracted, hideLabel = false }: VoiceInputButtonProps) => {
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -236,46 +237,42 @@ const VoiceInputButton = ({ onDataExtracted }: VoiceInputButtonProps) => {
 
   return (
     <div className="relative">
+      {/* Ripple / pulse effect */}
+      {isListening && (
+        <div className="absolute -inset-1.5 rounded-full bg-rose-500/30 animate-ping" />
+      )}
+
       <button
         onClick={startListening}
         disabled={isListening || isProcessing}
+        type="button"
+        aria-label="Ativar captura de dados por voz"
         className={`
-          w-14 h-14 rounded-full flex items-center justify-center
-          transition-all duration-300 shadow-lg
+          relative flex items-center justify-center transition-all duration-200 shadow-md cursor-pointer
           ${
-            isListening
-              ? "bg-ram-red animate-pulse scale-110"
-              : isProcessing
-              ? "bg-stellantis-blue"
-              : "bg-gradient-to-br from-stellantis-blue to-ram-red hover:scale-105 hover:shadow-xl"
+            hideLabel
+              ? "w-12 h-12 rounded-full bg-gradient-to-br from-rose-500 to-red-600 text-white shadow-rose-600/30 group-hover:scale-105 active:scale-95"
+              : "w-14 h-14 rounded-full bg-gradient-to-br from-stellantis-blue to-ram-red text-white hover:scale-105 hover:shadow-xl"
           }
+          ${isListening ? "ring-4 ring-rose-400 animate-pulse scale-105" : ""}
         `}
-        title="Clique para falar"
+        title={isListening ? "Ouvindo... Fale os dados" : "Clique para falar os dados"}
       >
         {isProcessing ? (
-          <Loader2 className="w-6 h-6 text-white animate-spin" />
+          <Loader2 className="w-5 h-5 text-white animate-spin" />
         ) : isListening ? (
-          <MicOff className="w-6 h-6 text-white" />
+          <MicOff className="w-5 h-5 text-white" />
         ) : (
-          <Mic className="w-6 h-6 text-white" />
+          <Mic className="w-5 h-5 text-white" />
         )}
       </button>
 
-      {/* Ripple effect when listening */}
-      {isListening && (
-        <>
-          <span className="absolute inset-0 rounded-full bg-ram-red/40 animate-ping" />
-          <span
-            className="absolute inset-0 rounded-full bg-ram-red/20 animate-ping"
-            style={{ animationDelay: "0.2s" }}
-          />
-        </>
+      {/* Label (apenas se hideLabel não estiver ativo) */}
+      {!hideLabel && (
+        <p className="text-xs text-center mt-2 text-muted-foreground font-medium">
+          {isListening ? "Ouvindo..." : isProcessing ? "Processando..." : "Falar dados"}
+        </p>
       )}
-
-      {/* Label */}
-      <p className="text-xs text-center mt-2 text-muted-foreground font-medium">
-        {isListening ? "Ouvindo..." : isProcessing ? "Processando..." : "Falar dados"}
-      </p>
     </div>
   );
 };
