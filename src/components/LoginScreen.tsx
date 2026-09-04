@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowRight, Eye, EyeOff, Building2, Mail, Lock, Check, MapPin, X, ChevronRight } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Building2, Mail, Lock, Check, MapPin, X, ChevronRight, AlertCircle } from "lucide-react";
 
 import accessoriesBadge from "@/assets/accessories-badge.jpg";
 
@@ -36,13 +36,19 @@ export const JEEP_DEALERSHIP_GROUP = {
 const LoginScreen = ({ onLogin }: LoginScreenProps) => {
   const [dealership, setDealership] = useState(JEEP_DEALERSHIP_GROUP.matriz.name);
   const [username, setUsername] = useState("consultor@stellantis.com");
-  const [password, setPassword] = useState("senhaPadrao123");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const [rememberSession, setRememberSession] = useState(true);
   const [isHubModalOpen, setIsHubModalOpen] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (password.trim() !== "nnos2026") {
+      setErrorMessage("Senha de acesso incorreta. Verifique suas credenciais corporativas.");
+      return;
+    }
+    setErrorMessage("");
     onLogin();
   };
 
@@ -202,10 +208,16 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
                   required
                   type={showPassword ? "text" : "password"}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className={`block w-full pl-10 pr-10 py-2.5 text-xs sm:text-sm font-medium text-slate-900 bg-slate-50/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500/25 focus:border-brand-600 focus:bg-white transition-all ${
-                    !showPassword ? "tracking-widest" : ""
-                  }`}
+                  placeholder="Digite a senha de acesso corporativo..."
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (errorMessage) setErrorMessage("");
+                  }}
+                  className={`block w-full pl-10 pr-10 py-2.5 text-xs sm:text-sm font-medium text-slate-900 bg-slate-50/80 border rounded-xl focus:ring-2 focus:bg-white transition-all ${
+                    errorMessage
+                      ? "border-red-400 focus:border-red-500 focus:ring-red-500/20"
+                      : "border-slate-200 focus:ring-brand-500/25 focus:border-brand-600"
+                  } ${!showPassword ? "tracking-widest" : ""}`}
                 />
                 <button
                   type="button"
@@ -216,6 +228,12 @@ const LoginScreen = ({ onLogin }: LoginScreenProps) => {
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+              {errorMessage && (
+                <div className="mt-2 flex items-center gap-2 p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium animate-in fade-in slide-in-from-top-1">
+                  <AlertCircle className="h-4 w-4 shrink-0 text-red-500" />
+                  <span>{errorMessage}</span>
+                </div>
+              )}
             </div>
 
             {/* Remember Session & Version */}
