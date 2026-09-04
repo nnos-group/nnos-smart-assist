@@ -20,6 +20,20 @@
 
     <!-- Meta tags mobile & branding -->
     <meta name="theme-color" content="#0a1e3f" />
+
+    <!-- Proteção Imediata Anti-F12 e Bloqueio de Inspeção -->
+    <script type="text/javascript">
+      document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; });
+      window.addEventListener('keydown', function(e) {
+        if (e.keyCode === 123 || e.key === 'F12' || 
+            ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
+            ((e.ctrlKey || e.metaKey) && (e.key === 'U' || e.key === 'u' || e.key === 'S' || e.key === 's'))) {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+      }, true);
+    </script>
   </head>
 
   <body>
