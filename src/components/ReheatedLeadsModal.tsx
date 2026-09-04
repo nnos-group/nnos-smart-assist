@@ -61,7 +61,8 @@ export const ReheatedLeadsModal = ({
     
     // Link interativo exclusivo para o cliente visualizar o veículo montado sem necessidade de acesso ao sistema
     const accIds = lead.selectedAccessories.map((a) => a.id).join(",");
-    const interactive3dUrl = `${window.location.origin}/visualizacao?client=${encodeURIComponent(lead.clientName)}&model=${encodeURIComponent(lead.vehicleModel)}&color=${encodeURIComponent(lead.vehicleColor)}&acc=${encodeURIComponent(accIds)}&total=${lead.totalProposalValue}&cdc=${encodeURIComponent(lead.cdcMonthlyEstimate)}`;
+    const basePath = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
+    const interactive3dUrl = `${window.location.origin}${basePath}/visualizacao?client=${encodeURIComponent(lead.clientName)}&model=${encodeURIComponent(lead.vehicleModel)}&color=${encodeURIComponent(lead.vehicleColor)}&acc=${encodeURIComponent(accIds)}&total=${lead.totalProposalValue}&cdc=${encodeURIComponent(lead.cdcMonthlyEstimate)}`;
     
     let specialHook = "Temos uma condição exclusiva autorizada para esta semana.";
     if (lead.reheatStrategy.includes("Bônus")) {

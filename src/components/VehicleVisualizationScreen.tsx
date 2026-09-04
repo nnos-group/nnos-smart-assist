@@ -86,7 +86,8 @@ const VehicleVisualizationScreen = ({
 
     // Link interativo exclusivo para o cliente visualizar o veículo montado sem necessidade de acesso ao sistema
     const accIds = selectedAccessories.map((a) => a.id).join(",");
-    const interactive3dUrl = `${window.location.origin}/visualizacao?client=${encodeURIComponent(clientData.clientName || "Cliente")}&model=${encodeURIComponent(clientData.vehicleModel)}&color=${encodeURIComponent(clientData.vehicleColor)}&acc=${encodeURIComponent(accIds)}&total=${totalFinal}&cdc=${encodeURIComponent(cdcMonthly)}`;
+    const basePath = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
+    const interactive3dUrl = `${window.location.origin}${basePath}/visualizacao?client=${encodeURIComponent(clientData.clientName || "Cliente")}&model=${encodeURIComponent(clientData.vehicleModel)}&color=${encodeURIComponent(clientData.vehicleColor)}&acc=${encodeURIComponent(accIds)}&total=${totalFinal}&cdc=${encodeURIComponent(cdcMonthly)}`;
 
     const message = 
       `Olá ${clientData.clientName || ""}!\n\n` +
