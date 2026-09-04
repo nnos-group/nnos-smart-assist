@@ -35,15 +35,19 @@ const VehicleVisualizationScreen = ({
   const isCompass = clientData.vehicleModel.toUpperCase().includes("COMPASS");
   const hasVideo = isRenegade || isRampage || isCompass;
 
+  const base = (import.meta.env.BASE_URL || "/").endsWith("/")
+    ? (import.meta.env.BASE_URL || "/")
+    : `${import.meta.env.BASE_URL}/`;
+
   const getVideoSrc = () => {
     if (isRenegade) {
-      return showAfter ? "/videos/Jeep_Renegade_com.mp4" : "/videos/Jeep_Renegade_sem.mp4";
+      return `${base}videos/${showAfter ? "Jeep_Renegade_com.mp4" : "Jeep_Renegade_sem.mp4"}`;
     }
     if (isRampage) {
-      return showAfter ? "/videos/Ram_Rampage_com.mp4" : "/videos/Ram_Rampage_sem.mp4";
+      return `${base}videos/${showAfter ? "Ram_Rampage_com.mp4" : "Ram_Rampage_sem.mp4"}`;
     }
     if (isCompass) {
-      return showAfter ? "/videos/Compass_com.mp4" : "/videos/Compass_sem.mp4";
+      return `${base}videos/${showAfter ? "Compass_com.mp4" : "Compass_sem.mp4"}`;
     }
     return null;
   };
