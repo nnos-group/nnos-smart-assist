@@ -7,7 +7,8 @@ import SalesScriptScreen from "@/components/SalesScriptScreen";
 import NavigationBar from "@/components/NavigationBar";
 import SuccessModal from "@/components/SuccessModal";
 import { ReheatedLeadsModal } from "@/components/ReheatedLeadsModal";
-import { Accessory, ClientData, defaultClientData, getAccessoriesForVehicle } from "@/types/accessories";
+import LostSalesDashboard from "@/components/LostSalesDashboard";
+import { Accessory, ClientData, ClientSource, defaultClientData, getAccessoriesForVehicle } from "@/types/accessories";
 import { ReheatedLead } from "@/types/leads";
 
 type Screen = "login" | "data" | "package" | "visualization" | "script";
@@ -16,6 +17,8 @@ const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>("login");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showReheatedLeadsModal, setShowReheatedLeadsModal] = useState(false);
+  const [showLostSalesDashboard, setShowLostSalesDashboard] = useState(false);
+  const [clientSource, setClientSource] = useState<ClientSource>("live");
   const [clientData, setClientData] = useState<ClientData>(defaultClientData);
   const [accessories, setAccessories] = useState<Accessory[]>(getAccessoriesForVehicle(defaultClientData.vehicleModel));
 
@@ -39,9 +42,8 @@ const Index = () => {
       case "package":
         return 2;
       case "visualization":
-        return 3;
       case "script":
-        return 4;
+        return 3;
       default:
         return 0;
     }
@@ -68,12 +70,14 @@ const Index = () => {
     setCurrentScreen("login");
     setClientData(defaultClientData);
     setAccessories(getAccessoriesForVehicle(defaultClientData.vehicleModel));
+    setClientSource("live");
   };
 
   const handleNewSale = () => {
     setShowSuccessModal(false);
     setClientData(defaultClientData);
     setAccessories(getAccessoriesForVehicle(defaultClientData.vehicleModel));
+    setClientSource("live");
     setCurrentScreen("data");
   };
 
@@ -84,6 +88,7 @@ const Index = () => {
   const handleResumeLead = (lead: ReheatedLead) => {
     setClientData(lead.clientData);
     setAccessories(lead.selectedAccessories);
+    setClientSource("crm");
     setCurrentScreen("visualization");
   };
 
@@ -97,6 +102,7 @@ const Index = () => {
           onLogout={handleLogout}
           showBack={currentScreen !== "data"}
           onOpenReheatedLeads={() => setShowReheatedLeadsModal(true)}
+          onOpenLostSales={() => setShowLostSalesDashboard(true)}
         />
       )}
 
@@ -118,6 +124,7 @@ const Index = () => {
           <PackageSuggestionScreen
             accessories={accessories}
             clientData={clientData}
+            clientSource={clientSource}
             onAccessoryToggle={handleAccessoryToggle}
             onVisualize={() => setCurrentScreen("visualization")}
             onBack={handleBack}
@@ -139,6 +146,7 @@ const Index = () => {
           <SalesScriptScreen 
             clientData={clientData}
             accessories={accessories}
+            clientSource={clientSource}
             onClose={handleCloseSale} 
             onBack={() => setCurrentScreen("visualization")}
           />
@@ -157,6 +165,12 @@ const Index = () => {
         isOpen={showReheatedLeadsModal}
         onClose={() => setShowReheatedLeadsModal(false)}
         onResumeLead={handleResumeLead}
+      />
+
+      {/* Lost Sales Dashboard (Pareto Analysis) */}
+      <LostSalesDashboard
+        isOpen={showLostSalesDashboard}
+        onClose={() => setShowLostSalesDashboard(false)}
       />
     </div>
   );

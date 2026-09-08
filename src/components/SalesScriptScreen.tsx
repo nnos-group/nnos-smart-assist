@@ -2,10 +2,12 @@ import { useState, useMemo, useCallback, useEffect } from "react";
 import { 
   ArrowLeft, Sparkles, Volume2, Copy, Check, ShieldCheck, 
   Car, MapPin, BadgePercent, Mic, MicOff, Send, Share2, 
-  FileText, ArrowRight, Lightbulb, User, CheckCircle, Zap, ShieldAlert, X
+  FileText, ArrowRight, Lightbulb, User, CheckCircle, Zap, ShieldAlert, X,
+  Target, RotateCcw, RefreshCw, MessageSquare
 } from "lucide-react";
-import { Accessory, ClientData, getPackageName } from "@/types/accessories";
+import { Accessory, ClientData, ClientSource, getPackageName } from "@/types/accessories";
 import { generateSalesArguments, CounterArgumentResult } from "@/lib/salesKnowledge";
+import { saveArgumentationLog } from "@/lib/argumentationRepository";
 import { toast } from "sonner";
 
 interface SalesScriptScreenProps {
@@ -13,6 +15,8 @@ interface SalesScriptScreenProps {
   accessories: Accessory[];
   onClose: () => void;
   onBack?: () => void;
+  clientSource?: ClientSource;
+  initialMode?: "prepare" | "recover";
 }
 
 const PRESET_OBJECTIONS = [
@@ -43,7 +47,17 @@ const SalesScriptScreen = ({
   accessories,
   onClose,
   onBack,
+  clientSource = "live",
+  initialMode = "prepare",
 }: SalesScriptScreenProps) => {
+  const [salesMode, setSalesMode] = useState<"prepare" | "recover">(initialMode);
+
+  useEffect(() => {
+    if (initialMode) {
+      setSalesMode(initialMode);
+    }
+  }, [initialMode]);
+
   const selectedAccessories = useMemo(
     () => accessories.filter((a) => a.selected),
     [accessories]
@@ -223,14 +237,48 @@ const SalesScriptScreen = ({
     setTimeout(() => setIsCopiedResponse(false), 2500);
   };
 
-  const handleShareWhatsApp = () => {
-    const text = encodeURIComponent(
-      `Olá ${firstName}! Tudo bem? Segue a síntese da proposta de acessórios homologados Mopar para o seu ${clientData.vehicleModel}:\n\n` +
-      `Pacote: ${packageName}\n` +
-      `Valor Total: R$ ${totalPrice.toLocaleString("pt-BR")} (ou +R$ ${cdcMonthly}/mês diluído no financiamento)\n\n` +
-      `Itens com garantia total preservada de 3 anos de fábrica.\n` +
-      `Podemos aprovar a ordem de instalação?`
+  const handleNewApproach = () => {
+    if (focusedAccessories.length === 0) {
+      toast.error("Selecione ao menos um acessório.");
+      return;
+    }
+    const generated = generateSalesArguments(
+      objectionText,
+      clientData,
+      focusedAccessories,
+      focusedTotal,
+      packageName
     );
+    setResult(generated);
+    toast.success("Nova abordagem IA calibrada para o cliente!");
+  };
+
+  const handleShareWhatsApp = () => {
+    let text = "";
+    if (salesMode === "recover") {
+      text = encodeURIComponent(
+        `Olá ${firstName}! Tudo bem? 😊\n\n` +
+        `Revisamos a proposta dos acessórios para o seu *${clientData.vehicleModel}*:\n\n` +
+        `📦 *${packageName} (Revisado)*\n` +
+        focusedAccessories.map((a) => `✅ ${a.name} — R$ ${Math.round(a.price * (1 - a.discountPercent / 100)).toLocaleString("pt-BR")}`).join("\n") +
+        `\n\n💰 *Total Otimizado:* R$ ${focusedTotal.toLocaleString("pt-BR")}\n` +
+        `📊 *No financiamento:* apenas + R$ ${((focusedTotal * 0.0235)).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mês (menos de R$ 5/dia)\n\n` +
+        `Garantia oficial de 3 anos preservada e segurança total para sua rotina em ${clientData.state?.replace(/\s*\(.*\)/, "") || "sua região"}.\n` +
+        `Podemos reservar essa condição especial esta semana? 🚗`
+      );
+    } else {
+      text = encodeURIComponent(
+        `Olá ${firstName}! Tudo bem? 😊\n\n` +
+        `Preparei a recomendação exclusiva de acessórios genuínos Mopar para o seu *${clientData.vehicleModel}*:\n\n` +
+        `📦 *${packageName}*\n` +
+        selectedAccessories.map((a) => `✅ ${a.name} — R$ ${Math.round(a.price * (1 - a.discountPercent / 100)).toLocaleString("pt-BR")}`).join("\n") +
+        `\n\n💡 *Por que agora:* Itens configurados para sua rotina em ${clientData.state?.replace(/\s*\(.*\)/, "") || "sua região"} com proteção e valorização na revenda.\n` +
+        `💰 *Valor Total:* R$ ${totalPrice.toLocaleString("pt-BR")}\n` +
+        `📊 *Diluição no CDC:* apenas + R$ ${cdcMonthly}/mês\n` +
+        `🛡️ *Garantia:* 3 anos de fábrica com instalação homologada.\n\n` +
+        `Podemos aprovar a instalação na entrega do veículo?`
+      );
+    }
     window.open(`https://api.whatsapp.com/send?text=${text}`, "_blank");
   };
 
@@ -251,6 +299,52 @@ const SalesScriptScreen = ({
             <p className="text-xs sm:text-sm text-slate-600 mt-0.5">
               Scripts altamente persuasivos formulados para o perfil do comprador, telemetria regional e proteções selecionadas.
             </p>
+          </div>
+
+          {/* Mode Switcher & Quick Actions */}
+          <div className="flex items-center gap-2.5 flex-wrap">
+            <div className="flex items-center bg-slate-200/80 p-1 rounded-xl border border-slate-300 shadow-2xs">
+              <button
+                type="button"
+                onClick={() => {
+                  setSalesMode("prepare");
+                  toast.info("Modo Preparar a Venda ativo: roteiro estruturado para apresentação.");
+                }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  salesMode === "prepare"
+                    ? "bg-white text-blue-800 shadow-xs ring-1 ring-black/5"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                <Target className="w-3.5 h-3.5 text-blue-600" />
+                <span>Modo Preparar</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setSalesMode("recover");
+                  toast.info("Modo Recuperar a Venda ativo: estratégias de reversão de objeção.");
+                }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                  salesMode === "recover"
+                    ? "bg-orange-500 text-white shadow-xs"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Modo Recuperar</span>
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={handleNewApproach}
+              className="inline-flex items-center gap-1.5 text-xs font-semibold bg-white hover:bg-slate-100 text-slate-700 px-3 py-2 rounded-lg border border-slate-300 shadow-2xs transition active:scale-95 cursor-pointer"
+              title="Gerar nova calibragem de argumentação"
+            >
+              <RefreshCw className="w-3.5 h-3.5 text-blue-600" />
+              <span>Nova Abordagem</span>
+            </button>
           </div>
         </div>
 
@@ -333,6 +427,59 @@ const SalesScriptScreen = ({
           </div>
         </section>
         {/* END: DealSummaryBar */}
+
+        {/* BEGIN: Modo Recuperar a Venda - Estratégia Ativa */}
+        {salesMode === "recover" && (
+          <section aria-label="Estratégia de Recuperação de Venda" className="bg-gradient-to-r from-orange-500/10 via-amber-500/10 to-rose-500/10 border-2 border-orange-400/50 rounded-2xl p-5 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-orange-500 text-white flex items-center justify-center font-bold shrink-0">
+                  <RotateCcw className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-900 flex items-center gap-2">
+                    Modo Recuperar a Venda — Reversão Estratégica
+                    <span className="text-[10px] font-extrabold bg-orange-100 text-orange-800 px-2 py-0.5 rounded-full border border-orange-300">
+                      Recuperação Ativa
+                    </span>
+                  </h3>
+                  <p className="text-xs text-slate-600">Municiamento consultivo para contornar hesitações sem parecer insistente.</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSalesMode("prepare")}
+                className="text-xs font-semibold text-orange-700 hover:text-orange-900 underline self-start sm:self-auto cursor-pointer"
+              >
+                ← Voltar para Modo Preparar
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+              <div className="bg-white rounded-xl p-3.5 border border-orange-200/80 shadow-2xs">
+                <span className="font-bold text-orange-900 block mb-1">🎯 1. Fatiamento Estratégico</span>
+                <p className="text-slate-600 leading-relaxed">
+                  Se o cliente hesitou no valor total, desmarque os itens adicionais nos botões abaixo e feche o <strong>item essencial de maior impacto</strong> (ex: Protetor ou Estribo).
+                </p>
+              </div>
+
+              <div className="bg-white rounded-xl p-3.5 border border-orange-200/80 shadow-2xs">
+                <span className="font-bold text-orange-900 block mb-1">💡 2. Custo Diluído no CDC</span>
+                <p className="text-slate-600 leading-relaxed">
+                  Em vez de R$ {focusedTotal.toLocaleString("pt-BR")} à vista, enfatize: <strong>+ R$ {((focusedTotal * 0.0235)).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mês</strong> no financiamento (menos de R$ 5,00/dia).
+                </p>
+              </div>
+
+              <div className="bg-white rounded-xl p-3.5 border border-orange-200/80 shadow-2xs">
+                <span className="font-bold text-orange-900 block mb-1">🔄 3. Frase de Reabertura</span>
+                <p className="text-slate-600 leading-relaxed italic">
+                  "{firstName}, para não comprometer seu orçamento agora, que tal garantirmos apenas a proteção de fábrica hoje e deixarmos o restante para a 1ª revisão?"
+                </p>
+              </div>
+            </div>
+          </section>
+        )}
+        {/* END: Modo Recuperar a Venda */}
 
         {/* BEGIN: ConsultativeOpening */}
         <section className="bg-gradient-to-br from-[#0a1e3f] via-[#0a3277] to-slate-900 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden border border-blue-700/60">

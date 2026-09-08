@@ -558,7 +558,7 @@ const VehicleVisualizationScreen = ({
 
               {/* Action Buttons */}
               <div className="space-y-2.5 pt-1">
-                {/* Primary Action: Adicionar à Proposta */}
+                {/* Primary Action: Adicionar à Proposta (Fechar Venda) */}
                 <button
                   type="button"
                   onClick={onAddToProposal}
@@ -566,10 +566,10 @@ const VehicleVisualizationScreen = ({
                   className="w-full bg-[#ff6200] hover:bg-[#e65800] disabled:opacity-50 disabled:cursor-not-allowed text-white font-extrabold text-sm py-3.5 px-4 rounded-xl shadow-lg shadow-orange-500/25 flex items-center justify-center space-x-2 transition transform active:scale-[0.99] cursor-pointer"
                 >
                   <ShoppingCart className="w-5 h-5" />
-                  <span>Adicionar à Proposta</span>
+                  <span>Adicionar à Proposta (Fechar Venda)</span>
                 </button>
 
-                {/* Secondary Action: Gerar Argumentação Consultiva */}
+                {/* Secondary Action: Contorno de Objeções (Copiloto IA) */}
                 <button
                   type="button"
                   onClick={() => {
@@ -580,9 +580,10 @@ const VehicleVisualizationScreen = ({
                     onGenerateScript();
                   }}
                   className="w-full bg-white hover:bg-blue-50/50 text-blue-600 hover:text-blue-700 font-bold text-xs py-2.5 px-4 rounded-xl border border-blue-200 shadow-sm flex items-center justify-center space-x-2 transition cursor-pointer"
+                  title="Acionar copiloto para contornar objeções em tempo real"
                 >
                   <MessageSquare className="w-4 h-4 text-blue-500" />
-                  <span>Gerar Argumentação Consultiva</span>
+                  <span>Contornar Objeções · Gerar Argumentação Consultiva</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
 

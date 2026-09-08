@@ -54,7 +54,8 @@ export const vehicleColors = [
   { name: "Preto Carbon", label: "⚫ Carbon Black (Perolizada)", color: "#1a1a1a" },
   { name: "Branco Polar", label: "⚪ Branco Polar (Sólida)", color: "#f5f5f5" },
   { name: "Cinza Granite", label: "🔘 Sting Gray (Exclusiva)", color: "#5a5a5a" },
-  { name: "Vermelho Volcano", label: "🔴 Vermelho Colorado", color: "#B22222" },
+  { name: "Vermelho Colorado", label: "🔴 Vermelho Colorado", color: "#B22222" },
+  { name: "Vermelho Volcano", label: "🔴 Vermelho Volcano", color: "#B22222" },
   { name: "Azul Patriot", label: "🔵 Azul Patriot (Metálica)", color: "#1e3a5f" },
 ];
 
@@ -88,7 +89,7 @@ export const climateConditions = [
 // ─── Clientes Mock ────────────────────────────────────────────────────────────
 const CRM_CLIENT: ClientData = {
   vehicleModel: "RAM RAMPAGE REBEL",
-  vehicleColor: "Verde Recon",
+  vehicleColor: "Vermelho Colorado",
   vehicleYear: "2025 / 2026 (0 km)",
   clientName: "João Silva",
   clientAge: "42",

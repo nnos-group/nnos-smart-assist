@@ -30,4 +30,5 @@ export interface ReheatedLead {
   rejectedAt: string; // ISO date or formatted
   reheatStrategy: ReheatStrategy;
   status: "pending_reheat" | "contacted" | "converted" | "archived";
+  argumentationLogId?: string;
 }

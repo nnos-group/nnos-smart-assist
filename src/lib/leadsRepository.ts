@@ -1,4 +1,5 @@
 import { ReheatedLead } from "@/types/leads";
+import { calculateParetoAnalysis } from "./argumentationRepository";
 
 const STORAGE_KEY = "smart_sell_reheated_leads_v1";
 
@@ -242,4 +243,11 @@ export const resetModelLeads = (): void => {
   } catch (err) {
     console.error("Erro ao restaurar leads modelo:", err);
   }
+};
+
+/**
+ * Retorna análise Pareto de oportunidades e vendas perdidas
+ */
+export const getLostSalesAnalysis = () => {
+  return calculateParetoAnalysis();
 };

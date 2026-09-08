@@ -32,7 +32,8 @@ const extractDataFromSpeech = (transcript: string): Partial<ClientData> => {
 
   // Extract color
   const colorPatterns: Record<string, string> = {
-    "vermelho": "Vermelho Volcano",
+    "colorado": "Vermelho Colorado",
+    "vermelho": "Vermelho Colorado",
     "preto": "Preto Onyx",
     "branco": "Branco Polar",
     "prata": "Prata Billet",

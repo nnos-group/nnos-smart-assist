@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ChevronLeft, LogOut, Check, Flame } from "lucide-react";
+import { ChevronLeft, LogOut, Check, Flame, BarChart3 } from "lucide-react";
 import accessoriesBadge from "@/assets/accessories-badge.jpg";
 import { getReheatedLeads } from "@/lib/leadsRepository";
 
@@ -9,16 +9,16 @@ interface NavigationBarProps {
   onLogout: () => void;
   showBack: boolean;
   onOpenReheatedLeads?: () => void;
+  onOpenLostSales?: () => void;
 }
 
 const steps = [
   { id: 1, label: "Dados & Perfil" },
   { id: 2, label: "Pacote Acessórios" },
-  { id: 3, label: "Visualização 3D" },
-  { id: 4, label: "Script & Fechamento" },
+  { id: 3, label: "Visualização 3D & Fechamento" },
 ];
 
-const NavigationBar = ({ currentStep, onBack, onLogout, showBack, onOpenReheatedLeads }: NavigationBarProps) => {
+const NavigationBar = ({ currentStep, onBack, onLogout, showBack, onOpenReheatedLeads, onOpenLostSales }: NavigationBarProps) => {
   const [leadsCount, setLeadsCount] = useState<number>(0);
 
   useEffect(() => {
@@ -115,6 +115,17 @@ const NavigationBar = ({ currentStep, onBack, onLogout, showBack, onOpenReheated
               <span className="bg-orange-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full min-w-[18px] text-center shadow-xs">
                 {leadsCount}
               </span>
+            </button>
+
+            {/* Botão Painel de Vendas Perdidas (Pareto) */}
+            <button
+              type="button"
+              onClick={onOpenLostSales}
+              className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 border border-rose-400/40 text-rose-200 hover:text-white transition text-xs font-bold shadow-xs cursor-pointer group"
+              title="Acessar Painel Gerencial de Vendas Perdidas (Análise de Pareto)"
+            >
+              <BarChart3 className="w-4 h-4 text-rose-400 group-hover:scale-110 transition-transform" />
+              <span className="hidden sm:inline">Painel de Perdas</span>
             </button>
 
             <div className="hidden lg:flex flex-col text-right">

@@ -3,11 +3,13 @@ import {
   Package, Check, Sparkles, Eye, ArrowRight, User, MapPin, Car, 
   Clock, TrendingUp, Zap, ChevronLeft, BadgePercent, Tag, Award 
 } from "lucide-react";
-import { Accessory, ClientData, getPackageName } from "@/types/accessories";
+import { Accessory, ClientData, ClientSource, getPackageName } from "@/types/accessories";
+import SellArgumentBlock from "@/components/SellArgumentBlock";
 
 interface PackageSuggestionScreenProps {
   accessories: Accessory[];
   clientData: ClientData;
+  clientSource?: ClientSource;
   onAccessoryToggle: (id: string) => void;
   onVisualize: () => void;
   onBack?: () => void;
@@ -20,6 +22,7 @@ const getColorHex = (colorName: string): string => {
     "Branco Polar": "#f3f4f6",
     "Cinza Granite": "#5a5a5a",
     "Vermelho Volcano": "#b91c1c",
+    "Vermelho Colorado": "#b91c1c",
     "Azul Patriot": "#1e3a5f",
   };
   return map[colorName] || "#2d4a3e";
@@ -95,6 +98,7 @@ const StockBadge = ({ status, days }: { status: string; days: number }) => {
 const PackageSuggestionScreen = ({
   accessories,
   clientData,
+  clientSource = "crm",
   onAccessoryToggle,
   onVisualize,
   onBack,
@@ -690,6 +694,16 @@ const PackageSuggestionScreen = ({
           </aside>
         </div>
         {/* END: Main2ColumnGridLayout */}
+
+        {/* BEGIN: SellArgumentBlock — COMO VENDER ESTA RECOMENDAÇÃO */}
+        {selectedAccessories.length > 0 && (
+          <SellArgumentBlock
+            accessories={accessories}
+            clientData={clientData}
+            clientSource={clientSource}
+          />
+        )}
+        {/* END: SellArgumentBlock */}
       </main>
       {/* END: MainContentContainer */}
 

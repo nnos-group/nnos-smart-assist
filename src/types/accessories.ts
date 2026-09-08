@@ -1,3 +1,6 @@
+/** Canal de origem do atendimento ao cliente */
+export type ClientSource = "crm" | "live" | "delivery" | "postsale";
+
 export type StockStatus = "available" | "dormant" | "obsolete";
 
 export interface Accessory {
@@ -274,7 +277,7 @@ export const defaultAccessories: Accessory[] = accessoriesByVehicle["RAM RAMPAGE
 
 export const defaultClientData: ClientData = {
   vehicleModel: "RAM RAMPAGE REBEL",
-  vehicleColor: "Vermelho Volcano",
+  vehicleColor: "Vermelho Colorado",
   vehicleYear: "2024/2025",
   clientName: "João Silva",
   clientAge: "35",
