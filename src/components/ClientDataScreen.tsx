@@ -137,7 +137,7 @@ const SOURCE_TABS: { id: ClientSource; label: string; icon: React.ReactNode; des
   },
   {
     id: "live",
-    label: "Show room",
+    label: "Showroom",
     icon: <Store className="w-4 h-4" />,
     description: "Atendimento presencial no salão",
     color: "rose",
@@ -732,14 +732,14 @@ const ClientDataScreen = ({ clientData, onClientDataChange, onGenerateSuggestion
           />
         )}
 
-        {/* ── Show room: Voice Card ── */}
+        {/* ── Showroom: Voice Card ── */}
         {clientSource === "live" && (
           <div className="flex items-center gap-4 bg-white p-3 sm:px-5 sm:py-4 rounded-2xl border border-rose-200/80 shadow-sm group">
             <VoiceInputButton onDataExtracted={handleVoiceData} hideLabel={true} />
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-sm font-bold text-slate-900">Preenchimento por Voz (IA Voice)</span>
-                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-600 border border-rose-200">SHOW ROOM</span>
+                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-rose-50 text-rose-600 border border-rose-200">SHOWROOM</span>
               </div>
               <p className="text-xs text-slate-500 mt-0.5">Captura contextual por microfone em tempo real durante o atendimento no salão de vendas</p>
             </div>

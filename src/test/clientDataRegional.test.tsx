@@ -16,8 +16,8 @@ const mockClientData: ClientData = {
   climateCondition: "Alta Incidência de Chuvas & Poeira",
 };
 
-describe("ClientDataScreen - Show room and Regional Predictive Intelligence", () => {
-  it("renders 'Show room' source selector button instead of 'Ao Vivo'", () => {
+describe("ClientDataScreen - Showroom and Regional Predictive Intelligence", () => {
+  it("renders 'Showroom' source selector button instead of 'Ao Vivo'", () => {
     render(
       <ClientDataScreen
         clientData={mockClientData}
@@ -26,11 +26,11 @@ describe("ClientDataScreen - Show room and Regional Predictive Intelligence", ()
       />
     );
 
-    // Should find Show room button and badge
-    expect(screen.getByRole("button", { name: /Show room/i })).toBeInTheDocument();
+    // Should find Showroom button and badge
+    expect(screen.getByRole("button", { name: /Showroom/i })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: /^Ao Vivo$/i })).not.toBeInTheDocument();
     expect(screen.getByText(/Atendimento presencial no salão/i)).toBeInTheDocument();
-    expect(screen.getByText("SHOW ROOM")).toBeInTheDocument();
+    expect(screen.getByText("SHOWROOM")).toBeInTheDocument();
   });
 
   it("renders regional predictive analysis for Mato Grosso without unwanted terms", () => {
