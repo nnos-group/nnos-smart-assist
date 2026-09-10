@@ -123,6 +123,26 @@ describe("VehicleVisualizationScreen", () => {
     expect(screen.getByText(/DEPOIS • 2 ACESSÓRIOS/i)).toBeInTheDocument();
   });
 
+  it("toggles between Externo and Interno perspective views correctly", () => {
+    render(
+      <VehicleVisualizationScreen
+        accessories={mockAccessories}
+        clientData={mockClientData}
+        onAccessoryToggle={vi.fn()}
+        onGenerateScript={vi.fn()}
+        onAddToProposal={vi.fn()}
+      />
+    );
+
+    const btnInterno = screen.getByRole("button", { name: "Interno" });
+    fireEvent.click(btnInterno);
+    expect(screen.getByText(/Cabine Interna/i)).toBeInTheDocument();
+
+    const btnExterno = screen.getByRole("button", { name: "Externo" });
+    fireEvent.click(btnExterno);
+    expect(screen.getByText(/Visão Externa/i)).toBeInTheDocument();
+  });
+
   it("calls onAccessoryToggle when clicking on an accessory in the right list", () => {
     const handleToggle = vi.fn();
     render(

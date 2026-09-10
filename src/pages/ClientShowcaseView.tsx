@@ -21,6 +21,7 @@ const ClientShowcaseView = () => {
   const consultantName = searchParams.get("consultant") || "Consultor da Concessionária";
 
   const [showAfter, setShowAfter] = useState(true);
+  const [viewPerspective, setViewPerspective] = useState<"externo" | "interno">("externo");
 
   const isRenegade = vehicleModel.toUpperCase().includes("RENEGADE");
   const isRampage = vehicleModel.toUpperCase().includes("RAMPAGE");
@@ -32,6 +33,19 @@ const ClientShowcaseView = () => {
     : `${import.meta.env.BASE_URL}/`;
 
   const getVideoSrc = () => {
+    if (viewPerspective === "interno") {
+      if (isRenegade) {
+        return `${base}videos/${showAfter ? "Jeep_Renegade_interior_cabin_pan_com.mp4" : "Jeep_Renegade_interior_cabin_pan_sem.mp4"}`;
+      }
+      if (isRampage) {
+        return `${base}videos/${showAfter ? "Ram_Rampage_cabin_interior_com.mp4" : "Ram_Rampage_cabin_interior_sem.mp4"}`;
+      }
+      if (isCompass) {
+        return `${base}videos/${showAfter ? "Jeep_Compass_interior_cabin_com.mp4" : "Jeep_Compass_interior_cabin_sem.mp4"}`;
+      }
+      return null;
+    }
+
     if (isRenegade) {
       return `${base}videos/${showAfter ? "Jeep_Renegade_com.mp4" : "Jeep_Renegade_sem.mp4"}`;
     }
@@ -164,30 +178,79 @@ const ClientShowcaseView = () => {
               </div>
             </div>
 
-            {/* Before / After Switcher */}
-            <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 self-start sm:self-auto">
-              <button
-                type="button"
-                onClick={() => setShowAfter(false)}
-                className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition cursor-pointer ${
-                  !showAfter
-                    ? "font-bold text-slate-900 bg-white shadow-sm border border-slate-200"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                Original de Fábrica
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowAfter(true)}
-                className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition cursor-pointer ${
-                  showAfter
-                    ? "font-bold text-slate-900 bg-white shadow-sm border border-slate-200"
-                    : "text-slate-600 hover:text-slate-900"
-                }`}
-              >
-                Com Seus Acessórios
-              </button>
+            {/* Controls: Externo/Interno e Antes/Depois */}
+            <div className="flex flex-wrap items-center gap-2.5 self-start sm:self-auto">
+              {/* Dynamic Perspective Switcher */}
+              <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setViewPerspective("externo")}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition cursor-pointer ${
+                    viewPerspective === "externo"
+                      ? "font-bold text-slate-900 bg-white shadow-sm border border-slate-200"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  Externo
+                </button>
+                <div
+                  onClick={() => setViewPerspective(viewPerspective === "externo" ? "interno" : "externo")}
+                  className={`w-10 h-5 rounded-full flex items-center p-0.5 cursor-pointer mx-1 transition ${
+                    viewPerspective === "interno" ? "bg-slate-900 justify-end" : "bg-slate-300 justify-start"
+                  }`}
+                  role="switch"
+                  aria-checked={viewPerspective === "interno"}
+                >
+                  <span className="w-4 h-4 bg-white rounded-full shadow-md transition-transform" />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setViewPerspective("interno")}
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition cursor-pointer ${
+                    viewPerspective === "interno"
+                      ? "font-bold text-slate-900 bg-white shadow-sm border border-slate-200"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  Interno
+                </button>
+              </div>
+
+              {/* Before / After Switcher */}
+              <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+                <button
+                  type="button"
+                  onClick={() => setShowAfter(false)}
+                  className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition cursor-pointer ${
+                    !showAfter
+                      ? "font-bold text-slate-900 bg-white shadow-sm border border-slate-200"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  Original de Fábrica
+                </button>
+                <div
+                  onClick={() => setShowAfter(!showAfter)}
+                  className={`w-10 h-5 rounded-full flex items-center p-0.5 cursor-pointer mx-1 transition ${
+                    showAfter ? "bg-slate-900 justify-end" : "bg-slate-300 justify-start"
+                  }`}
+                  role="switch"
+                  aria-checked={showAfter}
+                >
+                  <span className="w-4 h-4 bg-white rounded-full shadow-md transition-transform" />
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowAfter(true)}
+                  className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition cursor-pointer ${
+                    showAfter
+                      ? "font-bold text-slate-900 bg-white shadow-sm border border-slate-200"
+                      : "text-slate-600 hover:text-slate-900"
+                  }`}
+                >
+                  Com Seus Acessórios
+                </button>
+              </div>
             </div>
           </div>
 
@@ -195,7 +258,7 @@ const ClientShowcaseView = () => {
           <div className="relative w-full aspect-[16/9] bg-slate-950 flex items-center justify-center overflow-hidden select-none">
             {hasVideo ? (
               <video
-                key={`${isCompass ? "compass" : isRenegade ? "renegade" : "rampage"}-client-video-${showAfter ? "com" : "sem"}`}
+                key={`${isCompass ? "compass" : isRenegade ? "renegade" : "rampage"}-${viewPerspective}-client-${showAfter ? "com" : "sem"}`}
                 src={getVideoSrc() || undefined}
                 autoPlay
                 loop
@@ -214,8 +277,13 @@ const ClientShowcaseView = () => {
             {/* Overlay Gradient */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30 pointer-events-none" />
 
-            {/* Top Badge */}
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none">
+            {/* Top Badges */}
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex items-center gap-2">
+              <span className="inline-flex items-center space-x-1.5 bg-slate-900/90 text-white backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-white/20 shadow-lg">
+                <span className="w-2 h-2 rounded-full bg-sky-400" />
+                <span>{viewPerspective === "interno" ? "Cabine Interna" : "Visão Externa"}</span>
+              </span>
+
               <span className="inline-flex items-center space-x-2 bg-slate-900/90 text-white backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wider border border-white/20 shadow-lg">
                 {showAfter ? (
                   <>

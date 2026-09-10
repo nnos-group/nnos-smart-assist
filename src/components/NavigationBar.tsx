@@ -10,6 +10,7 @@ interface NavigationBarProps {
   showBack: boolean;
   onOpenReheatedLeads?: () => void;
   onOpenLostSales?: () => void;
+  hideLegacyStepper?: boolean;
 }
 
 const steps = [
@@ -18,7 +19,15 @@ const steps = [
   { id: 3, label: "Visualização 3D & Fechamento" },
 ];
 
-const NavigationBar = ({ currentStep, onBack, onLogout, showBack, onOpenReheatedLeads, onOpenLostSales }: NavigationBarProps) => {
+const NavigationBar = ({
+  currentStep,
+  onBack,
+  onLogout,
+  showBack,
+  onOpenReheatedLeads,
+  onOpenLostSales,
+  hideLegacyStepper = false,
+}: NavigationBarProps) => {
   const [leadsCount, setLeadsCount] = useState<number>(0);
 
   useEffect(() => {
@@ -63,7 +72,8 @@ const NavigationBar = ({ currentStep, onBack, onLogout, showBack, onOpenReheated
           </div>
 
           {/* Stepper Navigation Bar */}
-          <nav aria-label="Progresso da Proposta" className="hidden md:flex items-center gap-2 bg-slate-900/60 px-3 py-1.5 rounded-full border border-slate-700/60 shrink-0">
+          {!hideLegacyStepper && (
+            <nav aria-label="Progresso da Proposta" className="hidden md:flex items-center gap-2 bg-slate-900/60 px-3 py-1.5 rounded-full border border-slate-700/60 shrink-0">
             {steps.map((step, index) => {
               const isActive = step.id === currentStep;
               const isPast = step.id < currentStep;
@@ -100,6 +110,7 @@ const NavigationBar = ({ currentStep, onBack, onLogout, showBack, onOpenReheated
               );
             })}
           </nav>
+          )}
 
           {/* Right Side: Leads Reaquecimento, Concessionária Hub & Logout */}
           <div className="flex items-center gap-3 shrink-0">

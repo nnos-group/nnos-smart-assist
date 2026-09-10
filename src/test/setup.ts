@@ -13,3 +13,6 @@ Object.defineProperty(window, "matchMedia", {
     dispatchEvent: () => {},
   }),
 });
+
+// Mock scrollTo para evitar 'Not implemented: window.scrollTo' no jsdom
+window.scrollTo = () => {};

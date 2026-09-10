@@ -325,6 +325,25 @@ export const saveLostSale = (record: Omit<LostSaleRecord, "id" | "lostAt">): Los
   return newRecord;
 };
 
+export const logLostSale = (data: Partial<LostSaleRecord> & Record<string, unknown>): LostSaleRecord => {
+  return saveLostSale({
+    clientName: (data.clientName as string) || "Cliente",
+    vehicleModel: (data.vehicleModel as string) || "Compass",
+    region: (data.region as string) || "SP",
+    seller: (data.seller as string) || "Consultor",
+    dealership: (data.dealership as string) || "Concessionária Autorizada",
+    accessoriesRefused: Array.isArray(data.selectedAccessories)
+      ? (data.selectedAccessories as string[]).map((name: string, i: number) => ({ id: `acc-${i}`, name, price: 0 }))
+      : Array.isArray(data.accessoriesRefused)
+      ? data.accessoriesRefused
+      : [],
+    totalLostValue: (data.totalValue as number) || (data.totalLostValue as number) || 0,
+    lossReason: (data.primaryReason as string) || (data.lossReason as string) || "Preço",
+    notes: (data.notes as string) || (data.lostNotes as string) || "",
+    argumentationLogId: data.argumentationLogId as string | undefined,
+  });
+};
+
 // ─── Pareto Analysis ───────────────────────────────────────────────────────────
 
 const buildRankedMetrics = (

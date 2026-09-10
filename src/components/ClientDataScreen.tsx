@@ -87,7 +87,7 @@ export const climateConditions = [
 ];
 
 // ─── Clientes Mock ────────────────────────────────────────────────────────────
-const CRM_CLIENT: ClientData = {
+export const CRM_CLIENT: ClientData = {
   vehicleModel: "RAM RAMPAGE REBEL",
   vehicleColor: "Vermelho Colorado",
   vehicleYear: "2025 / 2026 (0 km)",
@@ -107,7 +107,7 @@ const CRM_ACCESSORIES: CrmAccessory[] = [
   { name: "Kit Vedação Anti-Poeira (porta e caçamba)", inStock: false },
 ];
 
-const DELIVERY_CLIENT: ClientData = {
+export const DELIVERY_CLIENT: ClientData = {
   vehicleModel: "JEEP RENEGADE TRAILHAWK",
   vehicleColor: "Verde Recon",
   vehicleYear: "2024 / 2025",

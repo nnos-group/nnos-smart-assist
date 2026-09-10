@@ -830,17 +830,17 @@ const FALLBACK_PROFILE: RegionalProfileTemplate = {
  * com base no Estado, Terreno, Condição Climática e Modelo do Veículo.
  */
 export function getRegionalTelemetryInsight(
-  stateInput: string,
-  terrainInput: string,
-  climateInput: string,
+  stateInput: string = "São Paulo (SP)",
+  terrainInput: string = "",
+  climateInput: string = "",
   vehicleModelInput?: string
 ): RegionalIntelligenceData {
   // Extrair sigla do estado (ex: "Mato Grosso (MT)" -> "MT")
-  const ufMatch = stateInput.match(/\(([A-Z]{2})\)/);
-  const uf = ufMatch ? ufMatch[1] : stateInput.trim().toUpperCase();
+  const ufMatch = (stateInput || "").match(/\(([A-Z]{2})\)/);
+  const uf = ufMatch ? ufMatch[1] : (stateInput || "").trim().toUpperCase();
 
   const profile = REGIONAL_PROFILES[uf] || FALLBACK_PROFILE;
-  const stateNameClean = stateInput.replace(/\s*\(.*\)/, "").trim() || "Região Selecionada";
+  const stateNameClean = (stateInput || "").replace(/\s*\(.*\)/, "").trim() || "Região Selecionada";
 
   // Ajustes dinâmicos com base no tipo de terreno
   let soilMod = 0;
@@ -848,27 +848,30 @@ export function getRegionalTelemetryInsight(
   let urbanMod = 0;
   let solarMod = 0;
 
-  if (terrainInput.includes("Rural") || terrainInput.includes("Terra")) {
+  const safeTerrain = terrainInput || "";
+  const safeClimate = climateInput || "";
+
+  if (safeTerrain.includes("Rural") || safeTerrain.includes("Terra")) {
     soilMod += 8;
     urbanMod -= 15;
-  } else if (terrainInput.includes("Litoral") || terrainInput.includes("Maresia")) {
+  } else if (safeTerrain.includes("Litoral") || safeTerrain.includes("Maresia")) {
     salinityMod += 18;
     soilMod -= 10;
-  } else if (terrainInput.includes("100% Urbano")) {
+  } else if (safeTerrain.includes("100% Urbano")) {
     urbanMod += 12;
     soilMod -= 20;
-  } else if (terrainInput.includes("Trilhas Off-Road")) {
+  } else if (safeTerrain.includes("Trilhas Off-Road")) {
     soilMod += 12;
     urbanMod -= 10;
   }
 
   // Ajustes dinâmicos com base no clima
-  if (climateInput.includes("Calor Extremo")) {
+  if (safeClimate.includes("Calor Extremo")) {
     solarMod += 8;
-  } else if (climateInput.includes("Secura Extrema")) {
+  } else if (safeClimate.includes("Secura Extrema")) {
     solarMod += 5;
     soilMod += 6;
-  } else if (climateInput.includes("Chuvas")) {
+  } else if (safeClimate.includes("Chuvas")) {
     soilMod += 4;
   }
 

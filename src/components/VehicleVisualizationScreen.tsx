@@ -12,9 +12,11 @@ interface VehicleVisualizationScreenProps {
   accessories: Accessory[];
   clientData: ClientData;
   onAccessoryToggle: (id: string) => void;
-  onGenerateScript: () => void;
-  onAddToProposal: () => void;
+  onGenerateScript?: () => void;
+  onAddToProposal?: () => void;
   onBack?: () => void;
+  consultativeMode?: boolean;
+  onProceedToExplanation?: () => void;
 }
 
 const VehicleVisualizationScreen = ({
@@ -24,8 +26,11 @@ const VehicleVisualizationScreen = ({
   onGenerateScript,
   onAddToProposal,
   onBack,
+  consultativeMode = false,
+  onProceedToExplanation,
 }: VehicleVisualizationScreenProps) => {
   const [showAfter, setShowAfter] = useState(true);
+  const [viewPerspective, setViewPerspective] = useState<"externo" | "interno">("externo");
   const [sellerDiscount, setSellerDiscount] = useState<number>(0);
   const [factoryBonus, setFactoryBonus] = useState<number>(0);
   const [showRejectModal, setShowRejectModal] = useState(false);
@@ -40,6 +45,19 @@ const VehicleVisualizationScreen = ({
     : `${import.meta.env.BASE_URL}/`;
 
   const getVideoSrc = () => {
+    if (viewPerspective === "interno") {
+      if (isRenegade) {
+        return `${base}videos/${showAfter ? "Jeep_Renegade_interior_cabin_pan_com.mp4" : "Jeep_Renegade_interior_cabin_pan_sem.mp4"}`;
+      }
+      if (isRampage) {
+        return `${base}videos/${showAfter ? "Ram_Rampage_cabin_interior_com.mp4" : "Ram_Rampage_cabin_interior_sem.mp4"}`;
+      }
+      if (isCompass) {
+        return `${base}videos/${showAfter ? "Jeep_Compass_interior_cabin_com.mp4" : "Jeep_Compass_interior_cabin_sem.mp4"}`;
+      }
+      return null;
+    }
+
     if (isRenegade) {
       return `${base}videos/${showAfter ? "Jeep_Renegade_com.mp4" : "Jeep_Renegade_sem.mp4"}`;
     }
@@ -128,11 +146,11 @@ const VehicleVisualizationScreen = ({
                   className="inline-flex items-center text-xs font-semibold text-blue-600 hover:text-blue-800 transition cursor-pointer"
                 >
                   <ChevronLeft className="w-4 h-4 mr-1" />
-                  Voltar para Pacote Acessórios
+                  {consultativeMode ? "Voltar para Recomendar Acessórios" : "Voltar para Pacote Acessórios"}
                 </button>
               ) : (
                 <span className="text-xs font-semibold text-slate-500">
-                  Etapa 3 · Visualização
+                  {consultativeMode ? "Etapa 3 de 7 · Ver no veículo" : "Etapa 3 · Visualização"}
                 </span>
               )}
             </div>
@@ -177,7 +195,7 @@ const VehicleVisualizationScreen = ({
                 {hasVideo ? (
                   /* High-Definition Official Video */
                   <video
-                    key={`${isCompass ? "compass" : isRenegade ? "renegade" : "rampage"}-video-${showAfter ? "com" : "sem"}`}
+                    key={`${isCompass ? "compass" : isRenegade ? "renegade" : "rampage"}-${viewPerspective}-${showAfter ? "com" : "sem"}`}
                     src={getVideoSrc() || undefined}
                     autoPlay
                     loop
@@ -199,10 +217,18 @@ const VehicleVisualizationScreen = ({
                 {/* Gradient Overlays for UI readability */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/25 pointer-events-none" />
 
-                {/* Top Overlay Badge: Estado Atual */}
-                <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20">
+                {/* Top Overlay Badges: Perspectiva e Estado */}
+                <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
                   <span
-                    className="inline-flex items-center space-x-2 bg-slate-900/90 text-white backdrop-blur-md px-5 py-2 rounded-full text-xs font-extrabold uppercase tracking-wider border border-white/20 shadow-lg ring-1 ring-black/40"
+                    className="inline-flex items-center space-x-1.5 bg-slate-900/90 text-white backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border border-white/20 shadow-lg"
+                    id="badge-status-perspective"
+                  >
+                    <span className="w-2 h-2 rounded-full bg-sky-400" />
+                    <span>{viewPerspective === "interno" ? "Cabine Interna" : "Visão Externa"}</span>
+                  </span>
+
+                  <span
+                    className="inline-flex items-center space-x-2 bg-slate-900/90 text-white backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wider border border-white/20 shadow-lg ring-1 ring-black/40"
                     id="badge-status-stage"
                   >
                     {showAfter ? (
@@ -241,7 +267,7 @@ const VehicleVisualizationScreen = ({
                 <div className="absolute bottom-4 left-4 z-20">
                   <div className="inline-flex items-center space-x-2 bg-slate-900/90 text-white text-xs font-semibold px-3 py-2 rounded-lg border border-slate-700/80 shadow-md backdrop-blur-sm">
                     <Video className="w-4 h-4 text-blue-400" />
-                    <span>Vídeo Oficial {getVehicleShortName()}</span>
+                    <span>Vídeo Oficial {getVehicleShortName()} ({viewPerspective === "interno" ? "Interno / Cabine" : "Externo"})</span>
                     <span className="bg-blue-600 text-[10px] uppercase px-1.5 py-0.5 rounded font-bold text-white">4K</span>
                   </div>
                 </div>
@@ -259,57 +285,178 @@ const VehicleVisualizationScreen = ({
                     Demonstração Dinâmica {getVehicleShortName()}
                   </h4>
                   <p className="text-xs text-slate-500">
-                    Alterne "Antes / Depois" para comparar a transformação com o cliente
+                    Alterne "Externo / Interno" e "Antes / Depois" para comparar a transformação
                   </p>
                 </div>
               </div>
 
-              {/* Dynamic Before/After Pill Switcher */}
-              <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
-                <button
-                  type="button"
-                  onClick={() => setShowAfter(false)}
-                  className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition cursor-pointer ${
-                    !showAfter
-                      ? "font-bold text-slate-900 bg-white shadow-sm border border-slate-200"
-                      : "text-slate-600 hover:text-slate-900"
-                  }`}
-                  id="btn-switch-antes"
-                >
-                  Antes
-                </button>
+              {/* Dynamic Controls Group: Externo/Interno ao lado de Antes/Depois */}
+              <div className="flex flex-wrap items-center gap-2.5">
+                {/* Dynamic Perspective Pill Switcher (Externo / Interno) */}
+                <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-2xs">
+                  <button
+                    type="button"
+                    onClick={() => setViewPerspective("externo")}
+                    className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition cursor-pointer ${
+                      viewPerspective === "externo"
+                        ? "font-bold text-slate-900 bg-white shadow-sm border border-slate-200"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                    id="btn-switch-externo"
+                  >
+                    Externo
+                  </button>
 
-                <div
-                  onClick={() => setShowAfter(!showAfter)}
-                  className={`w-11 h-6 rounded-full flex items-center p-0.5 cursor-pointer mx-1 transition ${
-                    showAfter ? "bg-slate-900 justify-end" : "bg-slate-300 justify-start"
-                  }`}
-                  id="visual-toggle-rail"
-                  role="switch"
-                  aria-checked={showAfter}
-                  aria-label="Alternar visualização Antes e Depois"
-                >
-                  <span className="w-5 h-5 bg-white rounded-full shadow-md transition-transform" />
+                  <div
+                    onClick={() => setViewPerspective(viewPerspective === "externo" ? "interno" : "externo")}
+                    className={`w-11 h-6 rounded-full flex items-center p-0.5 cursor-pointer mx-1 transition ${
+                      viewPerspective === "interno" ? "bg-slate-900 justify-end" : "bg-slate-300 justify-start"
+                    }`}
+                    id="perspective-toggle-rail"
+                    role="switch"
+                    aria-checked={viewPerspective === "interno"}
+                    aria-label="Alternar visualização Externa e Interna"
+                  >
+                    <span className="w-5 h-5 bg-white rounded-full shadow-md transition-transform" />
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setViewPerspective("interno")}
+                    className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition cursor-pointer ${
+                      viewPerspective === "interno"
+                        ? "font-bold text-slate-900 bg-white shadow-sm border border-slate-200"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                    id="btn-switch-interno"
+                  >
+                    Interno
+                  </button>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setShowAfter(true)}
-                  className={`px-4 py-1.5 text-xs font-semibold rounded-lg transition cursor-pointer ${
-                    showAfter
-                      ? "font-bold text-slate-900 bg-white shadow-sm border border-slate-200"
-                      : "text-slate-600 hover:text-slate-900"
-                  }`}
-                  id="btn-switch-depois"
-                >
-                  Depois
-                </button>
+                {/* Dynamic Before/After Pill Switcher */}
+                <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-2xs">
+                  <button
+                    type="button"
+                    onClick={() => setShowAfter(false)}
+                    className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition cursor-pointer ${
+                      !showAfter
+                        ? "font-bold text-slate-900 bg-white shadow-sm border border-slate-200"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                    id="btn-switch-antes"
+                  >
+                    Antes
+                  </button>
+
+                  <div
+                    onClick={() => setShowAfter(!showAfter)}
+                    className={`w-11 h-6 rounded-full flex items-center p-0.5 cursor-pointer mx-1 transition ${
+                      showAfter ? "bg-slate-900 justify-end" : "bg-slate-300 justify-start"
+                    }`}
+                    id="visual-toggle-rail"
+                    role="switch"
+                    aria-checked={showAfter}
+                    aria-label="Alternar visualização Antes e Depois"
+                  >
+                    <span className="w-5 h-5 bg-white rounded-full shadow-md transition-transform" />
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowAfter(true)}
+                    className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition cursor-pointer ${
+                      showAfter
+                        ? "font-bold text-slate-900 bg-white shadow-sm border border-slate-200"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                    id="btn-switch-depois"
+                  >
+                    Depois
+                  </button>
+                </div>
               </div>
             </div>
           </section>
           {/* END: Interactive Vehicle Viewport */}
 
-          {/* RIGHT COLUMN: Resumo Comercial & Acessórios Interativos (Mesmo Layout do Pacote de Acessórios) */}
+          {/* RIGHT COLUMN: Resumo Comercial & Acessórios Interativos */}
+          {consultativeMode ? (
+            <aside aria-label="Demonstração do Veículo e Acessórios" className="lg:col-span-4 space-y-4">
+              <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-md sticky top-20 space-y-4">
+                {/* Header do Resumo */}
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <div>
+                    <h3 className="font-extrabold text-slate-900 text-sm tracking-tight uppercase">Acessórios Aplicados</h3>
+                    <p className="text-xs text-slate-400 font-medium">Demonstração visual do conjunto</p>
+                  </div>
+                  <span className="inline-flex items-center px-2 py-1 rounded-md text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-100">
+                    {selectedAccessories.length} aplicados
+                  </span>
+                </div>
+
+                {/* Lista de Acessórios com Checkboxes Selecionáveis (sem preços!) */}
+                <div className="space-y-1.5 text-xs max-h-[300px] overflow-y-auto pr-1">
+                  {accessories.map((item) => {
+                    const isChecked = item.selected;
+                    return (
+                      <label
+                        key={item.id}
+                        className={`flex items-center justify-between px-3 py-2 rounded-xl transition cursor-pointer select-none ${
+                          isChecked
+                            ? "bg-slate-50 border border-slate-200 text-slate-900 font-medium"
+                            : "opacity-45 hover:opacity-80 hover:bg-slate-50/50 text-slate-500"
+                        }`}
+                      >
+                        <div className="flex items-center space-x-2.5 min-w-0 pr-2">
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={() => onAccessoryToggle(item.id)}
+                            className="w-4 h-4 rounded text-blue-600 border-slate-300 focus:ring-blue-500 cursor-pointer shrink-0"
+                          />
+                          <span className="text-base mr-1">{item.icon}</span>
+                          <span className="truncate text-xs">{item.name}</span>
+                        </div>
+                        <span className={`text-[11px] font-bold shrink-0 ${isChecked ? "text-sky-700" : "text-slate-400"}`}>
+                          {isChecked ? "Aplicado" : "Original"}
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+
+                {/* Callout Consultivo: Sem preços nesta etapa */}
+                <div className="bg-sky-50/80 p-3.5 rounded-xl border border-sky-100 text-xs text-sky-900 space-y-1">
+                  <span className="font-bold block">Foco na Percepção Visual:</span>
+                  <p className="text-[11px] text-sky-800 leading-relaxed">
+                    Nesta etapa o cliente visualiza a transformação estética e funcional do veículo. Os valores e condições de pagamento serão apresentados na Etapa 5 após a explicação dos benefícios.
+                  </p>
+                </div>
+
+                {/* Botões de Ação da Etapa 3 */}
+                <div className="space-y-2.5 pt-2">
+                  <button
+                    type="button"
+                    onClick={onProceedToExplanation}
+                    className="w-full bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 text-white font-extrabold text-sm py-3.5 px-4 rounded-xl shadow-md flex items-center justify-center space-x-2 transition cursor-pointer"
+                  >
+                    <span>Entender cada acessório</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleShareWhatsApp}
+                    className="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-xs py-2.5 px-4 rounded-xl shadow-xs flex items-center justify-center space-x-2 transition cursor-pointer"
+                  >
+                    <Share2 className="w-4 h-4 text-emerald-600" />
+                    <span>Enviar Visualização 3D ao WhatsApp</span>
+                  </button>
+                </div>
+              </div>
+            </aside>
+          ) : (
           <aside aria-label="Resumo Comercial e F&I" className="lg:col-span-4 space-y-4">
             <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-md sticky top-20 space-y-4">
               {/* Header do Resumo */}
@@ -636,6 +783,7 @@ const VehicleVisualizationScreen = ({
               </span>
             </div>
           </aside>
+          )}
           {/* END: RIGHT COLUMN */}
         </div>
         {/* END: MainShowcaseGrid */}
