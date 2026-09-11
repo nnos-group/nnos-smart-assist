@@ -1,6 +1,7 @@
 import React from "react";
-import { Tag, Check, Clock } from "lucide-react";
+import { Tag, Check, Clock, Sparkles, AlertCircle } from "lucide-react";
 import { CommercialCampaign } from "@/types/salesJourney";
+import { toast } from "sonner";
 
 interface CommercialCampaignBannerProps {
   eligibleCampaigns: CommercialCampaign[];
@@ -13,7 +14,40 @@ export const CommercialCampaignBanner: React.FC<CommercialCampaignBannerProps> =
   selectedCampaign,
   onSelectCampaign,
 }) => {
-  if (eligibleCampaigns.length === 0) return null;
+  const handleToggleCampaign = (camp: CommercialCampaign) => {
+    const isSelected = selectedCampaign?.id === camp.id;
+    if (isSelected) {
+      onSelectCampaign(undefined);
+      toast.info(`Campanha "${camp.name}" removida da proposta.`);
+    } else {
+      onSelectCampaign(camp);
+      const discountText =
+        camp.discountType === "percentage"
+          ? `${camp.discountValue}% de desconto`
+          : `R$ ${camp.discountValue?.toLocaleString("pt-BR")} de abatimento`;
+      toast.success(`Campanha Oficial "${camp.name}" ativada! (${discountText})`);
+    }
+  };
+
+  if (eligibleCampaigns.length === 0) {
+    return (
+      <div className="bg-purple-50/70 rounded-2xl border-2 border-purple-200 p-4 sm:p-5 flex items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl bg-purple-200 text-purple-800 flex items-center justify-center shrink-0">
+            <Tag className="w-4 h-4" />
+          </div>
+          <div>
+            <h4 className="text-xs sm:text-sm font-black text-purple-950 uppercase">
+              Gatilhos Comerciais Homologados &amp; Campanhas Vigentes
+            </h4>
+            <p className="text-xs text-slate-600 mt-0.5">
+              Nenhuma campanha ativada para esta configuração. Adicione itens acima de R$ 2.000 para liberar gatilhos oficiais.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-2xl border-2 border-purple-300 shadow-sm p-5 sm:p-6 space-y-4 animate-in fade-in">
@@ -41,6 +75,15 @@ export const CommercialCampaignBanner: React.FC<CommercialCampaignBannerProps> =
           const isSelected = selectedCampaign?.id === camp.id;
           const endDateFormatted = new Date(camp.endDate).toLocaleDateString("pt-BR");
 
+          let benefitBadge = "Condição Especial";
+          if (camp.campaignType === "freeInstallation") {
+            benefitBadge = "Instalação Cortesia (R$ 450)";
+          } else if (camp.discountType === "percentage" && camp.discountValue) {
+            benefitBadge = `${camp.discountValue}% de Desconto`;
+          } else if (camp.discountType === "fixed" && camp.discountValue) {
+            benefitBadge = `R$ ${camp.discountValue.toLocaleString("pt-BR")} OFF`;
+          }
+
           return (
             <div
               key={camp.id}
@@ -52,7 +95,13 @@ export const CommercialCampaignBanner: React.FC<CommercialCampaignBannerProps> =
             >
               <div>
                 <div className="flex items-start justify-between gap-2">
-                  <h4 className="text-xs sm:text-sm font-black text-slate-900 leading-snug">{camp.name}</h4>
+                  <div>
+                    <h4 className="text-xs sm:text-sm font-black text-slate-900 leading-snug">{camp.name}</h4>
+                    <span className="inline-flex items-center gap-1 mt-1 text-[11px] font-extrabold text-purple-700 bg-purple-100/80 px-2 py-0.5 rounded border border-purple-200">
+                      <Sparkles className="w-3 h-3 text-purple-600" />
+                      {benefitBadge}
+                    </span>
+                  </div>
                   {isSelected ? (
                     <span className="flex items-center gap-1 text-[10px] font-black bg-purple-700 text-white px-2.5 py-0.5 rounded-full shrink-0 shadow-2xs">
                       <Check className="w-3 h-3 stroke-[3]" /> ATIVA
@@ -82,14 +131,14 @@ export const CommercialCampaignBanner: React.FC<CommercialCampaignBannerProps> =
 
               <button
                 type="button"
-                onClick={() => onSelectCampaign(isSelected ? undefined : camp)}
+                onClick={() => handleToggleCampaign(camp)}
                 className={`w-full py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs ${
                   isSelected
                     ? "bg-purple-700 hover:bg-purple-800 text-white shadow-sm"
                     : "bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-300 font-extrabold"
                 }`}
               >
-                {isSelected ? "✓ Campanha Aplicada no Investimento" : "+ Aplicar Esta Campanha ao Investimento"}
+                {isSelected ? "✓ Campanha Aplicada no Investimento (ATIVA)" : "+ Aplicar Esta Campanha ao Investimento"}
               </button>
             </div>
           );

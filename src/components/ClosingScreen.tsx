@@ -1,8 +1,8 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import {
   CheckCircle2, ShoppingCart, MessageCircle, ArrowLeft,
   Calendar, Award, Clock, DollarSign, XCircle, Share2,
-  FileText, Check, AlertTriangle, Sparkles, Send
+  FileText, Check, AlertTriangle, Sparkles, Send, Trash2
 } from "lucide-react";
 import { useSalesJourney } from "@/context/SalesJourneyContext";
 import { ClosingStatus, LostSaleDetails, ObjectionCategory } from "@/types/salesJourney";
@@ -18,6 +18,7 @@ export const ClosingScreen: React.FC<ClosingScreenProps> = ({ onSaleWon }) => {
   const {
     state,
     availableAccessories,
+    toggleAccessory,
     finalizeSale,
     prevStep,
   } = useSalesJourney();
@@ -190,18 +191,49 @@ export const ClosingScreen: React.FC<ClosingScreenProps> = ({ onSaleWon }) => {
 
           {/* LISTA DE ITENS CONFIRMADOS */}
           <div className="space-y-2 pt-2">
-            <span className="text-xs font-bold text-slate-800 block">Itens confirmados para instalação:</span>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {selectedAccessories.map((item) => (
-                <div key={item.id} className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70 flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2 truncate">
-                    <span>{item.icon}</span>
-                    <span className="font-semibold text-slate-800 truncate">{item.name}</span>
-                  </div>
-                  <Check className="w-4 h-4 text-emerald-600 shrink-0" />
-                </div>
-              ))}
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-800 block">
+                Itens confirmados para instalação ({selectedAccessories.length}):
+              </span>
+              {selectedAccessories.length > 0 && (
+                <span className="text-[11px] text-slate-500">Clique na lixeira para retirar</span>
+              )}
             </div>
+
+            {selectedAccessories.length === 0 ? (
+              <div className="p-4 text-center bg-slate-50 rounded-xl border border-dashed border-slate-200 text-xs text-slate-500">
+                Nenhum item selecionado para faturamento.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {selectedAccessories.map((item) => (
+                  <div
+                    key={item.id}
+                    className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70 flex items-center justify-between text-xs hover:border-slate-300 transition-colors"
+                  >
+                    <div className="flex items-center gap-2 truncate">
+                      <span>{item.icon}</span>
+                      <span className="font-semibold text-slate-800 truncate">{item.name}</span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          toggleAccessory(item.id);
+                          toast.info(`"${item.name}" retirado da proposta.`);
+                        }}
+                        className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-md transition-colors cursor-pointer"
+                        title={`Retirar ${item.name} da proposta`}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* SUGESTÕES DE TÉCNICAS DE FECHAMENTO */}

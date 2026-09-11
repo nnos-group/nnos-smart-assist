@@ -244,33 +244,6 @@ const VehicleVisualizationScreen = ({
                     )}
                   </span>
                 </div>
-
-                {/* Interactive Hotspot Tags (Pinned to accessories - shown in "Depois" mode) */}
-                {showAfter && selectedAccessories.length > 0 && (
-                  <div className="absolute bottom-16 inset-x-0 flex flex-wrap items-center justify-center gap-2 px-4 z-20 pointer-events-auto">
-                    {selectedAccessories.map((acc) => (
-                      <button
-                        key={acc.id}
-                        type="button"
-                        onClick={() => onAccessoryToggle(acc.id)}
-                        className="bg-slate-900/90 hover:bg-blue-600 text-white text-[11px] font-bold px-3 py-1 rounded shadow-lg border border-slate-600 backdrop-blur-sm transition flex items-center space-x-1.5 cursor-pointer"
-                        title={`Clique para desmarcar ${acc.name}`}
-                      >
-                        <span className="w-2 h-2 rounded-full bg-blue-400" />
-                        <span>{acc.name}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {/* Bottom Left Floating Quick Pill: Vídeo Oficial */}
-                <div className="absolute bottom-4 left-4 z-20">
-                  <div className="inline-flex items-center space-x-2 bg-slate-900/90 text-white text-xs font-semibold px-3 py-2 rounded-lg border border-slate-700/80 shadow-md backdrop-blur-sm">
-                    <Video className="w-4 h-4 text-blue-400" />
-                    <span>Vídeo Oficial {getVehicleShortName()} ({viewPerspective === "interno" ? "Interno / Cabine" : "Externo"})</span>
-                    <span className="bg-blue-600 text-[10px] uppercase px-1.5 py-0.5 rounded font-bold text-white">4K</span>
-                  </div>
-                </div>
               </div>
             </div>
 

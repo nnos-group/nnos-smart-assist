@@ -1,17 +1,21 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Tag, Zap, Award, BadgePercent, Clock, ArrowRight, ArrowLeft,
-  CheckCircle, ShieldCheck, ShoppingCart, MessageSquare
+  CheckCircle, ShieldCheck, ShoppingCart, MessageSquare, Trash2,
+  Boxes, ChevronDown, ChevronUp, AlertCircle, Sparkles, CheckCircle2
 } from "lucide-react";
 import { useSalesJourney } from "@/context/SalesJourneyContext";
 import { getItemDiscountedPrice } from "@/lib/pricingEngine";
 import { MOCK_COMMERCIAL_CAMPAIGNS, getEligibleCampaigns } from "@/lib/campaignEligibilityEngine";
 import { CommercialCampaignBanner } from "./CommercialCampaignBanner";
+import { toast } from "sonner";
 
 export const PricePresentationScreen: React.FC = () => {
   const {
     state,
     availableAccessories,
+    toggleAccessory,
+    goToStep,
     setSellerDiscount,
     setFactoryBonus,
     applyCampaign,
@@ -22,6 +26,32 @@ export const PricePresentationScreen: React.FC = () => {
   const { clientData, discoveryProfile, selectedAccessoryIds, quote, selectedCampaign } = state;
 
   const selectedAccessories = availableAccessories.filter((a) => selectedAccessoryIds.includes(a.id));
+  const [showStockDetails, setShowStockDetails] = useState(true);
+
+  // Classificação da Análise de Estoque da Concessionária
+  const stockAnalysis = React.useMemo(() => {
+    let availableCount = 0;
+    let dormantCount = 0;
+    let obsoleteCount = 0;
+
+    selectedAccessories.forEach((item) => {
+      const days = item.stockAgeDays || 0;
+      if (days > 365) {
+        obsoleteCount++;
+      } else if (days > 180) {
+        dormantCount++;
+      } else {
+        availableCount++;
+      }
+    });
+
+    return {
+      availableCount,
+      dormantCount,
+      obsoleteCount,
+      totalCount: selectedAccessories.length,
+    };
+  }, [selectedAccessories]);
 
   // Campanhas comerciais elegíveis para o modelo e acessórios selecionados
   const eligibleCampaigns = React.useMemo(() => {
@@ -43,6 +73,11 @@ export const PricePresentationScreen: React.FC = () => {
       : "";
 
     return `Considerando o uso ${usage} do veículo${dirtRoad}${cargo}${passengers}, esta configuração reúne proteção, praticidade e segurança para o seu dia a dia.`;
+  };
+
+  const handleRemoveItem = (id: string, name: string) => {
+    toggleAccessory(id);
+    toast.info(`"${name}" removido da proposta.`);
   };
 
   return (
@@ -93,55 +128,169 @@ export const PricePresentationScreen: React.FC = () => {
       {/* GRID COMERCIAL: LISTA DE ITENS À ESQUERDA & TOTALIZADOR À DIREITA */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         {/* COLUNA ESQUERDA: LISTA DETALHADA COM PREÇO ORIGINAL E PROMOCIONAL */}
-        <div className="lg:col-span-7 bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-3">
+        <div className="lg:col-span-7 bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
-              Acessórios Selecionados ({selectedAccessories.length})
-            </h2>
-            <span className="text-xs text-slate-500 font-medium">Preços com mão-de-obra inclusa</span>
+            <div>
+              <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+                Acessórios Selecionados ({selectedAccessories.length})
+              </h2>
+              <span className="text-xs text-slate-500 font-medium">Preços com mão-de-obra inclusa</span>
+            </div>
+            {selectedAccessories.length > 0 && (
+              <span className="text-xs text-slate-500 font-medium">
+                Clique na lixeira para remover
+              </span>
+            )}
           </div>
 
-          <div className="space-y-2">
-            {selectedAccessories.map((item) => {
-              const discounted = getItemDiscountedPrice(item);
-              const hasDiscount = item.discountPercent > 0;
+          {selectedAccessories.length === 0 ? (
+            <div className="p-8 text-center bg-slate-50 rounded-xl border border-dashed border-slate-300 space-y-2">
+              <ShoppingCart className="w-8 h-8 text-slate-400 mx-auto" />
+              <p className="text-sm font-bold text-slate-700">Nenhum acessório selecionado</p>
+              <p className="text-xs text-slate-500">
+                Volte para a etapa de recomendações para adicionar itens à proposta.
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-2.5">
+              {selectedAccessories.map((item) => {
+                const discounted = getItemDiscountedPrice(item);
+                const hasDiscount = item.discountPercent > 0;
+                const days = item.stockAgeDays || 0;
 
-              return (
-                <div
-                  key={item.id}
-                  className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200/70"
+                return (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-200/70 hover:border-slate-300 transition-colors"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className="text-2xl shrink-0">{item.icon}</span>
+                      <div className="truncate">
+                        <div className="text-xs font-bold text-slate-900 truncate">{item.name}</div>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-[11px] text-slate-500 truncate">{item.description}</span>
+                          {days > 365 ? (
+                            <span className="shrink-0 text-[10px] font-black bg-rose-100 text-rose-800 px-2 py-0.5 rounded border border-rose-200">
+                              🔥 OBSOLETO • {days}D (-{item.discountPercent}%)
+                            </span>
+                          ) : days > 180 ? (
+                            <span className="shrink-0 text-[10px] font-black bg-amber-100 text-amber-900 px-2 py-0.5 rounded border border-amber-200">
+                              ⚡ DORMENTE • {days}D (-{item.discountPercent}%)
+                            </span>
+                          ) : (
+                            <span className="shrink-0 text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded border border-emerald-200">
+                              ✓ DISPONÍVEL
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3 shrink-0 ml-3">
+                      <div className="text-right">
+                        {hasDiscount ? (
+                          <div>
+                            <span className="text-[11px] text-slate-400 line-through block">
+                              R$ {item.price.toLocaleString("pt-BR")}
+                            </span>
+                            <span className="text-xs font-black text-slate-900">
+                              R$ {discounted.toLocaleString("pt-BR")}
+                            </span>
+                            <span className="text-[10px] font-bold text-amber-600 block">
+                              ({item.discountPercent}% off estoque)
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-xs font-bold text-slate-900">
+                            R$ {item.price.toLocaleString("pt-BR")}
+                          </span>
+                        )}
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveItem(item.id, item.name)}
+                        className="p-2 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                        title={`Remover ${item.name} da proposta`}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* PAINEL DE ANÁLISE DE ESTOQUE DA CONCESSIONÁRIA */}
+          {selectedAccessories.length > 0 && (
+            <div className="mt-4 p-4 rounded-xl bg-slate-900 text-white border border-slate-800 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-sky-500/20 text-sky-400">
+                    <Boxes className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-black uppercase tracking-wider text-slate-200">
+                      Análise de Estoque da Concessionária (Giro &amp; Oportunidades)
+                    </h3>
+                    <p className="text-[11px] text-slate-400">
+                      Classificação etária das peças selecionadas com descontos de giro autorizados
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setShowStockDetails(!showStockDetails)}
+                  className="text-xs font-bold text-sky-400 hover:text-sky-300 flex items-center gap-1 cursor-pointer"
                 >
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{item.icon}</span>
-                    <div>
-                      <div className="text-xs font-bold text-slate-900">{item.name}</div>
-                      <div className="text-[11px] text-slate-500">{item.description}</div>
+                  <span>{showStockDetails ? "Recolher" : "Detalhes"}</span>
+                  {showStockDetails ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                </button>
+              </div>
+
+              {showStockDetails && (
+                <div className="pt-2 border-t border-slate-800 space-y-3 animate-in fade-in">
+                  <div className="grid grid-cols-3 gap-2 text-center text-xs">
+                    <div className="p-2.5 rounded-lg bg-emerald-950/60 border border-emerald-800/60">
+                      <span className="block text-[10px] font-bold text-emerald-400 uppercase">Disponível (≤180d)</span>
+                      <strong className="text-base font-black text-emerald-200">{stockAnalysis.availableCount} itens</strong>
+                      <span className="block text-[10px] text-emerald-400/80">Sem desconto</span>
+                    </div>
+
+                    <div className="p-2.5 rounded-lg bg-amber-950/60 border border-amber-800/60">
+                      <span className="block text-[10px] font-bold text-amber-400 uppercase">Dormente (&gt;180d)</span>
+                      <strong className="text-base font-black text-amber-200">{stockAnalysis.dormantCount} itens</strong>
+                      <span className="block text-[10px] text-amber-400/80">10% a 20% OFF</span>
+                    </div>
+
+                    <div className="p-2.5 rounded-lg bg-rose-950/60 border border-rose-800/60">
+                      <span className="block text-[10px] font-bold text-rose-400 uppercase">Obsoleto (&gt;1 ano)</span>
+                      <strong className="text-base font-black text-rose-200">{stockAnalysis.obsoleteCount} itens</strong>
+                      <span className="block text-[10px] text-rose-400/80">25% a 35% OFF</span>
                     </div>
                   </div>
 
-                  <div className="text-right shrink-0">
-                    {hasDiscount ? (
-                      <div>
-                        <span className="text-[11px] text-slate-400 line-through block">
-                          R$ {item.price.toLocaleString("pt-BR")}
-                        </span>
-                        <span className="text-xs font-black text-slate-900">
-                          R$ {discounted.toLocaleString("pt-BR")}
-                        </span>
-                        <span className="text-[10px] font-bold text-amber-600 block">
-                          ({item.discountPercent}% off estoque)
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="text-xs font-bold text-slate-900">
-                        R$ {item.price.toLocaleString("pt-BR")}
+                  <div className="p-3 rounded-lg bg-white/5 border border-white/10 text-xs flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
+                      <span className="text-slate-300">
+                        {stockAnalysis.dormantCount + stockAnalysis.obsoleteCount > 0
+                          ? `Gatilho de Giro: ${stockAnalysis.dormantCount + stockAnalysis.obsoleteCount} item(ns) contam com abatimento de liquidação de estoque homologado.`
+                          : "Todos os itens selecionados possuem giro ativo na concessionária."}
+                      </span>
+                    </div>
+                    {quote.stockDiscountAmount > 0 && (
+                      <span className="font-bold text-amber-400 shrink-0">
+                        Economia: R$ {quote.stockDiscountAmount.toLocaleString("pt-BR")}
                       </span>
                     )}
                   </div>
                 </div>
-              );
-            })}
-          </div>
+              )}
+            </div>
+          )}
 
           {/* AJUSTES COMERCIAIS RÁPIDOS */}
           <div className="pt-4 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -166,7 +315,7 @@ export const PricePresentationScreen: React.FC = () => {
 
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="input-factory-bonus">
-                Bônus Montadora / Fábrica (R$)
+                Bônus de Fábrica Adicional (R$)
               </label>
               <input
                 id="input-factory-bonus"
@@ -201,7 +350,7 @@ export const PricePresentationScreen: React.FC = () => {
 
             {quote.stockDiscountAmount > 0 && (
               <div className="flex justify-between text-amber-700 font-semibold">
-                <span>Desconto de Estoque:</span>
+                <span>Desconto de Estoque (Dormente/Obsoleto):</span>
                 <span>- R$ {quote.stockDiscountAmount.toLocaleString("pt-BR")}</span>
               </div>
             )}
@@ -222,7 +371,7 @@ export const PricePresentationScreen: React.FC = () => {
 
             {quote.campaignDiscount > 0 && (
               <div className="flex justify-between text-emerald-700 font-semibold">
-                <span>Campanha Comercial:</span>
+                <span>Campanha Comercial{selectedCampaign ? ` (${selectedCampaign.name})` : ""}:</span>
                 <span>- R$ {quote.campaignDiscount.toLocaleString("pt-BR")}</span>
               </div>
             )}
@@ -258,16 +407,27 @@ export const PricePresentationScreen: React.FC = () => {
             </div>
           </div>
 
-          {/* CTA PARA NEGOCIAR OU FECHAR */}
-          <div className="pt-2 space-y-2">
+          {/* BOTÕES DE AÇÃO: IR DIRETO PARA FECHAMENTO OU NEGOCIAÇÃO */}
+          <div className="pt-2 space-y-2.5">
+            {/* 1. Botão Principal Solicitado: Ir Direto para o Fechamento */}
+            <button
+              type="button"
+              onClick={() => goToStep("closing")}
+              className="w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm shadow-md shadow-emerald-600/25 flex items-center justify-center gap-2 cursor-pointer transition-all transform active:scale-[0.99]"
+            >
+              <CheckCircle2 className="w-5 h-5" />
+              <span>Ir Direto para o Fechamento</span>
+              <ArrowRight className="w-4 h-4 ml-0.5" />
+            </button>
+
+            {/* 2. Botão Secundário: Avançar para Negociação Assistida */}
             <button
               type="button"
               onClick={nextStep}
-              className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 text-white font-bold text-sm shadow-md flex items-center justify-center gap-2 cursor-pointer transition-all"
+              className="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-2 cursor-pointer transition-colors border border-slate-200"
             >
-              <MessageSquare className="w-4 h-4" />
-              <span>Avançar para Negociação Assistida</span>
-              <ArrowRight className="w-4 h-4" />
+              <MessageSquare className="w-4 h-4 text-slate-600" />
+              <span>Tratar Objeções / Negociação Assistida (Etapa 6)</span>
             </button>
           </div>
         </div>

@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import LoginScreen from "@/components/LoginScreen";
-import NavigationBar from "@/components/NavigationBar";
+import NavigationBar, { ViewportDevice } from "@/components/NavigationBar";
 import SuccessModal from "@/components/SuccessModal";
 import { ReheatedLeadsModal } from "@/components/ReheatedLeadsModal";
 import LostSalesDashboard from "@/components/LostSalesDashboard";
 import { SalesJourneyProvider, useSalesJourney } from "@/context/SalesJourneyContext";
 import { SalesJourneyStepper } from "@/components/SalesJourneyStepper";
+import { Tablet, Smartphone, RotateCcw } from "lucide-react";
 
 // 7 Etapas Consultivas
 import { ConsultativeDiscoveryChecklist } from "@/components/ConsultativeDiscoveryChecklist";
@@ -38,6 +39,7 @@ const InnerSalesJourney = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showReheatedLeadsModal, setShowReheatedLeadsModal] = useState(false);
   const [showLostSalesDashboard, setShowLostSalesDashboard] = useState(false);
+  const [viewportDevice, setViewportDevice] = useState<ViewportDevice>("desktop");
 
   // Garante que ao mudar de etapa o usuário sempre visualize o topo da tela
   React.useEffect(() => {
@@ -94,9 +96,52 @@ const InnerSalesJourney = () => {
     selected: state.selectedAccessoryIds.includes(acc.id),
   }));
 
+  const renderCurrentStep = () => (
+    <div className="screen-transition">
+      {/* Etapa 1: Entender o cliente */}
+      {state.currentStep === "customer-understanding" && (
+        <ConsultativeDiscoveryChecklist
+          onOpenReheatedLeads={() => setShowReheatedLeadsModal(true)}
+        />
+      )}
+
+      {/* Etapa 2: Recomendar acessórios */}
+      {state.currentStep === "accessory-recommendation" && <RecommendationReviewScreen />}
+
+      {/* Etapa 3: Mostrar no veículo */}
+      {state.currentStep === "vehicle-visualization" && (
+        <VehicleVisualizationScreen
+          accessories={mappedAccessories}
+          clientData={state.clientData}
+          onAccessoryToggle={toggleAccessory}
+          consultativeMode={true}
+          onProceedToExplanation={nextStep}
+          onBack={prevStep}
+        />
+      )}
+
+      {/* Etapa 4: Explicar os acessórios */}
+      {state.currentStep === "accessory-explanation" && <AccessoryExplanationScreen />}
+
+      {/* Etapa 5: Apresentar o preço (Investimento) */}
+      {state.currentStep === "price-presentation" && <PricePresentationScreen />}
+
+      {/* Etapa 6: Negociar */}
+      {state.currentStep === "negotiation" && <NegotiationAssistantScreen />}
+
+      {/* Etapa 7: Fechar a venda */}
+      {state.currentStep === "closing" && (
+        <ClosingScreen
+          onSaleWon={handleSaleWon}
+          onOpenReheatedLeads={() => setShowReheatedLeadsModal(true)}
+        />
+      )}
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-slate-100 flex flex-col font-sans selection:bg-sky-500 selection:text-white">
-      {/* Navigation Bar Corporativo */}
+      {/* Navigation Bar Corporativo com Seletor de Simulação */}
       <NavigationBar
         currentStep={currentStepIndex + 1}
         onBack={prevStep}
@@ -105,54 +150,78 @@ const InnerSalesJourney = () => {
         onOpenReheatedLeads={() => setShowReheatedLeadsModal(true)}
         onOpenLostSales={() => setShowLostSalesDashboard(true)}
         hideLegacyStepper={true}
+        currentDevice={viewportDevice}
+        onDeviceChange={setViewportDevice}
       />
 
-      {/* Stepper das 7 Etapas da Jornada Consultiva */}
-      <SalesJourneyStepper />
+      {/* Visualização de acordo com o dispositivo simulado */}
+      {viewportDevice === "desktop" && (
+        <>
+          {/* Stepper das 7 Etapas da Jornada Consultiva */}
+          <SalesJourneyStepper />
 
-      {/* Conteúdo da Etapa Atual */}
-      <main className="flex-1 max-w-[1720px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-5">
-        <div className="screen-transition">
-          {/* Etapa 1: Entender o cliente */}
-          {state.currentStep === "customer-understanding" && (
-            <ConsultativeDiscoveryChecklist
-              onOpenReheatedLeads={() => setShowReheatedLeadsModal(true)}
-            />
-          )}
+          {/* Conteúdo da Etapa Atual */}
+          <main className="flex-1 max-w-[1720px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-5">
+            {renderCurrentStep()}
+          </main>
+        </>
+      )}
 
-          {/* Etapa 2: Recomendar acessórios */}
-          {state.currentStep === "accessory-recommendation" && <RecommendationReviewScreen />}
+      {viewportDevice === "tablet" && (
+        <div className="flex-1 w-full bg-slate-200/90 py-6 px-4 flex flex-col items-center overflow-x-auto">
+          <div className="mb-4 flex items-center gap-2.5 text-xs font-bold text-slate-700 bg-white/95 px-4 py-1.5 rounded-full shadow-md border border-slate-300">
+            <Tablet className="w-4 h-4 text-sky-600" />
+            <span>Simulação de Tela: Tablet (iPad 768px)</span>
+            <button
+              type="button"
+              onClick={() => setViewportDevice("desktop")}
+              className="ml-2 text-xs font-extrabold text-sky-600 hover:text-sky-800 flex items-center gap-1 cursor-pointer"
+            >
+              <RotateCcw className="w-3 h-3" />
+              Restaurar Computador
+            </button>
+          </div>
 
-          {/* Etapa 3: Mostrar no veículo */}
-          {state.currentStep === "vehicle-visualization" && (
-            <VehicleVisualizationScreen
-              accessories={mappedAccessories}
-              clientData={state.clientData}
-              onAccessoryToggle={toggleAccessory}
-              consultativeMode={true}
-              onProceedToExplanation={nextStep}
-              onBack={prevStep}
-            />
-          )}
-
-          {/* Etapa 4: Explicar os acessórios */}
-          {state.currentStep === "accessory-explanation" && <AccessoryExplanationScreen />}
-
-          {/* Etapa 5: Apresentar o preço (Investimento) */}
-          {state.currentStep === "price-presentation" && <PricePresentationScreen />}
-
-          {/* Etapa 6: Negociar */}
-          {state.currentStep === "negotiation" && <NegotiationAssistantScreen />}
-
-          {/* Etapa 7: Fechar a venda */}
-          {state.currentStep === "closing" && (
-            <ClosingScreen
-              onSaleWon={handleSaleWon}
-              onOpenReheatedLeads={() => setShowReheatedLeadsModal(true)}
-            />
-          )}
+          {/* Moldura Tablet */}
+          <div className="w-full max-w-[768px] bg-slate-950 p-4 rounded-[36px] shadow-2xl border-4 border-slate-700 ring-2 ring-slate-900/50">
+            <div className="bg-slate-100 rounded-[24px] overflow-hidden min-h-[820px] flex flex-col shadow-inner">
+              <SalesJourneyStepper />
+              <main className="flex-1 w-full p-4">
+                {renderCurrentStep()}
+              </main>
+            </div>
+          </div>
         </div>
-      </main>
+      )}
+
+      {viewportDevice === "mobile" && (
+        <div className="flex-1 w-full bg-slate-200/90 py-6 px-4 flex flex-col items-center overflow-x-auto">
+          <div className="mb-4 flex items-center gap-2.5 text-xs font-bold text-slate-700 bg-white/95 px-4 py-1.5 rounded-full shadow-md border border-slate-300">
+            <Smartphone className="w-4 h-4 text-sky-600" />
+            <span>Simulação de Tela: Celular (iPhone 390px)</span>
+            <button
+              type="button"
+              onClick={() => setViewportDevice("desktop")}
+              className="ml-2 text-xs font-extrabold text-sky-600 hover:text-sky-800 flex items-center gap-1 cursor-pointer"
+            >
+              <RotateCcw className="w-3 h-3" />
+              Restaurar Computador
+            </button>
+          </div>
+
+          {/* Moldura Celular */}
+          <div className="w-full max-w-[400px] bg-slate-950 p-3 pt-4 rounded-[48px] shadow-2xl border-4 border-slate-700 ring-2 ring-slate-900/50">
+            {/* Dynamic Island */}
+            <div className="w-24 h-4 bg-black rounded-full mx-auto mb-3 shadow-inner" />
+            <div className="bg-slate-100 rounded-[36px] overflow-hidden min-h-[800px] flex flex-col shadow-inner">
+              <SalesJourneyStepper />
+              <main className="flex-1 w-full p-3">
+                {renderCurrentStep()}
+              </main>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modais Gerenciais & Retargeting */}
       <SuccessModal

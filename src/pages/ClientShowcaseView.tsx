@@ -298,21 +298,6 @@ const ClientShowcaseView = () => {
                 )}
               </span>
             </div>
-
-            {/* Accessory Tags Overlay */}
-            {showAfter && selectedAccessories.length > 0 && (
-              <div className="absolute bottom-4 inset-x-0 flex flex-wrap items-center justify-center gap-2 px-4 z-20 pointer-events-none">
-                {selectedAccessories.map((acc) => (
-                  <span
-                    key={acc.id}
-                    className="bg-slate-900/90 text-white text-[11px] font-bold px-3 py-1 rounded shadow-lg border border-slate-600 backdrop-blur-sm flex items-center space-x-1.5"
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                    <span>{acc.name}</span>
-                  </span>
-                ))}
-              </div>
-            )}
           </div>
         </div>
 

@@ -49,6 +49,8 @@ export function calculateQuote({
       }
     } else if (campaign.discountType === "fixed" && campaign.discountValue) {
       campaignDiscount = campaign.discountValue;
+    } else if (campaign.campaignType === "freeInstallation") {
+      campaignDiscount = campaign.discountValue || 450;
     }
   }
 
