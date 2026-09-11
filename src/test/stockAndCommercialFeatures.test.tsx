@@ -53,18 +53,73 @@ describe("Novas Funcionalidades: Análise de Estoque, Fechamento e Simulador de 
     // Painel de Análise de Estoque da Concessionária
     expect(screen.getByText(/Análise de Estoque da Concessionária/i)).toBeInTheDocument();
 
-    // O painel vem aberto por padrão exibindo os detalhes das faixas de giro
+    // O painel vem recolhido por padrão por sigilo comercial
+    expect(screen.queryByText(/Disponível \(≤180d\)/i)).toBeNull();
+
+    // Botão de Exibir Análise de Giro abre os detalhes
+    const expandDetailsBtn = screen.getByRole("button", { name: /exibir análise de giro/i });
+    expect(expandDetailsBtn).toBeInTheDocument();
+    fireEvent.click(expandDetailsBtn);
+
+    // Agora os detalhes das faixas de giro são exibidos
     expect(screen.getByText(/Disponível \(≤180d\)/i)).toBeInTheDocument();
     expect(screen.getByText(/Dormente \(>180d\)/i)).toBeInTheDocument();
     expect(screen.getByText(/Obsoleto \(>1 ano\)/i)).toBeInTheDocument();
     expect(screen.getByText(/10% a 20% OFF/i)).toBeInTheDocument();
     expect(screen.getByText(/25% a 35% OFF/i)).toBeInTheDocument();
 
-    // Botão de Recolher/Detalhes alterna a exibição
-    const toggleDetailsBtn = screen.getByRole("button", { name: /recolher/i });
-    expect(toggleDetailsBtn).toBeInTheDocument();
-    fireEvent.click(toggleDetailsBtn);
+    // Botão de Recolher fecha novamente
+    const collapseDetailsBtn = screen.getByRole("button", { name: /recolher informações/i });
+    expect(collapseDetailsBtn).toBeInTheDocument();
+    fireEvent.click(collapseDetailsBtn);
     expect(screen.queryByText(/Disponível \(≤180d\)/i)).toBeNull();
+  });
+
+  it("limita o desconto do consultor em percentual de acordo com sua alçada máxima (5%)", () => {
+    render(
+      <SalesJourneyProvider>
+        <PricePresentationScreen />
+      </SalesJourneyProvider>
+    );
+
+    const discountInput = screen.getByLabelText(/Desconto do Consultor \(%\)/i);
+    expect(discountInput).toBeInTheDocument();
+
+    // Digita um percentual dentro da alçada (3%)
+    fireEvent.change(discountInput, { target: { value: "3" } });
+    expect(discountInput).toHaveValue(3);
+
+    // Tenta digitar um percentual acima da alçada de consultor (8%) -> deve limitar ao teto de 5%
+    fireEvent.change(discountInput, { target: { value: "8" } });
+    expect(discountInput).toHaveValue(5);
+  });
+
+  it("renderiza o botão de Enviar Proposta & Visualização 3D ao WhatsApp na etapa de Investimento", () => {
+    const originalOpen = window.open;
+    window.open = vi.fn();
+
+    render(
+      <SalesJourneyProvider>
+        <PricePresentationScreen />
+      </SalesJourneyProvider>
+    );
+
+    const whatsappBtn = screen.getByRole("button", { name: /Enviar Proposta & Visualização 3D ao WhatsApp/i });
+    expect(whatsappBtn).toBeInTheDocument();
+    fireEvent.click(whatsappBtn);
+
+    expect(window.open).toHaveBeenCalledTimes(1);
+    const openedUrl = (window.open as any).mock.calls[0][0];
+    const urlObj = new URL(openedUrl);
+    const textMessage = urlObj.searchParams.get("text") || "";
+
+    // Frases de efeito comerciais homologadas
+    expect(textMessage).toContain("100% Originais & Homologados de Fábrica");
+    expect(textMessage).toContain("Garantia Total do Veículo Preservada");
+    expect(textMessage).toContain("Valorização Comprovada na Revenda");
+    expect(textMessage).toContain("/visualizacao?");
+
+    window.open = originalOpen;
   });
 
   it("permite remover acessórios selecionados na tela de Investimento", () => {

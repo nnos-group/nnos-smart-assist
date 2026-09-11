@@ -214,36 +214,7 @@ const VehicleVisualizationScreen = ({
                   </div>
                 )}
 
-                {/* Gradient Overlays for UI readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/25 pointer-events-none" />
-
-                {/* Top Overlay Badges: Perspectiva e Estado */}
-                <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
-                  <span
-                    className="inline-flex items-center space-x-1.5 bg-slate-900/90 text-white backdrop-blur-md px-3.5 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider border border-white/20 shadow-lg"
-                    id="badge-status-perspective"
-                  >
-                    <span className="w-2 h-2 rounded-full bg-sky-400" />
-                    <span>{viewPerspective === "interno" ? "Cabine Interna" : "Visão Externa"}</span>
-                  </span>
-
-                  <span
-                    className="inline-flex items-center space-x-2 bg-slate-900/90 text-white backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wider border border-white/20 shadow-lg ring-1 ring-black/40"
-                    id="badge-status-stage"
-                  >
-                    {showAfter ? (
-                      <>
-                        <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                        <span>DEPOIS • {selectedAccessories.length} ACESSÓRIOS</span>
-                      </>
-                    ) : (
-                      <>
-                        <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
-                        <span>ORIGINAL DE FÁBRICA • SEM ACESSÓRIOS</span>
-                      </>
-                    )}
-                  </span>
-                </div>
+                {/* Vídeo 100% limpo sem sobreposições */}
               </div>
             </div>
 
@@ -254,10 +225,18 @@ const VehicleVisualizationScreen = ({
                   <Video className="w-4 h-4" />
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-slate-800">
-                    Demonstração Dinâmica {getVehicleShortName()}
-                  </h4>
-                  <p className="text-xs text-slate-500">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h4 className="text-sm font-bold text-slate-800">
+                      Demonstração Dinâmica {getVehicleShortName()}
+                    </h4>
+                    <span className="text-[10px] font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
+                      {viewPerspective === "interno" ? "Cabine Interna" : "Visão Externa"}
+                    </span>
+                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                      {showAfter ? `Depois • ${selectedAccessories.length} Acessórios` : "Original de Fábrica • Sem Acessórios"}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-0.5">
                     Alterne "Externo / Interno" e "Antes / Depois" para comparar a transformação
                   </p>
                 </div>
@@ -407,8 +386,8 @@ const VehicleVisualizationScreen = ({
                   </p>
                 </div>
 
-                {/* Botões de Ação da Etapa 3 */}
-                <div className="space-y-2.5 pt-2">
+                {/* Botão de Avanço da Etapa 3 */}
+                <div className="pt-2">
                   <button
                     type="button"
                     onClick={onProceedToExplanation}
@@ -416,15 +395,6 @@ const VehicleVisualizationScreen = ({
                   >
                     <span>Entender cada acessório</span>
                     <ArrowRight className="w-4 h-4" />
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleShareWhatsApp}
-                    className="w-full bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-xs py-2.5 px-4 rounded-xl shadow-xs flex items-center justify-center space-x-2 transition cursor-pointer"
-                  >
-                    <Share2 className="w-4 h-4 text-emerald-600" />
-                    <span>Enviar Visualização 3D ao WhatsApp</span>
                   </button>
                 </div>
               </div>

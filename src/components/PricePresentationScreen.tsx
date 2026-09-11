@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import {
   Tag, Zap, Award, BadgePercent, Clock, ArrowRight, ArrowLeft,
   CheckCircle, ShieldCheck, ShoppingCart, MessageSquare, Trash2,
-  Boxes, ChevronDown, ChevronUp, AlertCircle, Sparkles, CheckCircle2
+  Boxes, ChevronDown, ChevronUp, AlertCircle, Sparkles, CheckCircle2, Share2
 } from "lucide-react";
 import { useSalesJourney } from "@/context/SalesJourneyContext";
 import { getItemDiscountedPrice } from "@/lib/pricingEngine";
@@ -23,10 +23,53 @@ export const PricePresentationScreen: React.FC = () => {
     prevStep,
   } = useSalesJourney();
 
-  const { clientData, discoveryProfile, selectedAccessoryIds, quote, selectedCampaign } = state;
+  const { clientData, discoveryProfile, selectedAccessoryIds, quote, selectedCampaign, userSession } = state;
 
   const selectedAccessories = availableAccessories.filter((a) => selectedAccessoryIds.includes(a.id));
-  const [showStockDetails, setShowStockDetails] = useState(true);
+  
+  // Análise de estoque fica sempre recolhida inicialmente por segurança
+  const [showStockDetails, setShowStockDetails] = useState(false);
+
+  // Alçada de desconto do usuário ativo
+  const userRole = userSession?.role || "consultor";
+  const maxAllowedPercent = userRole === "administrador" ? 20.0 : userRole === "gerente" ? 10.0 : 5.0;
+  const userRoleLabel = userRole === "administrador" ? "Administrador" : userRole === "gerente" ? "Gerente" : "Consultor";
+
+  const [discountPercentInput, setDiscountPercentInput] = useState<string>(() => {
+    return quote.sellerDiscountPercent > 0 ? String(quote.sellerDiscountPercent) : "";
+  });
+
+  React.useEffect(() => {
+    if (quote.sellerDiscountPercent > 0) {
+      setDiscountPercentInput(String(quote.sellerDiscountPercent));
+    } else if (quote.sellerDiscount === 0) {
+      setDiscountPercentInput("");
+    }
+  }, [quote.sellerDiscountPercent, quote.sellerDiscount]);
+
+  const handleDiscountPercentChange = (valStr: string) => {
+    setDiscountPercentInput(valStr);
+    if (valStr.trim() === "") {
+      setSellerDiscount(0);
+      return;
+    }
+    const parsed = parseFloat(valStr.replace(",", "."));
+    if (isNaN(parsed) || parsed < 0) {
+      setSellerDiscount(0);
+      return;
+    }
+
+    if (parsed > maxAllowedPercent) {
+      toast.error(`Limite de alçada atingido: o perfil ${userRoleLabel} permite no máximo ${maxAllowedPercent}% de desconto.`);
+      setDiscountPercentInput(String(maxAllowedPercent));
+      const amountInReais = Math.round((maxAllowedPercent / 100) * (quote.subtotalAfterStockDiscounts || 0));
+      setSellerDiscount(amountInReais);
+      return;
+    }
+
+    const amountInReais = Math.round((parsed / 100) * (quote.subtotalAfterStockDiscounts || 0));
+    setSellerDiscount(amountInReais);
+  };
 
   // Classificação da Análise de Estoque da Concessionária
   const stockAnalysis = React.useMemo(() => {
@@ -80,6 +123,52 @@ export const PricePresentationScreen: React.FC = () => {
     toast.info(`"${name}" removido da proposta.`);
   };
 
+  const handleShareWhatsAppProposal = () => {
+    const accessoriesList = selectedAccessories.length > 0
+      ? selectedAccessories.map((a) => `  ✓ *${a.name}* (c/ mão de obra inclusa)`).join("\n")
+      : "Nenhum acessório selecionado";
+
+    // Link interativo público de demonstração 3D
+    const accIds = selectedAccessories.map((a) => a.id).join(",");
+    const basePath = (import.meta.env.BASE_URL || "/").replace(/\/$/, "");
+    const interactive3dUrl = `${window.location.origin}${basePath}/visualizacao?client=${encodeURIComponent(
+      clientData.clientName || "Cliente"
+    )}&model=${encodeURIComponent(clientData.vehicleModel)}&color=${encodeURIComponent(
+      clientData.vehicleColor
+    )}&acc=${encodeURIComponent(accIds)}&total=${quote.finalTotal}&cdc=${encodeURIComponent(
+      quote.monthlyInstallment
+    )}`;
+
+    const totalSavings = (quote.stockDiscountAmount || 0) + (quote.sellerDiscount || 0) + (quote.campaignDiscount || 0);
+
+    const message =
+      `Olá, *${clientData.clientName || "Cliente"}*! Tudo bem?\n\n` +
+      `Conforme conversamos na concessionária, preparei a proposta oficial de personalização do seu *${clientData.vehicleModel}* (${clientData.vehicleColor}):\n\n` +
+      `⭐ *PACOTE DE ACESSÓRIOS SELECIONADOS:*\n${accessoriesList}\n\n` +
+      `💎 *DIFERENCIAIS EXCLUSIVOS DE CONCESSIONÁRIA AUTORIZADA:*\n` +
+      `• *100% Originais & Homologados de Fábrica:* Você adquire componentes desenvolvidos e testados sob os mais rigorosos padrões de engenharia Mopar / Stellantis, com durabilidade e encaixe sob medida.\n` +
+      `• *Garantia Total do Veículo Preservada:* A instalação é executada por técnicos especializados na oficina autorizada. O seu veículo 0km mantém integralmente a garantia total de fábrica, sem qualquer risco elétrico ou estrutural.\n` +
+      `• *Segurança Ativa e Passiva Integradas:* Acessórios testados contra impactos e perfeitamente integrados à eletrônica de bordo original do carro.\n` +
+      `• *Valorização Comprovada na Revenda:* Carros com acessórios genuínos de fábrica têm maior procura, maior valor de avaliação e liquidez no mercado.\n\n` +
+      `💰 *CONDIÇÕES ESPECIAIS HOMOLOGADAS:*\n` +
+      (totalSavings > 0 ? `• De Tabela: R$ ${quote.originalSubtotal.toLocaleString("pt-BR")}\n• Economia Total Aplicada: - R$ ${totalSavings.toLocaleString("pt-BR")}\n` : "") +
+      `• *Investimento Final à Vista:* R$ ${quote.finalTotal.toLocaleString("pt-BR")}\n` +
+      `• *Parcelamento Concessionária:* ${quote.installmentsCount}x de R$ ${quote.monthlyInstallment.toLocaleString("pt-BR")} sem juros\n` +
+      `• *Diluição no Financiamento:* + apenas R$ ${quote.monthlyCdc.toFixed(2)}/mês na parcela do veículo\n\n` +
+      `📲 *ACESSE A VISUALIZAÇÃO 3D INTERATIVA:* \n` +
+      `Gire o veículo e confira a transformação do seu carro montado em tempo real:\n` +
+      `🔗 ${interactive3dUrl}\n\n` +
+      `Os itens já estão pré-reservados em nosso estoque para a montagem. Posso confirmar a ordem de serviço para a entrega técnica?`;
+
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(interactive3dUrl).catch(() => {});
+    }
+
+    const encoded = encodeURIComponent(message);
+    window.open(`https://api.whatsapp.com/send?text=${encoded}`, "_blank");
+    toast.success("Proposta comercial com argumentos de garantia e link 3D gerada para o WhatsApp!");
+  };
+
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       {/* HEADER DE ETAPA */}
@@ -97,10 +186,20 @@ export const PricePresentationScreen: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2.5">
           <span className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 border border-slate-200">
             Prazo: <strong>{quote.installationDeadlineDays} dia(s) útil</strong> · {quote.estimatedInstallationHours}h oficina
           </span>
+
+          <button
+            type="button"
+            onClick={handleShareWhatsAppProposal}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer"
+            title="Enviar proposta oficial com link 3D, garantia de fábrica preservada e valores ao WhatsApp"
+          >
+            <Share2 className="w-3.5 h-3.5" />
+            <span>Enviar no WhatsApp</span>
+          </button>
         </div>
       </div>
 
@@ -222,7 +321,7 @@ export const PricePresentationScreen: React.FC = () => {
             </div>
           )}
 
-          {/* PAINEL DE ANÁLISE DE ESTOQUE DA CONCESSIONÁRIA */}
+          {/* PAINEL DE ANÁLISE DE ESTOQUE DA CONCESSIONÁRIA (SEMPRE RECOLHIDO INICIALMENTE) */}
           {selectedAccessories.length > 0 && (
             <div className="mt-4 p-4 rounded-xl bg-slate-900 text-white border border-slate-800 space-y-3">
               <div className="flex items-center justify-between">
@@ -231,21 +330,29 @@ export const PricePresentationScreen: React.FC = () => {
                     <Boxes className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="text-xs font-black uppercase tracking-wider text-slate-200">
-                      Análise de Estoque da Concessionária (Giro &amp; Oportunidades)
-                    </h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="text-xs font-black uppercase tracking-wider text-slate-200">
+                        Análise de Estoque da Concessionária (Giro &amp; Oportunidades)
+                      </h3>
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-amber-300 border border-amber-500/30">
+                        🔒 Sigiloso / Uso Interno
+                      </span>
+                    </div>
                     <p className="text-[11px] text-slate-400">
-                      Classificação etária das peças selecionadas com descontos de giro autorizados
+                      {showStockDetails
+                        ? "Classificação etária das peças selecionadas com descontos de giro autorizados"
+                        : "Informações estratégicas de estoque protegidas para não exibir ao cliente"}
                     </p>
                   </div>
                 </div>
 
                 <button
                   type="button"
+                  id="btn-toggle-stock-details"
                   onClick={() => setShowStockDetails(!showStockDetails)}
-                  className="text-xs font-bold text-sky-400 hover:text-sky-300 flex items-center gap-1 cursor-pointer"
+                  className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-sky-400 hover:text-sky-300 flex items-center gap-1.5 cursor-pointer border border-slate-700 transition-colors shadow-xs"
                 >
-                  <span>{showStockDetails ? "Recolher" : "Detalhes"}</span>
+                  <span>{showStockDetails ? "Recolher Informações" : "Exibir Análise de Giro"}</span>
                   {showStockDetails ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
                 </button>
               </div>
@@ -295,21 +402,38 @@ export const PricePresentationScreen: React.FC = () => {
           {/* AJUSTES COMERCIAIS RÁPIDOS */}
           <div className="pt-4 border-t border-slate-100 grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="input-seller-discount">
-                Desconto do Consultor (R$)
-              </label>
-              <input
-                id="input-seller-discount"
-                type="number"
-                min={0}
-                max={quote.subtotalAfterStockDiscounts}
-                value={quote.sellerDiscount || ""}
-                onChange={(e) => setSellerDiscount(Number(e.target.value) || 0)}
-                placeholder="R$ 0"
-                className="w-full rounded-xl border border-slate-200 p-2 text-xs font-bold text-slate-900"
-              />
-              <span className="text-[10px] text-slate-500 block mt-0.5">
-                Alçada de consultor: até 5% (acima exige aprovação do gerente)
+              <div className="flex items-center justify-between mb-1">
+                <label className="block text-xs font-semibold text-slate-700" htmlFor="input-seller-discount">
+                  Desconto do {userRoleLabel} (%)
+                </label>
+                <span className="text-[10px] font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
+                  Alçada máx: {maxAllowedPercent}%
+                </span>
+              </div>
+              <div className="relative">
+                <input
+                  id="input-seller-discount"
+                  type="number"
+                  min={0}
+                  max={maxAllowedPercent}
+                  step={0.5}
+                  value={discountPercentInput}
+                  onChange={(e) => handleDiscountPercentChange(e.target.value)}
+                  placeholder="0%"
+                  className="w-full rounded-xl border border-slate-200 p-2 text-xs font-bold text-slate-900 pr-8"
+                />
+                <span className="absolute right-3 top-2 text-xs font-bold text-slate-400 pointer-events-none">
+                  %
+                </span>
+              </div>
+              <span className="text-[10px] text-slate-500 block mt-1">
+                {quote.sellerDiscount > 0 ? (
+                  <strong className="text-emerald-700">
+                    Equivalente a - R$ {quote.sellerDiscount.toLocaleString("pt-BR")} na proposta
+                  </strong>
+                ) : (
+                  `Limite autorizado para perfil ${userRoleLabel}: até ${maxAllowedPercent}%`
+                )}
               </span>
             </div>
 
@@ -407,9 +531,20 @@ export const PricePresentationScreen: React.FC = () => {
             </div>
           </div>
 
-          {/* BOTÕES DE AÇÃO: IR DIRETO PARA FECHAMENTO OU NEGOCIAÇÃO */}
+          {/* BOTÕES DE AÇÃO: ENVIAR WHATSAPP, IR DIRETO PARA FECHAMENTO OU NEGOCIAÇÃO */}
           <div className="pt-2 space-y-2.5">
-            {/* 1. Botão Principal Solicitado: Ir Direto para o Fechamento */}
+            {/* 1. Botão Solicitado: Enviar Proposta & Visualização 3D ao WhatsApp */}
+            <button
+              type="button"
+              onClick={handleShareWhatsAppProposal}
+              className="w-full py-3 px-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-extrabold text-xs border border-emerald-300 shadow-xs flex items-center justify-center gap-2 cursor-pointer transition-colors"
+              title="Gerar proposta oficial com link 3D, garantia de fábrica preservada e valores ao WhatsApp"
+            >
+              <Share2 className="w-4 h-4 text-emerald-600" />
+              <span>Enviar Proposta &amp; Visualização 3D ao WhatsApp</span>
+            </button>
+
+            {/* 2. Botão Principal Solicitado: Ir Direto para o Fechamento */}
             <button
               type="button"
               onClick={() => goToStep("closing")}
@@ -420,7 +555,7 @@ export const PricePresentationScreen: React.FC = () => {
               <ArrowRight className="w-4 h-4 ml-0.5" />
             </button>
 
-            {/* 2. Botão Secundário: Avançar para Negociação Assistida */}
+            {/* 3. Botão Secundário: Avançar para Negociação Assistida */}
             <button
               type="button"
               onClick={nextStep}
