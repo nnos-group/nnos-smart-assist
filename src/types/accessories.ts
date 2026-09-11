@@ -14,6 +14,8 @@ export interface Accessory {
   stockDays: number; // dias em estoque
   discountPercent: number; // desconto aplicado (0 se disponível)
   category: string; // ex: "interior", "exterior", "proteção", "tecnologia", "utilitário"
+  inStock?: boolean; // disponibilidade imediata no estoque local da concessionária
+  stockQuantity?: number; // quantidade física disponível em estoque
 }
 
 export interface ClientData {
@@ -81,15 +83,19 @@ const inferCategory = (id: string): string => {
 // Helper: criar acessório com estoque simulado
 const acc = (
   id: string, name: string, description: string, price: number, icon: string,
-  selected: boolean, stockDays: number, category?: string
+  selected: boolean, stockDays: number, category?: string, stockQty?: number
 ): Accessory => {
   const info = getStockInfo(stockDays);
+  // Simular que engate e película solar tem estoque zerado por padrão em alguns modelos para validação
+  const defaultQuantity = stockQty !== undefined ? stockQty : (id.includes("engate") ? 0 : 3);
   return {
     id, name, description, price, icon, selected,
     stockStatus: info.status,
     stockDays,
     discountPercent: info.discount,
     category: category || inferCategory(id),
+    stockQuantity: defaultQuantity,
+    inStock: defaultQuantity > 0,
   };
 };
 

@@ -621,69 +621,6 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
         </div>
       </div>
 
-      {/* PAINEL DE INTELIGÊNCIA PREDITIVA EM TEMPO REAL (MOPAR AI RADAR) */}
-      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 rounded-2xl p-5 sm:p-6 text-white border border-slate-700 shadow-xl space-y-4 animate-in fade-in">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-500 flex items-center justify-center shadow-lg shadow-sky-500/20 shrink-0">
-              <Sparkles className="w-4 h-4 text-white animate-pulse" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-black uppercase tracking-wider text-sky-400">Inteligência Preditiva IA</span>
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                  ● Calibração Ativa em Tempo Real
-                </span>
-              </div>
-              <p className="text-sm font-bold text-white mt-0.5">
-                {aiBehaviorSynthesis.archetype}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="text-right">
-              <span className="text-[10px] font-bold text-slate-400 uppercase">Aderência da IA</span>
-              <p className="text-sm font-black text-sky-400">{aiBehaviorSynthesis.confidenceScore}%</p>
-            </div>
-          </div>
-        </div>
-
-        {/* PRÉVIA DOS ITENS DIRECIONADOS EM TEMPO REAL */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-300 font-medium">
-              Itens Essenciais calculados em tempo real pela IA para este perfil:
-            </span>
-            <span className="text-[11px] font-bold text-sky-400">
-              {state.recommendations.filter((r) => r.tier === "essential").length} Essenciais Priorizados
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-            {state.recommendations
-              .filter((r) => r.tier === "essential")
-              .slice(0, 3)
-              .map((rec) => (
-                <div
-                  key={rec.accessoryId}
-                  className="bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 rounded-xl p-3 flex items-center gap-2.5 transition-all shadow-sm"
-                >
-                  <span className="text-xl p-1.5 rounded-lg bg-slate-700/60 shrink-0">
-                    {rec.accessory.icon || "🚗"}
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs font-bold text-white truncate">{rec.accessory.name}</p>
-                    <p className="text-[10px] text-sky-400 font-semibold truncate">
-                      {rec.hasExplicitDemandMatch ? "🎯 Demanda Direta" : `${rec.matchScore}% Match Preditivo`}
-                    </p>
-                  </div>
-                </div>
-              ))}
-          </div>
-        </div>
-      </div>
-
       {/* AS 10 PERGUNTAS CONSULTIVAS ESTRUTURADAS EM CARDS */}
       <div className="space-y-4">
         <div className="flex items-center gap-2">
@@ -991,6 +928,85 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
         onDismiss={handleAiDismiss}
         dismissedKeys={dismissedAiKeys}
       />
+
+      {/* PAINEL DE INTELIGÊNCIA PREDITIVA IA (AO FINAL DA PÁGINA APÓS PREENCHIMENTO) */}
+      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 rounded-2xl p-5 sm:p-6 text-white border border-slate-700 shadow-xl space-y-4 animate-in fade-in">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-500 flex items-center justify-center shadow-lg shadow-sky-500/20 shrink-0">
+              <Sparkles className="w-5 h-5 text-white animate-pulse" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-black uppercase tracking-wider text-sky-400">Inteligência Preditiva IA</span>
+                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+                  completedQuestionsCount >= 4
+                    ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+                    : "bg-amber-500/20 text-amber-300 border-amber-500/30"
+                }`}>
+                  {completedQuestionsCount >= 4 ? "● Diagnóstico Calibrado com Sucesso" : "⏳ Aguardando Respostas do Questionário"}
+                </span>
+              </div>
+              <p className="text-sm font-bold text-white mt-0.5">
+                {completedQuestionsCount >= 4 ? aiBehaviorSynthesis.archetype : "Preencha as perguntas acima para gerar a análise comportamental do cliente"}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="text-right">
+              <span className="text-[10px] font-bold text-slate-400 uppercase">Aderência da IA</span>
+              <p className="text-sm font-black text-sky-400">
+                {completedQuestionsCount >= 4 ? `${aiBehaviorSynthesis.confidenceScore}%` : "—"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* PRÉVIA DOS ITENS DIRECIONADOS EM TEMPO REAL APÓS O QUESTIONÁRIO */}
+        {completedQuestionsCount >= 4 ? (
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-slate-300 font-medium">
+                Itens Essenciais priorizados pela IA com base nas respostas deste cliente:
+              </span>
+              <span className="text-[11px] font-bold text-sky-400">
+                {state.recommendations.filter((r) => r.tier === "essential").length} Essenciais Priorizados
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+              {state.recommendations
+                .filter((r) => r.tier === "essential")
+                .slice(0, 3)
+                .map((rec) => (
+                  <div
+                    key={rec.accessoryId}
+                    className="bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 rounded-xl p-3 flex items-center gap-2.5 transition-all shadow-sm"
+                  >
+                    <span className="text-xl p-1.5 rounded-lg bg-slate-700/60 shrink-0">
+                      {rec.accessory.icon || "🚗"}
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-xs font-bold text-white truncate">{rec.accessory.name}</p>
+                      <p className="text-[10px] text-sky-400 font-semibold truncate">
+                        {rec.hasExplicitDemandMatch ? "🎯 Demanda Direta" : `${rec.matchScore}% Match Preditivo`}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </div>
+        ) : (
+          <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700/60 text-xs text-slate-300 flex items-center gap-3">
+            <span className="text-xl">📋</span>
+            <div>
+              <strong className="text-white block font-semibold">Questionário em preenchimento ({completedQuestionsCount}/9 perguntas respondidas):</strong>
+              Conforme você selecionar as opções de uso acima (local de rodagem, km, estradas de terra e prioridades), a Inteligência Preditiva apresentará aqui a análise calculada.
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* BOTÃO DE AVANÇO PARA A ETAPA 2 */}
       <div className="flex items-center justify-between pt-4 border-t border-slate-200">

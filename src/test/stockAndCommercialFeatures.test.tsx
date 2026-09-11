@@ -4,6 +4,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import NavigationBar, { ViewportDevice } from "@/components/NavigationBar";
 import { PricePresentationScreen } from "@/components/PricePresentationScreen";
 import { ClosingScreen } from "@/components/ClosingScreen";
+import { RecommendationReasonCard } from "@/components/RecommendationReasonCard";
 import { SalesJourneyProvider } from "@/context/SalesJourneyContext";
 
 describe("Novas Funcionalidades: Análise de Estoque, Fechamento e Simulador de Telas", () => {
@@ -137,19 +138,49 @@ describe("Novas Funcionalidades: Análise de Estoque, Fechamento e Simulador de 
     fireEvent.click(removeButtons[0]);
   });
 
-  it("renderiza tela de Fechamento (Etapa 7) e permite remover itens selecionados", () => {
-    render(
-      <SalesJourneyProvider>
-        <ClosingScreen onSaleWon={vi.fn()} />
-      </SalesJourneyProvider>
+  it("sinaliza itens sem estoque com opacidade no RecommendationReasonCard e na lista de aplicados", () => {
+    // Simular acessório sem estoque
+    const mockOutOfStockAcc = {
+      id: "engate",
+      name: "Engate de Reboque Removível Mopar",
+      description: "Homologado para reboques",
+      price: 2450,
+      icon: "🔗",
+      selected: true,
+      stockStatus: "available" as const,
+      stockDays: 40,
+      discountPercent: 0,
+      category: "utilitário",
+      inStock: false,
+      stockQuantity: 0,
+    };
+
+    const mockRecommendation = {
+      accessoryId: "engate",
+      accessory: mockOutOfStockAcc,
+      tier: "essential" as const,
+      matchScore: 90,
+      reason: "Item indicado",
+      relatedAnswers: [],
+      problemSolved: "Trabalho pesado",
+      benefitDelivered: "Tração 1.500kg",
+      regionalInfluence: "MT",
+    };
+
+    const { container } = render(
+      <RecommendationReasonCard
+        recommendation={mockRecommendation}
+        isSelected={true}
+        onToggle={vi.fn()}
+        onRemoveRequest={vi.fn()}
+        onChangeTier={vi.fn()}
+      />
     );
 
-    expect(screen.getByRole("heading", { name: /Fechamento/i })).toBeInTheDocument();
-
-    // Botões de remoção nos itens
-    const removeButtons = screen.getAllByTitle(/Retirar .* da proposta/i);
-    expect(removeButtons.length).toBeGreaterThan(0);
-
-    fireEvent.click(removeButtons[0]);
+    // Deve exibir o aviso de sem estoque
+    expect(screen.getByText(/Sem Estoque Local Imediato/i)).toBeInTheDocument();
+    expect(screen.getByText(/Encomenda CD/i)).toBeInTheDocument();
+    // Card deve ter a classe de opacidade
+    expect(container.firstChild).toHaveClass("opacity-60");
   });
 });

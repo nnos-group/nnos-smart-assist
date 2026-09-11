@@ -351,11 +351,14 @@ const VehicleVisualizationScreen = ({
                 <div className="space-y-1.5 text-xs max-h-[300px] overflow-y-auto pr-1">
                   {accessories.map((item) => {
                     const isChecked = item.selected;
+                    const isOutOfStock = item.inStock === false || item.stockQuantity === 0;
                     return (
                       <label
                         key={item.id}
                         className={`flex items-center justify-between px-3 py-2 rounded-xl transition cursor-pointer select-none ${
-                          isChecked
+                          isOutOfStock && isChecked
+                            ? "bg-amber-50/70 border border-amber-200/80 text-slate-800 font-medium opacity-85"
+                            : isChecked
                             ? "bg-slate-50 border border-slate-200 text-slate-900 font-medium"
                             : "opacity-45 hover:opacity-80 hover:bg-slate-50/50 text-slate-500"
                         }`}
@@ -368,7 +371,14 @@ const VehicleVisualizationScreen = ({
                             className="w-4 h-4 rounded text-blue-600 border-slate-300 focus:ring-blue-500 cursor-pointer shrink-0"
                           />
                           <span className="text-base mr-1">{item.icon}</span>
-                          <span className="truncate text-xs">{item.name}</span>
+                          <div className="truncate">
+                            <span className="truncate text-xs block">{item.name}</span>
+                            {isOutOfStock && (
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-100/80 px-1.5 py-0.2 rounded mt-0.5">
+                                ⚠️ Sem estoque local (Encomenda CD)
+                              </span>
+                            )}
+                          </div>
                         </div>
                         <span className={`text-[11px] font-bold shrink-0 ${isChecked ? "text-sky-700" : "text-slate-400"}`}>
                           {isChecked ? "Aplicado" : "Original"}

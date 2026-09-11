@@ -41,16 +41,32 @@ export const RecommendationReasonCard: React.FC<RecommendationReasonCardProps> =
     },
   }[tier];
 
+  const isOutOfStock = accessory.inStock === false || accessory.stockQuantity === 0;
+
   return (
     <div
       className={`rounded-2xl border transition-all p-5 flex flex-col justify-between space-y-4 ${
-        isSelected
+        isOutOfStock
+          ? "opacity-60 bg-slate-100/90 border-dashed border-amber-300 ring-1 ring-amber-200/50 grayscale-[15%]"
+          : isSelected
           ? "bg-white border-slate-300 shadow-md ring-1 ring-black/5"
           : "bg-slate-50/70 border-slate-200 opacity-60 hover:opacity-100"
       }`}
     >
       {/* HEADER DO CARD: CLASSIFICAÇÃO & ADERÊNCIA */}
       <div>
+        {isOutOfStock && (
+          <div className="mb-2.5 flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg bg-amber-100/90 border border-amber-300 text-amber-900 text-xs font-bold">
+            <span className="flex items-center gap-1.5">
+              <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+              <span>Sem Estoque Local Imediato</span>
+            </span>
+            <span className="text-[10px] font-semibold text-amber-800 bg-amber-200/70 px-2 py-0.5 rounded">
+              Encomenda CD (2 a 5 dias)
+            </span>
+          </div>
+        )}
+
         <div className="flex items-center justify-between gap-2 mb-2">
           <div className="flex items-center gap-1.5">
             <span

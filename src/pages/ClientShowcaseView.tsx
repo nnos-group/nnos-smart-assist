@@ -254,55 +254,103 @@ const ClientShowcaseView = () => {
             </div>
           </div>
 
-          {/* Viewport Box */}
-          <div className="relative w-full aspect-[16/9] bg-slate-950 flex items-center justify-center overflow-hidden select-none">
-            {hasVideo ? (
-              <video
-                key={`${isCompass ? "compass" : isRenegade ? "renegade" : "rampage"}-${viewPerspective}-client-${showAfter ? "com" : "sem"}`}
-                src={getVideoSrc() || undefined}
-                autoPlay
-                loop
-                muted
-                playsInline
-                className="w-full h-full object-cover object-center transition-opacity duration-300"
-              />
-            ) : (
-              <img
-                src={ramRampageImage}
-                alt={vehicleModel}
-                className="max-h-full max-w-full object-contain drop-shadow-2xl"
-              />
-            )}
-
-            {/* Overlay Gradient */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/30 pointer-events-none" />
-
-            {/* Top Badges */}
-            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20 pointer-events-none flex items-center gap-2">
-              <span className="inline-flex items-center space-x-1.5 bg-slate-900/90 text-white backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border border-white/20 shadow-lg">
-                <span className="w-2 h-2 rounded-full bg-sky-400" />
-                <span>{viewPerspective === "interno" ? "Cabine Interna" : "Visão Externa"}</span>
-              </span>
-
-              <span className="inline-flex items-center space-x-2 bg-slate-900/90 text-white backdrop-blur-md px-4 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wider border border-white/20 shadow-lg">
-                {showAfter ? (
-                  <>
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span>COM {selectedAccessories.length} ACESSÓRIOS INSTALADOS</span>
-                  </>
-                ) : (
-                  <>
-                    <span className="w-2 h-2 rounded-full bg-amber-400" />
-                    <span>ORIGINAL DE FÁBRICA (SEM ACESSÓRIOS)</span>
-                  </>
-                )}
-              </span>
+            {/* Viewport Box (Vídeo 100% Limpo sem sobreposições poluindo a imagem) */}
+            <div className="relative w-full aspect-[16/9] bg-slate-950 flex items-center justify-center overflow-hidden select-none">
+              {hasVideo ? (
+                <video
+                  key={`${isCompass ? "compass" : isRenegade ? "renegade" : "rampage"}-${viewPerspective}-client-${showAfter ? "com" : "sem"}`}
+                  src={getVideoSrc() || undefined}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-full object-cover object-center transition-opacity duration-300"
+                />
+              ) : (
+                <img
+                  src={ramRampageImage}
+                  alt={vehicleModel}
+                  className="max-h-full max-w-full object-contain drop-shadow-2xl"
+                />
+              )}
             </div>
           </div>
-        </div>
 
-        {/* Two-Column Details: Accessories Grid & Financial Summary */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* DIFERENCIAIS EXCLUSIVOS DE CONCESSIONÁRIA AUTORIZADA (REDE OFICIAL STELLANTIS MOPAR) */}
+          <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-sky-950 rounded-2xl p-6 text-white border border-slate-700 shadow-xl space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-700/80">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold">
+                  💎
+                </div>
+                <div>
+                  <h3 className="text-sm font-black uppercase tracking-wider text-sky-300">
+                    Diferenciais Exclusivos de Concessionária Autorizada
+                  </h3>
+                  <p className="text-xs text-slate-300">
+                    Sua tranquilidade e a garantia de fábrica do seu 0km 100% protegidas
+                  </p>
+                </div>
+              </div>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 self-start sm:self-auto">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+                Oficina Homologada Mopar
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+              <div className="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/60 flex items-start gap-3">
+                <span className="text-xl shrink-0 mt-0.5">⭐</span>
+                <div>
+                  <strong className="text-xs font-black text-white block">
+                    100% Originais &amp; Homologados de Fábrica
+                  </strong>
+                  <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                    Você adquire componentes desenvolvidos e testados sob os mais rigorosos padrões de engenharia Mopar / Stellantis, garantindo durabilidade máxima e encaixe perfeito sob medida.
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/60 flex items-start gap-3">
+                <span className="text-xl shrink-0 mt-0.5">🛡️</span>
+                <div>
+                  <strong className="text-xs font-black text-white block">
+                    Garantia Total do Veículo Preservada
+                  </strong>
+                  <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                    A instalação é executada exclusivamente por técnicos especializados certificados na oficina autorizada. O seu veículo 0km mantém integralmente a garantia total de fábrica, sem qualquer risco elétrico ou estrutural.
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/60 flex items-start gap-3">
+                <span className="text-xl shrink-0 mt-0.5">🔒</span>
+                <div>
+                  <strong className="text-xs font-black text-white block">
+                    Segurança Ativa e Passiva Integradas
+                  </strong>
+                  <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                    Acessórios testados contra impactos e perfeitamente integrados aos módulos e à eletrônica de bordo original do carro, preservando sensores, airbags e sistemas de assistência.
+                  </p>
+                </div>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-slate-800/60 border border-slate-700/60 flex items-start gap-3">
+                <span className="text-xl shrink-0 mt-0.5">📈</span>
+                <div>
+                  <strong className="text-xs font-black text-white block">
+                    Valorização Comprovada na Revenda
+                  </strong>
+                  <p className="text-xs text-slate-300 mt-1 leading-relaxed">
+                    Carros equipados com acessórios genuínos de fábrica têm maior procura, maior valor de avaliação nas concessionárias e muito mais liquidez no mercado de seminovos.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Two-Column Details: Accessories Grid & Financial Summary (Estrutura idêntica à de Investimento) */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* Left: Accessories List */}
           <div className="lg:col-span-7 space-y-4">
             <div className="flex items-center justify-between px-1">
@@ -315,17 +363,27 @@ const ClientShowcaseView = () => {
             <div className="space-y-3">
               {selectedAccessories.map((item) => {
                 const finalPrice = Math.round(item.price * (1 - item.discountPercent / 100));
+                const isOutOfStock = item.inStock === false || item.stockQuantity === 0;
                 return (
                   <div
                     key={item.id}
-                    className="bg-white rounded-xl p-4 border border-slate-200 shadow-sm flex items-start justify-between gap-3"
+                    className={`bg-white rounded-xl p-4 border shadow-sm flex items-start justify-between gap-3 ${
+                      isOutOfStock ? "border-amber-200 bg-amber-50/20" : "border-slate-200"
+                    }`}
                   >
                     <div className="flex items-start space-x-3">
                       <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-600 border border-blue-100 flex items-center justify-center shrink-0 mt-0.5 text-lg">
                         {item.icon || "⚙️"}
                       </div>
                       <div>
-                        <h4 className="font-bold text-slate-900 text-sm">{item.name}</h4>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-bold text-slate-900 text-sm">{item.name}</h4>
+                          {isOutOfStock && (
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-100/90 px-1.5 py-0.2 rounded border border-amber-300">
+                              ⚠️ Encomenda CD (2-5d)
+                            </span>
+                          )}
+                        </div>
                         <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">{item.description}</p>
                         <span className="inline-flex items-center gap-1 text-[11px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 mt-2">
                           <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />

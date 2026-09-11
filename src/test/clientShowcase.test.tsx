@@ -57,7 +57,7 @@ describe("ClientShowcaseView", () => {
     window.open = originalOpen;
   });
 
-  it("allows switching between Original de Fábrica and Com Seus Acessórios views", () => {
+  it("allows switching between Original de Fábrica and Com Seus Acessórios views and displays concessionaire differentials", () => {
     const route = "/visualizacao?client=Teste&model=JEEP%20RENEGADE%20TRAILHAWK";
 
     render(
@@ -66,12 +66,18 @@ describe("ClientShowcaseView", () => {
       </MemoryRouter>
     );
 
+    // Diferenciais de concessionária oficial na página do cliente
+    expect(screen.getByText(/Diferenciais Exclusivos de Concessionária Autorizada/i)).toBeInTheDocument();
+    expect(screen.getByText(/100% Originais & Homologados de Fábrica/i)).toBeInTheDocument();
+    expect(screen.getByText(/Garantia Total do Veículo Preservada/i)).toBeInTheDocument();
+
+    // Botões de alternância sem poluição no frame de vídeo
     const btnOriginal = screen.getByRole("button", { name: "Original de Fábrica" });
     fireEvent.click(btnOriginal);
-    expect(screen.getByText(/ORIGINAL DE FÁBRICA \(SEM ACESSÓRIOS\)/i)).toBeInTheDocument();
+    expect(btnOriginal).toHaveClass("font-bold");
 
     const btnAcessorios = screen.getByRole("button", { name: "Com Seus Acessórios" });
     fireEvent.click(btnAcessorios);
-    expect(screen.getByText(/^COM \d+ ACESSÓRIOS INSTALADOS$/i)).toBeInTheDocument();
+    expect(btnAcessorios).toHaveClass("font-bold");
   });
 });
