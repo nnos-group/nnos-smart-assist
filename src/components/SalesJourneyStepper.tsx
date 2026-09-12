@@ -63,11 +63,11 @@ export const SalesJourneyStepper: React.FC<SalesJourneyStepperProps> = ({ onStep
                       <span
                         className={`text-[10px] block leading-tight ${
                           isActive
-                            ? "text-sky-600 font-semibold"
+                            ? "text-sky-600 font-bold uppercase tracking-wider"
                             : "text-slate-400 font-normal"
                         }`}
                       >
-                        {isActive ? "Etapa atual" : meta.subtitle}
+                        {isActive ? "ETAPA ATUAL" : meta.subtitle}
                       </span>
                       <span
                         className={`text-xs tracking-tight block truncate ${

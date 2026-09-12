@@ -235,7 +235,7 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
   ].filter(Boolean).length;
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300 pb-36 sm:pb-40">
+    <div className="space-y-6 animate-in fade-in duration-300">
       {/* HEADER DE ETAPA */}
       <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 sm:p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
