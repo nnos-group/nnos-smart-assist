@@ -129,7 +129,7 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
         <div className="flex flex-col items-center text-center mb-6 relative">
           {/* Authentic Accessories Badge (Jeep & RAM) */}
           <div className="relative group">
-            <div className="relative h-20 sm:h-24 w-auto aspect-[2055/1279] rounded-2xl border border-slate-200 shadow-card overflow-hidden flex items-center justify-center bg-white p-1 mb-3">
+            <div className="relative h-20 sm:h-24 w-auto aspect-[2055/1279] flex items-center justify-center mb-3">
               <img
                 src={accessoriesBadge}
                 alt="Logomarca Oficial Jeep & RAM"
