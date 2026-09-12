@@ -1119,6 +1119,9 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
         )}
       </section>
 
+      {/* Espaçamento calibrado idêntico aos campos do formulário (24px de respiro + 72px da barra fixa) */}
+      <div className="h-[96px] pointer-events-none" aria-hidden="true" />
+
       {/* DOCKED CLEAN ACTION BAR (Rivian / CarPlay Style) */}
       <aside aria-label="Controles de Navegação Cockpit" className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 border-t border-slate-200 backdrop-blur-xl py-3.5 px-4 lg:px-8 shadow-lg">
         <div className="max-w-[1720px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">

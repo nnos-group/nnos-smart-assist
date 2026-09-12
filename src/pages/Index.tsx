@@ -140,7 +140,7 @@ const InnerSalesJourney = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col font-sans selection:bg-sky-500 selection:text-white pb-20">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 flex flex-col font-sans selection:bg-sky-500 selection:text-white">
       {/* Navigation Bar Corporativo com Seletor de Simulação */}
       <NavigationBar
         currentStep={currentStepIndex + 1}
