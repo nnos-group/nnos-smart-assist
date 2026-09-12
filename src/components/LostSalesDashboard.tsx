@@ -153,19 +153,19 @@ export const LostSalesDashboard = ({ isOpen, onClose }: LostSalesDashboardProps)
     : 1;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-8 bg-slate-900/70 backdrop-blur-sm animate-fadeIn overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-start justify-center p-4 pt-8 bg-slate-950/60 backdrop-blur-sm animate-in fade-in overflow-y-auto">
       <div className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="bg-gradient-to-r from-slate-900 via-rose-950 to-slate-900 text-white p-5 flex items-center justify-between border-b border-rose-950 shrink-0">
+        <div className="bg-white text-slate-900 p-5 flex items-center justify-between border-b border-slate-200 shrink-0">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-rose-500/20 border border-rose-400/30 flex items-center justify-center text-rose-400 shadow-inner">
+            <div className="w-10 h-10 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 shadow-xs">
               <BarChart3 className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white tracking-tight">
+              <h3 className="text-base font-bold text-slate-900 tracking-tight">
                 Painel de Vendas Perdidas — Análise de Pareto
               </h3>
-              <p className="text-xs text-rose-200 mt-0.5">
+              <p className="text-xs text-slate-500 mt-0.5">
                 Transforme perdas em decisões gerenciais • Dados da concessionária
               </p>
             </div>
@@ -173,7 +173,7 @@ export const LostSalesDashboard = ({ isOpen, onClose }: LostSalesDashboardProps)
           <button
             type="button"
             onClick={onClose}
-            className="text-rose-200 hover:text-white p-1 rounded-lg hover:bg-white/10 transition cursor-pointer"
+            className="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100 transition cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>

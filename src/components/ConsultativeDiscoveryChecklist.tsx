@@ -516,21 +516,26 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
         </div>
       )}
 
-      {/* DADOS BÁSICOS DO CLIENTE & VEÍCULO */}
+      {/* DADOS BÁSICOS DO CLIENTE & VEÍCULO (Cockpit Telemetry Strip) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
-        <div className="lg:col-span-6 bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-4">
-          <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
-            <Car className="w-4 h-4 text-sky-600" />
-            <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Veículo do Cliente</h2>
+        <div className="lg:col-span-6 cockpit-panel rounded-2xl p-6 space-y-4 relative overflow-hidden transition-all">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div className="flex items-center gap-2">
+              <Car className="w-4 h-4 text-sky-600" />
+              <h2 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Veículo do Cliente</h2>
+            </div>
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-sky-50 text-sky-700 font-semibold text-[11px] border border-sky-200">
+              Homologado Oficial
+            </span>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="input-vehicle-model">Modelo & Versão</label>
+            <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1" htmlFor="input-vehicle-model">Modelo & Versão</label>
             <select
               id="input-vehicle-model"
               value={clientData.vehicleModel}
               onChange={(e) => updateClientData({ vehicleModel: e.target.value })}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 text-xs sm:text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-sky-500/20 focus:border-sky-600 cursor-pointer"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100/70 p-2.5 text-xs sm:text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-sky-500/20 focus:border-sky-600 focus:bg-white cursor-pointer transition-colors"
             >
               {vehicleGroups.map((g) => (
                 <optgroup key={g.brand} label={g.brand}>
@@ -544,12 +549,12 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="input-vehicle-color">Cor</label>
+              <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1" htmlFor="input-vehicle-color">Cor</label>
               <select
                 id="input-vehicle-color"
                 value={clientData.vehicleColor}
                 onChange={(e) => updateClientData({ vehicleColor: e.target.value })}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 text-xs sm:text-sm font-medium text-slate-900 focus:ring-2 focus:ring-sky-500/20 focus:border-sky-600 cursor-pointer"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100/70 p-2.5 text-xs sm:text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-sky-500/20 focus:border-sky-600 focus:bg-white cursor-pointer transition-colors"
               >
                 {vehicleColors.map((c) => (
                   <option key={c.name} value={c.name}>{c.label}</option>
@@ -557,12 +562,12 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="input-vehicle-year">Ano / Fabricação</label>
+              <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1" htmlFor="input-vehicle-year">Ano / Fabricação</label>
               <select
                 id="input-vehicle-year"
                 value={clientData.vehicleYear}
                 onChange={(e) => updateClientData({ vehicleYear: e.target.value })}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 text-xs sm:text-sm font-medium text-slate-900 focus:ring-2 focus:ring-sky-500/20 focus:border-sky-600 cursor-pointer"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100/70 p-2.5 text-xs sm:text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-sky-500/20 focus:border-sky-600 focus:bg-white cursor-pointer transition-colors"
               >
                 {vehicleYears.map((y) => (
                   <option key={y} value={y}>{y}</option>
@@ -572,32 +577,35 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
           </div>
         </div>
 
-        <div className="lg:col-span-6 bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-4">
-          <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
-            <User className="w-4 h-4 text-sky-600" />
-            <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">Identificação & Localização</h2>
+        <div className="lg:col-span-6 cockpit-panel rounded-2xl p-6 space-y-4 relative overflow-hidden transition-all">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div className="flex items-center gap-2">
+              <User className="w-4 h-4 text-sky-600" />
+              <h2 className="text-xs font-bold text-slate-700 uppercase tracking-wider">Identificação & Localização</h2>
+            </div>
+            <span className="w-2 h-2 rounded-full bg-emerald-500" />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="input-client-name">Nome do Cliente</label>
+            <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1" htmlFor="input-client-name">Nome do Cliente</label>
             <input
               id="input-client-name"
               type="text"
               value={clientData.clientName}
               onChange={(e) => updateClientData({ clientName: e.target.value })}
               placeholder="Ex: João Silva"
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 text-xs sm:text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-sky-500/20 focus:border-sky-600"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100/70 p-2.5 text-xs sm:text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-sky-500/20 focus:border-sky-600 focus:bg-white transition-colors"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="input-client-state">Estado / Região</label>
+              <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1" htmlFor="input-client-state">Estado / Região</label>
               <select
                 id="input-client-state"
                 value={clientData.state}
                 onChange={(e) => updateClientData({ state: e.target.value })}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 text-xs sm:text-sm font-medium text-slate-900 focus:ring-2 focus:ring-sky-500/20 focus:border-sky-600 cursor-pointer"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100/70 p-2.5 text-xs sm:text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-sky-500/20 focus:border-sky-600 focus:bg-white cursor-pointer transition-colors"
               >
                 {states.map((s) => (
                   <option key={s} value={s}>{s}</option>
@@ -605,12 +613,12 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
               </select>
             </div>
             <div>
-              <label className="block text-xs font-semibold text-slate-700 mb-1" htmlFor="input-client-gender">Perfil de Compra</label>
+              <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1" htmlFor="input-client-gender">Perfil de Compra</label>
               <select
                 id="input-client-gender"
                 value={clientData.clientGender}
                 onChange={(e) => updateClientData({ clientGender: e.target.value })}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 text-xs sm:text-sm font-medium text-slate-900 focus:ring-2 focus:ring-sky-500/20 focus:border-sky-600 cursor-pointer"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100/70 p-2.5 text-xs sm:text-sm font-semibold text-slate-900 focus:ring-2 focus:ring-sky-500/20 focus:border-sky-600 focus:bg-white cursor-pointer transition-colors"
               >
                 <option value="Masculino">Pessoa Física (Masculino)</option>
                 <option value="Feminino">Pessoa Física (Feminino)</option>
@@ -621,21 +629,39 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
         </div>
       </div>
 
-      {/* AS 10 PERGUNTAS CONSULTIVAS ESTRUTURADAS EM CARDS */}
+      {/* AS 10 PERGUNTAS CONSULTIVAS ESTRUTURADAS EM CARDS (Cockpit Technical Grid) */}
       <div className="space-y-4">
-        <div className="flex items-center gap-2">
-          <Compass className="w-5 h-5 text-sky-600" />
-          <h2 className="text-lg font-bold text-slate-900 font-display">
-            Checklist de Diagnóstico de Utilização (10 Perguntas Mínimas)
-          </h2>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200/80 pb-3">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-600 shadow-xs">
+              <Compass className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-slate-900 tracking-tight font-display">
+                Checklist de Diagnóstico de Utilização (10 Perguntas Mínimas)
+              </h2>
+              <p className="text-xs text-slate-500">Parâmetros operacionais para personalização precisa dos pacotes recomendados.</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-slate-500">Modo de Calibração:</span>
+            <span className="px-3 py-1 rounded-full bg-sky-50 border border-sky-200 text-sky-700 text-xs font-bold">
+              Alta Precisão (IA)
+            </span>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* 1. Onde o veículo será utilizado */}
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-3">
-            <span className="text-[11px] font-bold text-sky-600 uppercase tracking-wider">Pergunta 1 de 10</span>
-            <h3 className="text-sm font-bold text-slate-900">Onde o veículo será utilizado com maior frequência?</h3>
-            <div className="grid grid-cols-2 gap-2">
+          <article className="cockpit-panel rounded-2xl p-5 border border-slate-200 space-y-3.5 transition-shadow hover:shadow-card">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0">01</span>
+                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold">Onde o veículo será utilizado com maior frequência?</h3>
+              </div>
+              <span className="text-[10px] font-semibold text-slate-400">Pergunta 1 de 10</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-xs">
               {([
                 { id: "cidade", label: "Cidade / Trânsito Urbano" },
                 { id: "rodovia", label: "Rodovias / Estradas" },
@@ -643,113 +669,146 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
                 { id: "litoral", label: "Litoral / Maresia" },
                 { id: "uso_misto", label: "Uso Misto" },
                 { id: "off_road", label: "Trilhas / Off-road" },
-              ] as { id: DiscoveryProfile["usageLocation"]; label: string }[]).map((opt) => (
-                <button
-                  key={opt.id}
-                  type="button"
-                  onClick={() => updateDiscoveryProfile({ usageLocation: opt.id })}
-                  className={`px-3 py-2 rounded-xl text-xs font-semibold text-center border transition-all cursor-pointer ${
-                    discoveryProfile.usageLocation === opt.id
-                      ? "bg-sky-600 text-white border-sky-600 shadow-xs"
-                      : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
+              ] as { id: DiscoveryProfile["usageLocation"]; label: string }[]).map((opt) => {
+                const isSelected = discoveryProfile.usageLocation === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => updateDiscoveryProfile({ usageLocation: opt.id })}
+                    className={`p-2.5 rounded-xl transition-all text-xs font-medium cursor-pointer ${
+                      isSelected
+                        ? "bg-slate-900 border border-slate-900 text-white font-semibold shadow-sm flex items-center justify-center gap-1.5"
+                        : "bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 text-center"
+                    }`}
+                  >
+                    {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-sky-400 shrink-0" />}
+                    <span>{opt.label}</span>
+                  </button>
+                );
+              })}
             </div>
-          </div>
+          </article>
 
           {/* 2. Quilometragem mensal aproximada */}
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-3">
-            <span className="text-[11px] font-bold text-sky-600 uppercase tracking-wider">Pergunta 2 de 10</span>
-            <h3 className="text-sm font-bold text-slate-900">Qual será a quilometragem mensal aproximada?</h3>
-            <div className="grid grid-cols-2 gap-2">
+          <article className="cockpit-panel rounded-2xl p-5 border border-slate-200 space-y-3.5 transition-shadow hover:shadow-card">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0">02</span>
+                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold">Qual será a quilometragem mensal aproximada?</h3>
+              </div>
+              <span className="text-[10px] font-semibold text-slate-400">Pergunta 2 de 10</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2 text-xs">
               {([
                 { id: "ate_500", label: "Até 500 km" },
                 { id: "500_1000", label: "500 a 1.000 km" },
                 { id: "1000_2000", label: "1.000 a 2.000 km" },
                 { id: "acima_2000", label: "Acima de 2.000 km" },
-              ] as { id: DiscoveryProfile["monthlyKm"]; label: string }[]).map((opt) => (
-                <button
-                  key={opt.id}
-                  type="button"
-                  onClick={() => updateDiscoveryProfile({ monthlyKm: opt.id })}
-                  className={`px-3 py-2 rounded-xl text-xs font-semibold text-center border transition-all cursor-pointer ${
-                    discoveryProfile.monthlyKm === opt.id
-                      ? "bg-sky-600 text-white border-sky-600 shadow-xs"
-                      : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
+              ] as { id: DiscoveryProfile["monthlyKm"]; label: string }[]).map((opt) => {
+                const isSelected = discoveryProfile.monthlyKm === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => updateDiscoveryProfile({ monthlyKm: opt.id })}
+                    className={`p-2.5 rounded-xl transition-all text-xs font-medium cursor-pointer ${
+                      isSelected
+                        ? "bg-slate-900 border border-slate-900 text-white font-semibold shadow-sm flex items-center justify-center gap-1.5"
+                        : "bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 text-center"
+                    }`}
+                  >
+                    {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-sky-400 shrink-0" />}
+                    <span>{opt.label}</span>
+                  </button>
+                );
+              })}
             </div>
-          </div>
+          </article>
 
           {/* 3. Frequência em estradas de terra */}
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-3">
-            <span className="text-[11px] font-bold text-sky-600 uppercase tracking-wider">Pergunta 3 de 10</span>
-            <h3 className="text-sm font-bold text-slate-900">Com que frequência passará por estradas de terra?</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <article className="cockpit-panel rounded-2xl p-5 border border-slate-200 space-y-3.5 transition-shadow hover:shadow-card">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0">03</span>
+                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold">Com que frequência passará por estradas de terra?</h3>
+              </div>
+              <span className="text-[10px] font-semibold text-slate-400">Pergunta 3 de 10</span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
               {([
                 { id: "nunca", label: "Nunca" },
                 { id: "ocasionalmente", label: "Ocasional" },
                 { id: "semanalmente", label: "Semanal" },
                 { id: "diariamente", label: "Diário" },
-              ] as { id: DiscoveryProfile["dirtRoadFrequency"]; label: string }[]).map((opt) => (
-                <button
-                  key={opt.id}
-                  type="button"
-                  onClick={() => updateDiscoveryProfile({ dirtRoadFrequency: opt.id })}
-                  className={`px-3 py-2 rounded-xl text-xs font-semibold text-center border transition-all cursor-pointer ${
-                    discoveryProfile.dirtRoadFrequency === opt.id
-                      ? "bg-sky-600 text-white border-sky-600 shadow-xs"
-                      : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
+              ] as { id: DiscoveryProfile["dirtRoadFrequency"]; label: string }[]).map((opt) => {
+                const isSelected = discoveryProfile.dirtRoadFrequency === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => updateDiscoveryProfile({ dirtRoadFrequency: opt.id })}
+                    className={`p-2.5 rounded-xl transition-all text-xs font-medium cursor-pointer ${
+                      isSelected
+                        ? "bg-slate-900 border border-slate-900 text-white font-semibold shadow-sm flex items-center justify-center gap-1.5"
+                        : "bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 text-center"
+                    }`}
+                  >
+                    {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-sky-400 shrink-0" />}
+                    <span>{opt.label}</span>
+                  </button>
+                );
+              })}
             </div>
-          </div>
+          </article>
 
           {/* 4. Transporte de cargas */}
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-3">
-            <span className="text-[11px] font-bold text-sky-600 uppercase tracking-wider">Pergunta 4 de 10</span>
-            <h3 className="text-sm font-bold text-slate-900">O veículo será usado para transportar cargas?</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <article className="cockpit-panel rounded-2xl p-5 border border-slate-200 space-y-3.5 transition-shadow hover:shadow-card">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0">04</span>
+                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold">O veículo será usado para transportar cargas?</h3>
+              </div>
+              <span className="text-[10px] font-semibold text-slate-400">Pergunta 4 de 10</span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
               {([
                 { id: "nao", label: "Não transporta" },
                 { id: "cargas_leves", label: "Cargas leves" },
                 { id: "ferramentas", label: "Ferramentas" },
                 { id: "materiais_profissionais", label: "Materiais prof." },
                 { id: "cargas_pesadas", label: "Cargas pesadas" },
-              ] as { id: DiscoveryProfile["cargoUsage"]; label: string }[]).map((opt) => (
-                <button
-                  key={opt.id}
-                  type="button"
-                  onClick={() => updateDiscoveryProfile({ cargoUsage: opt.id })}
-                  className={`px-3 py-2 rounded-xl text-xs font-semibold text-center border transition-all cursor-pointer ${
-                    discoveryProfile.cargoUsage === opt.id
-                      ? "bg-sky-600 text-white border-sky-600 shadow-xs"
-                      : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
+              ] as { id: DiscoveryProfile["cargoUsage"]; label: string }[]).map((opt) => {
+                const isSelected = discoveryProfile.cargoUsage === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => updateDiscoveryProfile({ cargoUsage: opt.id })}
+                    className={`p-2.5 rounded-xl transition-all text-xs font-medium cursor-pointer ${
+                      isSelected
+                        ? "bg-slate-900 border border-slate-900 text-white font-semibold shadow-sm flex items-center justify-center gap-1.5"
+                        : "bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 text-center"
+                    }`}
+                  >
+                    {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-sky-400 shrink-0" />}
+                    <span>{opt.label}</span>
+                  </button>
+                );
+              })}
             </div>
-          </div>
+          </article>
 
           {/* 5. Quem será transportado com frequência? (múltipla seleção) */}
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-3">
+          <article className="cockpit-panel rounded-2xl p-5 border border-slate-200 space-y-3.5 transition-shadow hover:shadow-card">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-sky-600 uppercase tracking-wider">Pergunta 5 de 10</span>
-              <span className="text-[10px] font-bold text-slate-500">Múltipla seleção</span>
+              <div className="flex items-center gap-2.5">
+                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0">05</span>
+                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold">Quem será transportado com frequência?</h3>
+              </div>
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Múltipla seleção</span>
             </div>
-            <h3 className="text-sm font-bold text-slate-900">Quem será transportado com frequência?</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
               {([
                 { id: "criancas", label: "👶 Crianças" },
                 { id: "idosos", label: "👵 Idosos" },
@@ -763,54 +822,66 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
                     key={opt.id}
                     type="button"
                     onClick={() => togglePassenger(opt.id)}
-                    className={`px-3 py-2 rounded-xl text-xs font-semibold text-center border transition-all cursor-pointer ${
+                    className={`p-2.5 rounded-xl transition-all text-xs font-medium cursor-pointer ${
                       isSelected
-                        ? "bg-sky-600 text-white border-sky-600 shadow-xs"
-                        : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                        ? "bg-slate-900 border border-slate-900 text-white font-semibold shadow-sm flex items-center justify-center gap-1.5"
+                        : "bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 text-center"
                     }`}
                   >
-                    {opt.label}
+                    {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-sky-400 shrink-0" />}
+                    <span>{opt.label}</span>
                   </button>
                 );
               })}
             </div>
-          </div>
+          </article>
 
           {/* 6. Frequência de viagens */}
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-3">
-            <span className="text-[11px] font-bold text-sky-600 uppercase tracking-wider">Pergunta 6 de 10</span>
-            <h3 className="text-sm font-bold text-slate-900">Com que frequência realiza viagens?</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <article className="cockpit-panel rounded-2xl p-5 border border-slate-200 space-y-3.5 transition-shadow hover:shadow-card">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0">06</span>
+                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold">Com que frequência realiza viagens?</h3>
+              </div>
+              <span className="text-[10px] font-semibold text-slate-400">Pergunta 6 de 10</span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
               {([
                 { id: "raramente", label: "Raramente" },
                 { id: "mensalmente", label: "Mensalmente" },
                 { id: "quinzenalmente", label: "Quinzenal" },
                 { id: "semanalmente", label: "Semanal" },
-              ] as { id: DiscoveryProfile["tripFrequency"]; label: string }[]).map((opt) => (
-                <button
-                  key={opt.id}
-                  type="button"
-                  onClick={() => updateDiscoveryProfile({ tripFrequency: opt.id })}
-                  className={`px-3 py-2 rounded-xl text-xs font-semibold text-center border transition-all cursor-pointer ${
-                    discoveryProfile.tripFrequency === opt.id
-                      ? "bg-sky-600 text-white border-sky-600 shadow-xs"
-                      : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
+              ] as { id: DiscoveryProfile["tripFrequency"]; label: string }[]).map((opt) => {
+                const isSelected = discoveryProfile.tripFrequency === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => updateDiscoveryProfile({ tripFrequency: opt.id })}
+                    className={`p-2.5 rounded-xl transition-all text-xs font-medium cursor-pointer ${
+                      isSelected
+                        ? "bg-slate-900 border border-slate-900 text-white font-semibold shadow-sm flex items-center justify-center gap-1.5"
+                        : "bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 text-center"
+                    }`}
+                  >
+                    {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-sky-400 shrink-0" />}
+                    <span>{opt.label}</span>
+                  </button>
+                );
+              })}
             </div>
-          </div>
+          </article>
 
           {/* 7. Necessidades específicas (múltipla seleção) */}
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-3 md:col-span-2">
+          <article className="cockpit-panel rounded-2xl p-5 border border-slate-200 space-y-3.5 md:col-span-2 transition-shadow hover:shadow-card">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-sky-600 uppercase tracking-wider">Pergunta 7 de 10</span>
-              <span className="text-[10px] font-bold text-slate-500">Múltipla seleção</span>
+              <div className="flex items-center gap-2.5">
+                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0">07</span>
+                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold">Existe necessidade específica identificada?</h3>
+              </div>
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Múltipla seleção</span>
             </div>
-            <h3 className="text-sm font-bold text-slate-900">Existe necessidade específica identificada?</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
               {([
                 { id: "reboque", label: "🔗 Reboque / Carreta" },
                 { id: "transporte_bicicletas", label: "🚲 Transporte de bikes" },
@@ -826,29 +897,33 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
                     key={opt.id}
                     type="button"
                     onClick={() => toggleSpecialNeed(opt.id)}
-                    className={`px-3 py-2 rounded-xl text-xs font-semibold text-center border transition-all cursor-pointer ${
+                    className={`p-2.5 rounded-xl transition-all text-xs font-medium cursor-pointer ${
                       isSelected
-                        ? "bg-sky-600 text-white border-sky-600 shadow-xs"
-                        : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                        ? "bg-slate-900 border border-slate-900 text-white font-semibold shadow-sm flex items-center justify-center gap-1.5"
+                        : "bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 text-center"
                     }`}
                   >
-                    {opt.label}
+                    {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-sky-400 shrink-0" />}
+                    <span>{opt.label}</span>
                   </button>
                 );
               })}
             </div>
-          </div>
+          </article>
 
           {/* 8. As 3 prioridades principais */}
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-3 md:col-span-2">
+          <article className="cockpit-panel rounded-2xl p-5 border border-slate-200 space-y-3.5 md:col-span-2 transition-shadow hover:shadow-card">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold text-sky-600 uppercase tracking-wider">Pergunta 8 de 10</span>
-              <span className="text-[10px] font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded-full border border-sky-200">
+              <div className="flex items-center gap-2.5">
+                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0">08</span>
+                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold">Quais são as três prioridades principais para o cliente?</h3>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                 Selecione até 3 prioridades ({discoveryProfile.priorities.length}/3)
-              </span>
+              </div>
             </div>
-            <h3 className="text-sm font-bold text-slate-900">Quais são as três prioridades principais para o cliente?</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
               {([
                 { id: "protecao", label: "🛡️ Proteção" },
                 { id: "seguranca", label: "🔒 Segurança" },
@@ -859,65 +934,94 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
                 { id: "desempenho", label: "⚙️ Desempenho" },
                 { id: "valorizacao_revenda", label: "📈 Valorização na revenda" },
               ] as { id: DiscoveryProfile["priorities"][number]; label: string }[]).map((opt) => {
-                const isSelected = discoveryProfile.priorities.includes(opt.id);
+                const priorityIndex = discoveryProfile.priorities.indexOf(opt.id);
+                const isSelected = priorityIndex !== -1;
                 return (
                   <button
                     key={opt.id}
                     type="button"
                     onClick={() => togglePriority(opt.id)}
-                    className={`px-3 py-2 rounded-xl text-xs font-semibold text-center border transition-all cursor-pointer ${
+                    className={`p-3.5 rounded-xl transition-all flex flex-col justify-between text-left h-24 cursor-pointer ${
                       isSelected
-                        ? "bg-emerald-600 text-white border-emerald-600 shadow-xs font-bold"
-                        : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                        ? "bg-sky-50 border border-sky-300 text-slate-900 shadow-xs"
+                        : "bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-500"
                     }`}
                   >
-                    {opt.label}
+                    <span className={`text-[10px] uppercase font-bold tracking-wider ${
+                      isSelected ? "text-sky-700" : "text-slate-400"
+                    }`}>
+                      {isSelected ? `${priorityIndex + 1}ª Prioridade` : "Em Espera"}
+                    </span>
+                    <span className={`text-xs block ${
+                      isSelected ? "font-bold text-slate-900" : "font-semibold text-slate-700"
+                    }`}>
+                      {opt.label}
+                    </span>
                   </button>
                 );
               })}
             </div>
-          </div>
+          </article>
 
           {/* 9. Onde o veículo ficará estacionado? */}
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-3">
-            <span className="text-[11px] font-bold text-sky-600 uppercase tracking-wider">Pergunta 9 de 10</span>
-            <h3 className="text-sm font-bold text-slate-900">Onde o veículo ficará estacionado?</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <article className="cockpit-panel rounded-2xl p-5 border border-slate-200 space-y-3.5 transition-shadow hover:shadow-card">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0">09</span>
+                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold">Onde o veículo ficará estacionado?</h3>
+              </div>
+              <span className="text-[10px] font-semibold text-slate-400">Pergunta 9 de 10</span>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
               {([
                 { id: "garagem_fechada", label: "Garagem fechada" },
                 { id: "estacionamento_aberto", label: "Estacionamento aberto" },
                 { id: "rua", label: "Rua pública" },
                 { id: "area_rural", label: "Área rural" },
                 { id: "ambiente_industrial", label: "Ambiente industrial" },
-              ] as { id: DiscoveryProfile["parkingLocation"]; label: string }[]).map((opt) => (
-                <button
-                  key={opt.id}
-                  type="button"
-                  onClick={() => updateDiscoveryProfile({ parkingLocation: opt.id })}
-                  className={`px-3 py-2 rounded-xl text-xs font-semibold text-center border transition-all cursor-pointer ${
-                    discoveryProfile.parkingLocation === opt.id
-                      ? "bg-sky-600 text-white border-sky-600 shadow-xs"
-                      : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
+              ] as { id: DiscoveryProfile["parkingLocation"]; label: string }[]).map((opt) => {
+                const isSelected = discoveryProfile.parkingLocation === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => updateDiscoveryProfile({ parkingLocation: opt.id })}
+                    className={`p-2.5 rounded-xl transition-all text-xs font-medium cursor-pointer ${
+                      isSelected
+                        ? "bg-slate-900 border border-slate-900 text-white font-semibold shadow-sm flex items-center justify-center gap-1.5"
+                        : "bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 text-center"
+                    }`}
+                  >
+                    {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-sky-400 shrink-0" />}
+                    <span>{opt.label}</span>
+                  </button>
+                );
+              })}
             </div>
-          </div>
+          </article>
 
           {/* 10. Necessidade ou preocupação específica (texto livre) */}
-          <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-3">
-            <span className="text-[11px] font-bold text-sky-600 uppercase tracking-wider">Pergunta 10 de 10</span>
-            <h3 className="text-sm font-bold text-slate-900">Existe alguma necessidade ou preocupação específica?</h3>
-            <textarea
-              rows={2}
-              value={discoveryProfile.specificNotes}
-              onChange={(e) => updateDiscoveryProfile({ specificNotes: e.target.value })}
-              placeholder="Ex: Vai transportar barcos no fim do ano; esposa tem dificuldade de subir no carro..."
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/70 p-2.5 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-sky-500/20 focus:border-sky-600"
-            />
-          </div>
+          <article className="cockpit-panel rounded-2xl p-5 border border-slate-200 space-y-3.5 transition-shadow hover:shadow-card">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0">10</span>
+                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold">Existe alguma necessidade ou preocupação específica?</h3>
+              </div>
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                Sincronizado
+              </span>
+            </div>
+            <div className="relative">
+              <textarea
+                rows={2}
+                value={discoveryProfile.specificNotes}
+                onChange={(e) => updateDiscoveryProfile({ specificNotes: e.target.value })}
+                placeholder="Ex: Vai transportar barcos no fim do ano; esposa tem dificuldade de subir no carro..."
+                className="w-full bg-slate-50 rounded-xl border border-slate-200 focus:border-sky-500 focus:bg-white focus:ring-2 focus:ring-sky-100 text-xs font-medium text-slate-800 p-3 resize-none leading-relaxed transition-all"
+              />
+              <div className="absolute right-3 bottom-2 text-[10px] font-medium text-slate-400">Notas de Venda</div>
+            </div>
+          </article>
         </div>
       </div>
 
@@ -930,24 +1034,22 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
       />
 
       {/* PAINEL DE INTELIGÊNCIA PREDITIVA IA (AO FINAL DA PÁGINA APÓS PREENCHIMENTO) */}
-      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 rounded-2xl p-5 sm:p-6 text-white border border-slate-700 shadow-xl space-y-4 animate-in fade-in">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-500 flex items-center justify-center shadow-lg shadow-sky-500/20 shrink-0">
-              <Sparkles className="w-5 h-5 text-white animate-pulse" />
-            </div>
+      <section aria-label="RAM Predictive IA Engine" className="cockpit-panel rounded-2xl p-6 border border-sky-100 bg-gradient-to-b from-sky-50/40 via-white to-white space-y-5 shadow-card transition-all">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+          <div className="flex items-center gap-3">
+            <div className="w-3.5 h-3.5 rounded-full bg-sky-500 ring-4 ring-sky-100 shrink-0" />
             <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-black uppercase tracking-wider text-sky-400">Inteligência Preditiva IA</span>
-                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border ${
+              <div className="flex items-center gap-2.5">
+                <h4 className="text-sm font-bold text-slate-900 tracking-tight">Inteligência Preditiva IA</h4>
+                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-bold border ${
                   completedQuestionsCount >= 4
-                    ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
-                    : "bg-amber-500/20 text-amber-300 border-amber-500/30"
+                    ? "bg-sky-100 text-sky-800 border-sky-200"
+                    : "bg-amber-50 text-amber-700 border-amber-200"
                 }`}>
-                  {completedQuestionsCount >= 4 ? "● Diagnóstico Calibrado com Sucesso" : "⏳ Aguardando Respostas do Questionário"}
+                  {completedQuestionsCount >= 4 ? "Calibração em Tempo Real" : "Aguardando Respostas"}
                 </span>
               </div>
-              <p className="text-sm font-bold text-white mt-0.5">
+              <p className="text-xs text-slate-500 mt-0.5">
                 {completedQuestionsCount >= 4 ? aiBehaviorSynthesis.archetype : "Preencha as perguntas acima para gerar a análise comportamental do cliente"}
               </p>
             </div>
@@ -955,70 +1057,103 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
 
           <div className="flex items-center gap-3">
             <div className="text-right">
-              <span className="text-[10px] font-bold text-slate-400 uppercase">Aderência da IA</span>
-              <p className="text-sm font-black text-sky-400">
-                {completedQuestionsCount >= 4 ? `${aiBehaviorSynthesis.confidenceScore}%` : "—"}
-              </p>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Aderência da IA</span>
+              <span className="text-sm font-extrabold text-sky-600">
+                {completedQuestionsCount >= 4 ? `${aiBehaviorSynthesis.confidenceScore}% Coerência` : "—"}
+              </span>
             </div>
           </div>
         </div>
 
         {/* PRÉVIA DOS ITENS DIRECIONADOS EM TEMPO REAL APÓS O QUESTIONÁRIO */}
         {completedQuestionsCount >= 4 ? (
-          <div className="space-y-2">
+          <div className="space-y-3">
             <div className="flex items-center justify-between text-xs">
-              <span className="text-slate-300 font-medium">
+              <span className="text-slate-600 font-medium">
                 Itens Essenciais priorizados pela IA com base nas respostas deste cliente:
               </span>
-              <span className="text-[11px] font-bold text-sky-400">
+              <span className="text-[11px] font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
                 {state.recommendations.filter((r) => r.tier === "essential").length} Essenciais Priorizados
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {state.recommendations
                 .filter((r) => r.tier === "essential")
                 .slice(0, 3)
                 .map((rec) => (
                   <div
                     key={rec.accessoryId}
-                    className="bg-slate-800/80 hover:bg-slate-800 border border-slate-700/80 rounded-xl p-3 flex items-center gap-2.5 transition-all shadow-sm"
+                    className="bg-white rounded-xl p-4 border border-slate-200/80 hover:border-sky-300 hover:shadow-card transition-all group relative flex flex-col justify-between"
                   >
-                    <span className="text-xl p-1.5 rounded-lg bg-slate-700/60 shrink-0">
-                      {rec.accessory.icon || "🚗"}
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-xs font-bold text-white truncate">{rec.accessory.name}</p>
-                      <p className="text-[10px] text-sky-400 font-semibold truncate">
-                        {rec.hasExplicitDemandMatch ? "🎯 Demanda Direta" : `${rec.matchScore}% Match Preditivo`}
-                      </p>
+                    <div className="flex items-center justify-between text-xs mb-3">
+                      <span className="font-bold text-sky-600 text-xs">Recomendação IA</span>
+                      <span className="text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md font-semibold text-[10px]">
+                        {rec.hasExplicitDemandMatch ? "Demanda Direta" : "Pronta Entrega"}
+                      </span>
+                    </div>
+
+                    <div className="flex items-start gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-700 text-lg flex-shrink-0 group-hover:text-sky-600 group-hover:bg-sky-50 transition-colors">
+                        {rec.accessory.icon || "🚗"}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h5 className="text-xs font-bold text-slate-900 group-hover:text-sky-600 transition-colors truncate">
+                          {rec.accessory.name}
+                        </h5>
+                        <p className="text-[11px] text-slate-500 mt-0.5 line-clamp-2">
+                          {rec.accessory.description || "Acessório original homologado"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                      <span className="text-slate-500 font-medium">Margem: <strong className="text-slate-800">A+</strong></span>
+                      <span className="text-sky-700 font-bold bg-sky-50 px-2 py-0.5 rounded">
+                        {rec.matchScore}% Match
+                      </span>
                     </div>
                   </div>
                 ))}
             </div>
           </div>
         ) : (
-          <div className="p-4 rounded-xl bg-slate-800/50 border border-slate-700/60 text-xs text-slate-300 flex items-center gap-3">
+          <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-600 flex items-center gap-3">
             <span className="text-xl">📋</span>
             <div>
-              <strong className="text-white block font-semibold">Questionário em preenchimento ({completedQuestionsCount}/9 perguntas respondidas):</strong>
+              <strong className="text-slate-900 block font-semibold">Questionário em preenchimento ({completedQuestionsCount}/9 perguntas respondidas):</strong>
               Conforme você selecionar as opções de uso acima (local de rodagem, km, estradas de terra e prioridades), a Inteligência Preditiva apresentará aqui a análise calculada.
             </div>
           </div>
         )}
-      </div>
+      </section>
 
-      {/* BOTÃO DE AVANÇO PARA A ETAPA 2 */}
-      <div className="flex items-center justify-end pt-4 border-t border-slate-200">
-        <button
-          type="button"
-          onClick={nextStep}
-          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 text-white font-bold text-sm shadow-md transition-all cursor-pointer"
-        >
-          <span>Avançar para Recomendar Acessórios</span>
-          <ArrowRight className="w-4 h-4" />
-        </button>
-      </div>
+      {/* DOCKED CLEAN ACTION BAR (Rivian / CarPlay Style) */}
+      <aside aria-label="Controles de Navegação Cockpit" className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 border-t border-slate-200 backdrop-blur-xl py-3.5 px-4 lg:px-8 shadow-lg">
+        <div className="max-w-[1720px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
+            <div className="flex items-center gap-2">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-100" />
+              <span className="text-xs font-bold text-slate-800 uppercase tracking-wide">
+                {completedQuestionsCount}/10 Parâmetros Homologados
+              </span>
+            </div>
+            <span className="hidden sm:inline-block text-slate-300">|</span>
+            <span className="text-xs text-slate-500 font-medium">Sincronizado com CRM & Concessionária</span>
+          </div>
+
+          <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+            <button
+              type="button"
+              onClick={nextStep}
+              className="flex-1 sm:flex-none px-6 py-2.5 rounded-xl bg-[#0077E6] hover:bg-[#0066CC] text-white font-bold text-xs tracking-tight transition-all shadow-glow-blue flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+            >
+              <span>Avançar para Recomendar Acessórios</span>
+              <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      </aside>
 
       {/* MODAL / CARD DE CAPTURA POR VOZ & PARSER DETERMINÍSTICO */}
       {voiceModalOpen && (

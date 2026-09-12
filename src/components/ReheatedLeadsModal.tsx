@@ -107,24 +107,24 @@ export const ReheatedLeadsModal = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm animate-fadeIn">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in">
       <div className="bg-white w-full max-w-4xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
         {/* Modal Header */}
-        <div className="bg-[#001E36] text-white p-5 flex items-center justify-between border-b border-sky-950">
+        <div className="bg-white text-slate-900 p-5 flex items-center justify-between border-b border-slate-200">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-orange-500/20 border border-orange-400/30 flex items-center justify-center text-orange-400 shadow-inner">
-              <Flame className="w-5 h-5 text-orange-400 fill-orange-400/20" />
+            <div className="w-10 h-10 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 shadow-xs">
+              <Flame className="w-5 h-5 text-amber-500 fill-amber-500/20" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h3 className="text-lg font-bold text-white tracking-tight">
+                <h3 className="text-base font-bold text-slate-900 tracking-tight">
                   Base de Leads para Reaquecimento (CRM Retargeting)
                 </h3>
-                <span className="text-[11px] font-bold bg-orange-500 text-white px-2 py-0.5 rounded-full">
+                <span className="text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200 px-2.5 py-0.5 rounded-full">
                   {leads.length} leads
                 </span>
               </div>
-              <p className="text-xs text-slate-300 mt-0.5">
+              <p className="text-xs text-slate-500 mt-0.5">
                 Clientes que recusaram a proposta inicial e possuem alto potencial de conversão com bônus ou nova abordagem
               </p>
             </div>
@@ -135,7 +135,7 @@ export const ReheatedLeadsModal = ({
               type="button"
               onClick={resetModelLeads}
               title="Restaurar leads modelo de exemplo"
-              className="text-xs text-slate-300 hover:text-white px-2.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 transition flex items-center gap-1 cursor-pointer"
+              className="text-xs text-slate-600 hover:text-slate-900 px-2.5 py-1.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 transition flex items-center gap-1 cursor-pointer"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Restaurar Exemplos</span>
@@ -143,7 +143,7 @@ export const ReheatedLeadsModal = ({
             <button
               type="button"
               onClick={onClose}
-              className="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition cursor-pointer"
+              className="text-slate-400 hover:text-slate-700 p-1.5 rounded-lg hover:bg-slate-100 transition cursor-pointer"
               aria-label="Fechar modal"
             >
               <X className="w-5 h-5" />
@@ -168,9 +168,9 @@ export const ReheatedLeadsModal = ({
             <button
               type="button"
               onClick={() => setSelectedFilter("all")}
-              className={`px-3 py-1 rounded-lg text-xs font-semibold transition cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
                 selectedFilter === "all"
-                  ? "bg-blue-600 text-white shadow-xs"
+                  ? "bg-slate-900 text-white shadow-xs"
                   : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
               }`}
             >
@@ -179,7 +179,7 @@ export const ReheatedLeadsModal = ({
             <button
               type="button"
               onClick={() => setSelectedFilter("pending")}
-              className={`px-3 py-1 rounded-lg text-xs font-semibold transition cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
                 selectedFilter === "pending"
                   ? "bg-amber-600 text-white shadow-xs"
                   : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
@@ -190,7 +190,7 @@ export const ReheatedLeadsModal = ({
             <button
               type="button"
               onClick={() => setSelectedFilter("contacted")}
-              className={`px-3 py-1 rounded-lg text-xs font-semibold transition cursor-pointer ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
                 selectedFilter === "contacted"
                   ? "bg-emerald-600 text-white shadow-xs"
                   : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
@@ -202,7 +202,7 @@ export const ReheatedLeadsModal = ({
         </div>
 
         {/* Leads Cards List */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-slate-100/70">
+        <div className="flex-1 overflow-y-auto p-4 space-y-3.5 bg-slate-50">
           {filteredLeads.length === 0 ? (
             <div className="text-center py-12 bg-white rounded-xl border border-dashed border-slate-300 p-8">
               <AlertCircle className="w-10 h-10 text-slate-400 mx-auto mb-2" />

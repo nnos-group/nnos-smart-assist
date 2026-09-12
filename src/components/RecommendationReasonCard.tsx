@@ -45,23 +45,23 @@ export const RecommendationReasonCard: React.FC<RecommendationReasonCardProps> =
 
   return (
     <div
-      className={`rounded-2xl border transition-all p-5 flex flex-col justify-between space-y-4 ${
+      className={`cockpit-panel rounded-2xl p-5 flex flex-col justify-between space-y-4 transition-all hover:shadow-card ${
         isOutOfStock
-          ? "opacity-60 bg-slate-100/90 border-dashed border-amber-300 ring-1 ring-amber-200/50 grayscale-[15%]"
+          ? "opacity-60 bg-slate-50 border-dashed border-amber-300 ring-1 ring-amber-200/50"
           : isSelected
-          ? "bg-white border-slate-300 shadow-md ring-1 ring-black/5"
-          : "bg-slate-50/70 border-slate-200 opacity-60 hover:opacity-100"
+          ? "border-slate-300 shadow-card ring-1 ring-black/5"
+          : "opacity-75 hover:opacity-100 border-slate-200"
       }`}
     >
       {/* HEADER DO CARD: CLASSIFICAÇÃO & ADERÊNCIA */}
       <div>
         {isOutOfStock && (
-          <div className="mb-2.5 flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg bg-amber-100/90 border border-amber-300 text-amber-900 text-xs font-bold">
+          <div className="mb-2.5 flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-bold">
             <span className="flex items-center gap-1.5">
               <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
               <span>Sem Estoque Local Imediato</span>
             </span>
-            <span className="text-[10px] font-semibold text-amber-800 bg-amber-200/70 px-2 py-0.5 rounded">
+            <span className="text-[10px] font-semibold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-md">
               Encomenda CD (2 a 5 dias)
             </span>
           </div>
@@ -70,36 +70,36 @@ export const RecommendationReasonCard: React.FC<RecommendationReasonCardProps> =
         <div className="flex items-center justify-between gap-2 mb-2">
           <div className="flex items-center gap-1.5">
             <span
-              className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-black tracking-wide border ${tierBadgeConfig.color}`}
+              className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold tracking-wide border ${tierBadgeConfig.color}`}
             >
               <span className={`w-1.5 h-1.5 rounded-full ${tierBadgeConfig.dot}`} />
               {tierBadgeConfig.label}
             </span>
-            <span className="text-[10px] font-bold text-slate-600 uppercase bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+            <span className="text-[10px] font-bold text-slate-600 uppercase bg-slate-100 px-2 py-0.5 rounded-md border border-slate-200">
               {(accessory.category || 'acessório').toUpperCase()}
             </span>
           </div>
 
-          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md">
-            <span>Aderência ao perfil:</span>
-            <span className="text-sky-700 font-black">{matchScore}%</span>
+          <div className="flex items-center gap-1.5 text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-md border border-slate-200">
+            <span>Aderência:</span>
+            <span className="text-sky-700 font-extrabold">{matchScore}%</span>
           </div>
         </div>
 
         {recommendation.hasExplicitDemandMatch && (
-          <div className="mb-2.5 flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gradient-to-r from-amber-500/15 to-orange-500/15 border border-amber-300 text-amber-900 text-[11px] font-bold">
+          <div className="mb-2.5 flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-[11px] font-bold">
             <Sparkles className="w-3.5 h-3.5 text-amber-600 shrink-0" />
             <span>{recommendation.explicitDemandLabel || "Item Priorizado por Demanda Direta"}</span>
           </div>
         )}
 
         {/* NOME & DESCRIÇÃO TÉCNICA */}
-        <div className="flex items-start gap-3">
-          <span className="text-3xl p-2 rounded-xl bg-slate-100 border border-slate-200 shrink-0">
+        <div className="flex items-start gap-3 mt-1">
+          <span className="text-2xl w-11 h-11 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0 text-slate-700 shadow-2xs">
             {accessory.icon || "🚗"}
           </span>
-          <div>
-            <h3 className="text-base font-bold text-slate-900 leading-snug">{accessory.name}</h3>
+          <div className="min-w-0 flex-1">
+            <h3 className="text-sm font-bold text-slate-900 leading-snug group-hover:text-sky-600 transition-colors">{accessory.name}</h3>
             <p className="text-xs text-slate-500 line-clamp-2 mt-0.5">{accessory.description}</p>
           </div>
         </div>
@@ -131,13 +131,13 @@ export const RecommendationReasonCard: React.FC<RecommendationReasonCardProps> =
         <button
           type="button"
           onClick={onToggle}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
             isSelected
-              ? "bg-sky-600 hover:bg-sky-700 text-white shadow-2xs"
-              : "bg-slate-200 hover:bg-slate-300 text-slate-700"
+              ? "bg-slate-900 hover:bg-slate-800 text-white shadow-sm"
+              : "bg-white border border-slate-200 hover:bg-slate-50 text-slate-700"
           }`}
         >
-          {isSelected ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : null}
+          {isSelected ? <Check className="w-3.5 h-3.5 stroke-[2.5] text-sky-400" /> : null}
           <span>{isSelected ? "Incluído na Proposta" : "Desmarcado"}</span>
         </button>
 

@@ -130,16 +130,16 @@ export const ClosingScreen: React.FC<ClosingScreenProps> = ({ onSaleWon }) => {
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       {/* HEADER DE ETAPA */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 sm:p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div className="cockpit-panel rounded-2xl p-5 sm:p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold mb-2 border border-emerald-200/60">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold mb-2 border border-emerald-200">
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
             <span>Etapa 7 de 7 · Fechamento &amp; Conclusão da Oportunidade</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight font-display">
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
             Fechamento
           </h1>
-          <p className="text-sm text-slate-600 font-medium mt-1">
+          <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1">
             Confirme a decisão e registre a conclusão da oportunidade.
           </p>
         </div>
@@ -148,7 +148,7 @@ export const ClosingScreen: React.FC<ClosingScreenProps> = ({ onSaleWon }) => {
           <button
             type="button"
             onClick={handleShareWhatsApp}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-sm transition-all cursor-pointer"
           >
             <Share2 className="w-4 h-4" />
             <span>Enviar Proposta no WhatsApp</span>
@@ -159,31 +159,31 @@ export const ClosingScreen: React.FC<ClosingScreenProps> = ({ onSaleWon }) => {
       {/* QUADRO DE CONFIRMAÇÃO INTEGRAL DA PROPOSTA */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* RESUMO DOS DADOS CONFIRMADOS */}
-        <div className="lg:col-span-8 bg-white rounded-2xl border border-slate-200/90 shadow-sm p-6 space-y-4">
+        <div className="lg:col-span-8 cockpit-panel rounded-2xl p-6 space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
-            <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
+            <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
               Conferência dos Termos da Venda
             </h2>
-            <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded border border-emerald-200">
+            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
               Pronto para Faturamento
             </span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70">
-              <span className="text-slate-500 font-bold block text-[10px] uppercase">Veículo</span>
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+              <span className="text-slate-400 font-bold block text-[10px] uppercase">Veículo</span>
               <strong className="text-slate-900 block mt-0.5">{clientData.vehicleModel}</strong>
               <span className="text-slate-600 text-[11px]">{clientData.vehicleColor} · {clientData.vehicleYear}</span>
             </div>
 
-            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70">
-              <span className="text-slate-500 font-bold block text-[10px] uppercase">Cliente</span>
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+              <span className="text-slate-400 font-bold block text-[10px] uppercase">Cliente</span>
               <strong className="text-slate-900 block mt-0.5">{clientData.clientName || "Cliente"}</strong>
               <span className="text-slate-600 text-[11px]">{clientData.state} · {clientData.clientGender}</span>
             </div>
 
-            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/70">
-              <span className="text-slate-500 font-bold block text-[10px] uppercase">Oficina & Instalação</span>
+            <div className="p-3 rounded-xl bg-slate-50 border border-slate-200/80">
+              <span className="text-slate-400 font-bold block text-[10px] uppercase">Oficina &amp; Instalação</span>
               <strong className="text-slate-900 block mt-0.5">{quote.installationDeadlineDays} dia(s) útil</strong>
               <span className="text-slate-600 text-[11px]">{quote.estimatedInstallationHours} horas em box expresso</span>
             </div>
@@ -209,7 +209,7 @@ export const ClosingScreen: React.FC<ClosingScreenProps> = ({ onSaleWon }) => {
                 {selectedAccessories.map((item) => (
                   <div
                     key={item.id}
-                    className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/70 flex items-center justify-between text-xs hover:border-slate-300 transition-colors"
+                    className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between text-xs hover:border-slate-300 transition-colors"
                   >
                     <div className="flex items-center gap-2 truncate">
                       <span>{item.icon}</span>
@@ -241,9 +241,9 @@ export const ClosingScreen: React.FC<ClosingScreenProps> = ({ onSaleWon }) => {
             <span className="text-xs font-bold text-slate-800 block">Técnicas de Fechamento Recomendadas:</span>
             <div className="space-y-2">
               {closingTechniques.map((tech) => (
-                <div key={tech.title} className="p-3 rounded-xl bg-sky-50/60 border border-sky-200/70 text-xs text-sky-950 space-y-0.5">
-                  <span className="font-bold block text-[11px] text-sky-800 uppercase tracking-wider">{tech.title}</span>
-                  <p className="italic">{tech.phrase}</p>
+                <div key={tech.title} className="p-3 rounded-xl bg-sky-50/60 border border-sky-200 text-xs text-slate-800 space-y-0.5">
+                  <span className="font-bold block text-[11px] text-sky-700 uppercase tracking-wider">{tech.title}</span>
+                  <p className="italic text-slate-600">{tech.phrase}</p>
                 </div>
               ))}
             </div>
@@ -251,22 +251,22 @@ export const ClosingScreen: React.FC<ClosingScreenProps> = ({ onSaleWon }) => {
         </div>
 
         {/* COLUNA DIREITA: VALORES FINAIS & BOTÕES DE DESFECHO */}
-        <div className="lg:col-span-4 bg-white rounded-2xl border border-slate-200/90 shadow-md p-6 flex flex-col justify-between space-y-5">
+        <div className="lg:col-span-4 cockpit-panel rounded-2xl p-6 flex flex-col justify-between space-y-5">
           <div className="space-y-4">
             <div className="pb-3 border-b border-slate-100">
-              <span className="text-xs font-extrabold uppercase tracking-wider text-slate-500">Valores Finais</span>
-              <div className="text-3xl font-black text-emerald-600 mt-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Valores Finais</span>
+              <div className="text-3xl font-extrabold text-emerald-600 tracking-tight mt-1">
                 R$ {quote.finalTotal.toLocaleString("pt-BR")}
               </div>
-              <div className="text-xs text-slate-600 mt-0.5">
-                ou <strong>{quote.installmentsCount}x de R$ {quote.monthlyInstallment.toLocaleString("pt-BR")}</strong> s/ juros
+              <div className="text-xs text-slate-500 mt-0.5">
+                ou <strong className="text-slate-800">{quote.installmentsCount}x de R$ {quote.monthlyInstallment.toLocaleString("pt-BR")}</strong> s/ juros
               </div>
             </div>
 
             <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1 text-slate-700">
               <div className="flex justify-between">
                 <span>Subtotal Tabela:</span>
-                <span>R$ {quote.originalSubtotal.toLocaleString("pt-BR")}</span>
+                <span className="font-semibold text-slate-800">R$ {quote.originalSubtotal.toLocaleString("pt-BR")}</span>
               </div>
               {quote.campaignDiscount > 0 && (
                 <div className="flex justify-between text-purple-700 font-bold">
@@ -289,9 +289,9 @@ export const ClosingScreen: React.FC<ClosingScreenProps> = ({ onSaleWon }) => {
             <button
               type="button"
               onClick={handleConfirmWon}
-              className="w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm shadow-lg shadow-emerald-600/25 flex items-center justify-center gap-2 cursor-pointer transition-all transform active:scale-[0.99]"
+              className="w-full py-3 px-4 rounded-xl bg-[#0077E6] hover:bg-[#0066CC] text-white font-bold text-xs tracking-tight shadow-glow-blue flex items-center justify-center gap-2 cursor-pointer transition-all"
             >
-              <CheckCircle2 className="w-5 h-5" />
+              <CheckCircle2 className="w-4 h-4" />
               <span>Concluir Venda &amp; Faturar</span>
             </button>
 
@@ -302,9 +302,9 @@ export const ClosingScreen: React.FC<ClosingScreenProps> = ({ onSaleWon }) => {
                 finalizeSale("proposal-sent");
                 toast.info("Proposta registrada como enviada ao cliente.");
               }}
-              className="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs border border-slate-200 flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-2.5 px-4 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold text-xs border border-slate-200 flex items-center justify-center gap-2 cursor-pointer transition-all"
             >
-              <Send className="w-4 h-4" />
+              <Send className="w-3.5 h-3.5 text-slate-500" />
               <span>Registrar: Proposta Enviada (Aguardando)</span>
             </button>
 
@@ -312,9 +312,9 @@ export const ClosingScreen: React.FC<ClosingScreenProps> = ({ onSaleWon }) => {
             <button
               type="button"
               onClick={() => setLostModalOpen(true)}
-              className="w-full py-2.5 px-4 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs border border-rose-200 flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-2.5 px-4 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold text-xs border border-rose-200 flex items-center justify-center gap-2 cursor-pointer transition-all"
             >
-              <XCircle className="w-4 h-4 text-rose-600" />
+              <XCircle className="w-3.5 h-3.5 text-rose-600" />
               <span>Registrar Venda Perdida</span>
             </button>
           </div>
@@ -326,7 +326,7 @@ export const ClosingScreen: React.FC<ClosingScreenProps> = ({ onSaleWon }) => {
         <button
           type="button"
           onClick={prevStep}
-          className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-bold cursor-pointer"
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 text-xs font-semibold cursor-pointer shadow-subtle transition-all"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Voltar para Negociação</span>

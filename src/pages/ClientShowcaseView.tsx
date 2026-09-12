@@ -104,12 +104,12 @@ const ClientShowcaseView = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 font-sans text-slate-800 antialiased flex flex-col selection:bg-blue-600 selection:text-white">
+    <div className="min-h-screen bg-[#F8FAFC] font-sans text-slate-900 antialiased flex flex-col selection:bg-sky-500 selection:text-white">
       {/* BEGIN: PublicHeader */}
-      <header className="bg-[#001E36] text-white border-b border-sky-950 shadow-md sticky top-0 z-50">
+      <header className="bg-white/95 text-slate-900 border-b border-slate-200/80 shadow-xs backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="relative h-11 w-auto aspect-[2055/1279] rounded-lg overflow-hidden shadow-sm flex items-center justify-center shrink-0 bg-white p-0.5 border border-white/20">
+            <div className="relative h-11 w-auto aspect-[2055/1279] rounded-lg overflow-hidden shadow-xs flex items-center justify-center shrink-0 bg-white p-0.5 border border-slate-200">
               <img
                 src={accessoriesBadge}
                 alt="Logomarca Oficial Jeep & RAM"
@@ -117,17 +117,17 @@ const ClientShowcaseView = () => {
               />
             </div>
             <div>
-              <span className="text-base sm:text-lg font-bold tracking-tight text-white block leading-tight">
+              <span className="text-base sm:text-lg font-bold tracking-tight text-slate-900 block leading-tight">
                 Concessionária Autorizada
               </span>
-              <span className="text-[10px] text-sky-300 font-semibold uppercase tracking-wider">
+              <span className="text-[10px] text-sky-600 font-bold uppercase tracking-wider">
                 Acessórios Originais Mopar
               </span>
             </div>
           </div>
 
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-500/20 text-blue-200 border border-blue-400/30">
-            <Sparkles className="w-3.5 h-3.5 text-blue-400" />
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-sky-50 text-sky-700 border border-sky-200">
+            <Sparkles className="w-3.5 h-3.5 text-sky-500" />
             <span className="hidden sm:inline">Apresentação Exclusiva</span>
             <span>Para Você</span>
           </span>
@@ -138,9 +138,9 @@ const ClientShowcaseView = () => {
       {/* BEGIN: MainContent */}
       <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
         {/* Personalized Welcome Banner */}
-        <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="cockpit-panel rounded-2xl p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center space-x-2 text-xs font-semibold text-blue-600 uppercase tracking-wider mb-1">
+            <div className="flex items-center space-x-2 text-xs font-bold text-sky-600 uppercase tracking-wider mb-1">
               <Car className="w-4 h-4" />
               <span>Seu Veículo Personalizado</span>
             </div>
@@ -162,10 +162,10 @@ const ClientShowcaseView = () => {
         </div>
 
         {/* Interactive Vehicle Showcase (Video / 3D) */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-md overflow-hidden">
+        <div className="cockpit-panel rounded-2xl overflow-hidden">
           <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center space-x-2.5">
-              <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+              <div className="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 border border-sky-200 flex items-center justify-center font-bold">
                 <Video className="w-4 h-4" />
               </div>
               <div>
@@ -406,19 +406,19 @@ const ClientShowcaseView = () => {
 
           {/* Right: Proposal Summary & Fast Approve CTA */}
           <div className="lg:col-span-5 space-y-4">
-            <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-md space-y-5 sticky top-24">
+            <div className="cockpit-panel rounded-2xl p-6 space-y-5 sticky top-24">
               <div className="border-b border-slate-100 pb-4">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-400 block">Condição Comercial</span>
-                <h3 className="text-lg font-black text-slate-900 tracking-tight mt-0.5">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Condição Comercial</span>
+                <h3 className="text-lg font-bold text-slate-900 tracking-tight mt-0.5">
                   Resumo da Sua Proposta
                 </h3>
               </div>
 
               {/* Total Card */}
-              <div className="bg-slate-50 rounded-xl p-4 border border-slate-200/80 space-y-3">
+              <div className="bg-slate-50 rounded-xl p-4 border border-slate-200 space-y-3">
                 <div className="flex items-baseline justify-between">
-                  <span className="text-xs font-bold uppercase text-slate-500">Total à Vista</span>
-                  <span className="text-3xl font-black text-sky-600">
+                  <span className="text-xs font-bold uppercase text-slate-400">Total à Vista</span>
+                  <span className="text-3xl font-extrabold text-[#0077E6] tracking-tight">
                     R$ {calculatedTotal.toLocaleString("pt-BR")}
                   </span>
                 </div>
@@ -431,11 +431,11 @@ const ClientShowcaseView = () => {
                     </span>
                   </div>
 
-                  <div className="bg-blue-50/80 p-3 rounded-lg border border-blue-100 flex items-start gap-2">
-                    <Zap className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-                    <div className="text-xs text-blue-900 leading-tight">
-                      <strong className="font-bold">Diluição no Financiamento CDC:</strong>
-                      <span className="block mt-0.5 text-blue-800">
+                  <div className="bg-sky-50/80 p-3 rounded-lg border border-sky-200/60 flex items-start gap-2">
+                    <Zap className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
+                    <div className="text-xs text-sky-950 leading-tight">
+                      <strong className="font-bold text-sky-900">Diluição no Financiamento CDC:</strong>
+                      <span className="block mt-0.5 text-sky-800">
                         + apenas <strong>R$ {cdcMonthly} / mês</strong> nas parcelas do seu veículo.
                       </span>
                     </div>
@@ -449,9 +449,9 @@ const ClientShowcaseView = () => {
                 <button
                   type="button"
                   onClick={handleApproveProposal}
-                  className="w-full bg-[#10b981] hover:bg-[#059669] text-white font-extrabold text-sm py-3.5 px-4 rounded-xl shadow-lg shadow-emerald-600/25 flex items-center justify-center space-x-2 transition transform active:scale-[0.99] cursor-pointer"
+                  className="w-full bg-[#10b981] hover:bg-[#059669] text-white font-bold text-sm py-3 px-4 rounded-xl shadow-lg shadow-emerald-600/25 flex items-center justify-center space-x-2 transition transform active:scale-[0.99] cursor-pointer"
                 >
-                  <MessageCircle className="w-5 h-5" />
+                  <MessageCircle className="w-4 h-4" />
                   <span>Aprovar Proposta no WhatsApp</span>
                   <ChevronRight className="w-4 h-4" />
                 </button>
@@ -460,9 +460,9 @@ const ClientShowcaseView = () => {
                 <button
                   type="button"
                   onClick={handleContactConsultant}
-                  className="w-full bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs py-2.5 px-4 rounded-xl border border-slate-300 shadow-xs flex items-center justify-center space-x-1.5 transition cursor-pointer"
+                  className="w-full bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold text-xs py-2.5 px-4 rounded-xl border border-slate-200 shadow-xs flex items-center justify-center space-x-1.5 transition cursor-pointer"
                 >
-                  <Phone className="w-3.5 h-3.5 text-blue-600" />
+                  <Phone className="w-3.5 h-3.5 text-sky-600" />
                   <span>Falar com o Consultor / Ajustar Itens</span>
                 </button>
               </div>

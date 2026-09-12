@@ -203,16 +203,16 @@ export const PricePresentationScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* CONTEXTUALIZAÇÃO CONSULTIVA ANTES DOS NÚMEROS */}
-      <div className="bg-gradient-to-r from-sky-950 via-slate-900 to-sky-900 text-white rounded-2xl p-6 shadow-md space-y-3">
-        <div className="flex items-center gap-2 text-xs font-bold text-sky-400 uppercase tracking-wider">
-          <ShieldCheck className="w-4 h-4 text-sky-400" />
+      {/* CONTEXTUALIZAÇÃO CONSULTIVA ANTES DOS NÚMEROS (Cockpit Panel) */}
+      <div className="cockpit-panel rounded-2xl p-6 border border-sky-100 bg-gradient-to-b from-sky-50/40 via-white to-white text-slate-900 shadow-card space-y-3">
+        <div className="flex items-center gap-2 text-xs font-bold text-sky-700 uppercase tracking-wider">
+          <ShieldCheck className="w-4 h-4 text-sky-600" />
           <span>Solução sob medida para {clientData.clientName || "o Cliente"}</span>
         </div>
-        <p className="text-sm sm:text-base text-slate-200 font-medium leading-relaxed">
+        <p className="text-sm sm:text-base text-slate-700 font-medium leading-relaxed">
           “{generateContextSummary()}”
         </p>
-        <p className="text-xs text-sky-300 font-bold uppercase tracking-wider pt-1">
+        <p className="text-xs text-sky-800 font-bold uppercase tracking-wider pt-1">
           O investimento para deixar o veículo 0km totalmente preparado para essa utilização será de:
         </p>
       </div>
@@ -537,7 +537,7 @@ export const PricePresentationScreen: React.FC = () => {
             <button
               type="button"
               onClick={handleShareWhatsAppProposal}
-              className="w-full py-3 px-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-extrabold text-xs border border-emerald-300 shadow-xs flex items-center justify-center gap-2 cursor-pointer transition-colors"
+              className="w-full py-3 px-4 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 font-bold text-xs border border-emerald-200 shadow-2xs flex items-center justify-center gap-2 cursor-pointer transition-colors"
               title="Gerar proposta oficial com link 3D, garantia de fábrica preservada e valores ao WhatsApp"
             >
               <Share2 className="w-4 h-4 text-emerald-600" />
@@ -548,9 +548,9 @@ export const PricePresentationScreen: React.FC = () => {
             <button
               type="button"
               onClick={() => goToStep("closing")}
-              className="w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-sm shadow-md shadow-emerald-600/25 flex items-center justify-center gap-2 cursor-pointer transition-all transform active:scale-[0.99]"
+              className="w-full py-3 px-4 rounded-xl bg-[#0077E6] hover:bg-[#0066CC] text-white font-bold text-xs tracking-tight shadow-glow-blue flex items-center justify-center gap-2 cursor-pointer transition-all transform active:scale-95"
             >
-              <CheckCircle2 className="w-5 h-5" />
+              <CheckCircle2 className="w-4 h-4" />
               <span>Ir Direto para o Fechamento</span>
               <ArrowRight className="w-4 h-4 ml-0.5" />
             </button>
@@ -559,9 +559,9 @@ export const PricePresentationScreen: React.FC = () => {
             <button
               type="button"
               onClick={nextStep}
-              className="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs flex items-center justify-center gap-2 cursor-pointer transition-colors border border-slate-200"
+              className="w-full py-2.5 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs flex items-center justify-center gap-2 cursor-pointer transition-colors border border-slate-200"
             >
-              <MessageSquare className="w-4 h-4 text-slate-600" />
+              <MessageSquare className="w-4 h-4 text-slate-500" />
               <span>Tratar Objeções / Negociação Assistida (Etapa 6)</span>
             </button>
           </div>

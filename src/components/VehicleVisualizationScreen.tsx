@@ -132,24 +132,24 @@ const VehicleVisualizationScreen = ({
   };
 
   return (
-    <div className="min-h-full flex flex-col font-sans text-slate-800 bg-slate-100 antialiased selection:bg-blue-100 selection:text-blue-900">
+    <div className="min-h-full flex flex-col font-sans text-slate-800 bg-[#F8FAFC] antialiased selection:bg-sky-500 selection:text-white">
       {/* BEGIN: PageContent */}
-      <main className="flex-1 max-w-[1720px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col space-y-4">
-        {/* BEGIN: ContextBreadcrumbAndTitle */}
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <main className="flex-1 max-w-[1720px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col space-y-5">
+        {/* BEGIN: ContextBreadcrumbAndTitle (Cockpit Panel) */}
+        <div className="cockpit-panel rounded-2xl p-6 border border-slate-200 shadow-card flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
-            <div className="flex items-center space-x-3 mb-1">
+            <div className="flex items-center space-x-3 mb-2">
               {onBack ? (
                 <button
                   type="button"
                   onClick={onBack}
-                  className="inline-flex items-center text-xs font-semibold text-blue-600 hover:text-blue-800 transition cursor-pointer"
+                  className="inline-flex items-center text-xs font-semibold text-sky-700 hover:text-sky-900 transition cursor-pointer"
                 >
                   <ChevronLeft className="w-4 h-4 mr-1" />
                   {consultativeMode ? "Voltar para Recomendar Acessórios" : "Voltar para Pacote Acessórios"}
                 </button>
               ) : (
-                <span className="text-xs font-semibold text-slate-500">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-50 text-sky-700 text-xs font-bold border border-sky-200">
                   {consultativeMode ? "Etapa 3 de 7 · Ver no veículo" : "Etapa 3 · Visualização"}
                 </span>
               )}
@@ -157,7 +157,7 @@ const VehicleVisualizationScreen = ({
 
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
               {clientData.vehicleModel} — {clientData.vehicleColor}
-              <span className="text-xs font-medium px-2.5 py-1 rounded-full bg-slate-200 text-slate-700">
+              <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-200">
                 {isRampage ? "Turbo Diesel 4x4" : "Tração 4x4 Integral"}
               </span>
             </h1>
@@ -218,10 +218,10 @@ const VehicleVisualizationScreen = ({
               </div>
             </div>
 
-            {/* Demonstration Switcher Control Bar (Card inferior) */}
-            <div className="bg-white rounded-xl border border-slate-200 p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
+            {/* Demonstration Switcher Control Bar (Cockpit Panel) */}
+            <div className="cockpit-panel rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
               <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                <div className="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center font-bold">
                   <Video className="w-4 h-4" />
                 </div>
                 <div>
@@ -242,9 +242,9 @@ const VehicleVisualizationScreen = ({
                 </div>
               </div>
 
-              {/* Dynamic Controls Group: Externo/Interno ao lado de Antes/Depois */}
-              <div className="flex flex-wrap items-center gap-2.5">
-                {/* Dynamic Perspective Pill Switcher (Externo / Interno) */}
+              {/* Controles de Visão & Comparativo */}
+              <div className="flex items-center gap-2.5">
+                {/* Dynamic Perspective Switcher */}
                 <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-2xs">
                   <button
                     type="button"
@@ -330,37 +330,35 @@ const VehicleVisualizationScreen = ({
               </div>
             </div>
           </section>
-          {/* END: Interactive Vehicle Viewport */}
+          {/* END: LeftColumnViewports */}
 
-          {/* RIGHT COLUMN: Resumo Comercial & Acessórios Interativos */}
+          {/* RIGHT COLUMN: Resumo de Acessórios & Ações (Col 4/12) */}
           {consultativeMode ? (
-            <aside aria-label="Demonstração do Veículo e Acessórios" className="lg:col-span-4 space-y-4">
-              <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-md sticky top-20 space-y-4">
-                {/* Header do Resumo */}
+            <aside aria-label="Acessórios Aplicados" className="lg:col-span-4 space-y-4">
+              <div className="cockpit-panel border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-card sticky top-20 space-y-4">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                   <div>
-                    <h3 className="font-extrabold text-slate-900 text-sm tracking-tight uppercase">Acessórios Aplicados</h3>
-                    <p className="text-xs text-slate-400 font-medium">Demonstração visual do conjunto</p>
+                    <h3 className="font-extrabold text-slate-900 text-sm tracking-tight uppercase">
+                      Acessórios Aplicados
+                    </h3>
+                    <p className="text-xs text-slate-500 font-medium">Itens visualizados no veículo</p>
                   </div>
-                  <span className="inline-flex items-center px-2 py-1 rounded-md text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-100">
-                    {selectedAccessories.length} aplicados
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold bg-sky-50 text-sky-700 border border-sky-200">
+                    {selectedAccessories.length} selecionados
                   </span>
                 </div>
 
-                {/* Lista de Acessórios com Checkboxes Selecionáveis (sem preços!) */}
-                <div className="space-y-1.5 text-xs max-h-[300px] overflow-y-auto pr-1">
+                <div className="space-y-1.5 text-xs max-h-[360px] overflow-y-auto pr-1">
                   {accessories.map((item) => {
                     const isChecked = item.selected;
-                    const isOutOfStock = item.inStock === false || item.stockQuantity === 0;
+                    const isOutOfStock = item.stockStatus === "dormant" || item.stockStatus === "obsolete";
                     return (
                       <label
                         key={item.id}
-                        className={`flex items-center justify-between px-3 py-2 rounded-xl transition cursor-pointer select-none ${
-                          isOutOfStock && isChecked
-                            ? "bg-amber-50/70 border border-amber-200/80 text-slate-800 font-medium opacity-85"
-                            : isChecked
-                            ? "bg-slate-50 border border-slate-200 text-slate-900 font-medium"
-                            : "opacity-45 hover:opacity-80 hover:bg-slate-50/50 text-slate-500"
+                        className={`flex items-center justify-between px-3 py-2 rounded-xl transition cursor-pointer select-none border ${
+                          isChecked
+                            ? "bg-slate-50 border-slate-200/80 hover:bg-slate-100/70"
+                            : "opacity-45 hover:opacity-80 bg-white border-transparent"
                         }`}
                       >
                         <div className="flex items-center space-x-2.5 min-w-0 pr-2">
@@ -368,12 +366,8 @@ const VehicleVisualizationScreen = ({
                             type="checkbox"
                             checked={isChecked}
                             onChange={() => onAccessoryToggle(item.id)}
-                            className="w-4 h-4 rounded text-blue-600 border-slate-300 focus:ring-blue-500 cursor-pointer shrink-0"
+                            className="w-4 h-4 rounded text-sky-600 border-slate-300 focus:ring-sky-500 cursor-pointer shrink-0"
                           />
-                          <span className="text-base mr-1">{item.icon}</span>
-                          <div className="truncate">
-                            <span className="truncate text-xs block">{item.name}</span>
-                            {isOutOfStock && (
                               <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-100/80 px-1.5 py-0.2 rounded mt-0.5">
                                 ⚠️ Sem estoque local (Encomenda CD)
                               </span>

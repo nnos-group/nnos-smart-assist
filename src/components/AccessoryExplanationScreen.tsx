@@ -95,14 +95,14 @@ export const AccessoryExplanationScreen: React.FC = () => {
       </div>
 
       {/* PERGUNTA DE FECHAMENTO DE ETAPA: O CLIENTE COMPREENDEU OS BENEFÍCIOS? */}
-      <div className="bg-gradient-to-r from-sky-900 to-slate-900 text-white rounded-2xl p-5 sm:p-6 shadow-lg flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="cockpit-panel rounded-2xl p-6 border border-sky-100 bg-gradient-to-b from-sky-50/40 via-white to-white text-slate-900 shadow-card flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="space-y-1 text-center md:text-left">
-          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-sky-300">
-            <CheckCircle className="w-4 h-4 text-emerald-400" />
+          <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-sky-700">
+            <CheckCircle className="w-4 h-4 text-emerald-600" />
             <span>Validação de Percepção de Valor</span>
           </div>
-          <h2 className="text-base sm:text-lg font-bold">O cliente compreendeu os principais benefícios?</h2>
-          <p className="text-xs text-slate-300 max-w-xl">
+          <h2 className="text-base sm:text-lg font-bold text-slate-900">O cliente compreendeu os principais benefícios?</h2>
+          <p className="text-xs text-slate-500 max-w-xl">
             Somente após o cliente perceber o valor prático e de proteção é o momento de revelar o investimento.
           </p>
         </div>
@@ -110,9 +110,9 @@ export const AccessoryExplanationScreen: React.FC = () => {
         <button
           type="button"
           onClick={handleProceedToPrice}
-          className="flex items-center gap-2.5 px-7 py-3.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold text-sm shadow-lg shadow-emerald-500/25 transition-all transform active:scale-[0.98] cursor-pointer shrink-0"
+          className="flex items-center gap-2.5 px-6 py-2.5 rounded-xl bg-[#0077E6] hover:bg-[#0066CC] text-white font-bold text-xs tracking-tight shadow-glow-blue transition-all transform active:scale-95 cursor-pointer shrink-0"
         >
-          <DollarSign className="w-5 h-5" />
+          <DollarSign className="w-4 h-4" />
           <span>Apresentar Investimento</span>
           <ArrowRight className="w-4 h-4" />
         </button>
@@ -123,7 +123,7 @@ export const AccessoryExplanationScreen: React.FC = () => {
         <button
           type="button"
           onClick={prevStep}
-          className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-bold cursor-pointer"
+          className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl border border-slate-200 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold cursor-pointer transition-all"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Voltar para Visualização no Veículo</span>

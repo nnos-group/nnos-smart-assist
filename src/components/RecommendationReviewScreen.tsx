@@ -87,21 +87,21 @@ export const RecommendationReviewScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* BANNER DE SÍNTESE DA INTELIGÊNCIA ARTIFICIAL */}
-      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 rounded-2xl p-5 sm:p-6 text-white border border-slate-700 shadow-xl space-y-3 animate-in fade-in">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+      {/* BANNER DE SÍNTESE DA INTELIGÊNCIA ARTIFICIAL (Cockpit Style) */}
+      <div className="cockpit-panel rounded-2xl p-6 border border-sky-100 bg-gradient-to-b from-sky-50/40 via-white to-white space-y-4 shadow-card text-slate-900 animate-in fade-in">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-sky-500/20 shrink-0">
-              <Sparkles className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center shadow-xs shrink-0 text-sky-600">
+              <Sparkles className="w-5 h-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-black uppercase tracking-wider text-sky-400">Inteligência Preditiva Concluída</span>
-                <span className="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold">
+                <span className="text-xs font-bold uppercase tracking-wider text-sky-700">Inteligência Preditiva Concluída</span>
+                <span className="text-[10px] bg-sky-50 text-sky-800 border border-sky-200 px-2 py-0.5 rounded-full font-bold">
                   Proposta Calibrada para {clientData.vehicleModel}
                 </span>
               </div>
-              <h2 className="text-base font-bold text-white mt-0.5">
+              <h2 className="text-base font-bold text-slate-900 mt-0.5">
                 {essentialItems.some((r) => r.hasExplicitDemandMatch)
                   ? `Priorização Automática de Demanda: ${essentialItems.filter((r) => r.hasExplicitDemandMatch).map((r) => r.accessory.name).join(", ")}`
                   : `Configuração Consultiva Otimizada para ${clientData.clientName || "Cliente"}`}
@@ -109,28 +109,28 @@ export const RecommendationReviewScreen: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700 text-xs font-bold text-slate-300">
+          <div className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700">
             <span>Score Preditivo Médio:</span>
-            <span className="text-sky-400 font-black">
+            <span className="text-sky-600 font-extrabold">
               {Math.round(recommendations.reduce((sum, r) => sum + r.matchScore, 0) / (recommendations.length || 1))}%
             </span>
           </div>
         </div>
 
-        <p className="text-xs text-slate-300 leading-relaxed">
+        <p className="text-xs text-slate-600 leading-relaxed">
           {discoveryProfile.specialNeeds.length > 0 ? (
             <>
-              💡 <strong className="text-white">Critério da IA:</strong> As necessidades diretas declaradas de{" "}
-              <span className="text-amber-300 font-bold">
+              💡 <strong className="text-slate-900">Critério da IA:</strong> As necessidades diretas declaradas de{" "}
+              <span className="text-slate-900 font-bold">
                 {discoveryProfile.specialNeeds.map((s) => s.replace("_", " ")).join(", ")}
               </span>{" "}
               foram correlacionadas aos acessórios homologados Mopar com máxima prioridade de proteção, segurança e usabilidade na rotina do veículo.
             </>
           ) : (
             <>
-              💡 <strong className="text-white">Critério da IA:</strong> Acelerado para uso frequente em{" "}
-              <span className="text-sky-300 font-bold">{discoveryProfile.usageLocation.replace("_", " ")}</span> e terreno com{" "}
-              <span className="text-sky-300 font-bold">{discoveryProfile.dirtRoadFrequency !== "nunca" ? "estradas de terra" : "rodovias"}</span>.
+              💡 <strong className="text-slate-900">Critério da IA:</strong> Acelerado para uso frequente em{" "}
+              <span className="text-sky-700 font-bold">{discoveryProfile.usageLocation.replace("_", " ")}</span> e terreno com{" "}
+              <span className="text-sky-700 font-bold">{discoveryProfile.dirtRoadFrequency !== "nunca" ? "estradas de terra" : "rodovias"}</span>.
             </>
           )}
         </p>
@@ -268,12 +268,12 @@ export const RecommendationReviewScreen: React.FC = () => {
         </div>
       </div>
 
-      {/* NAVEGAÇÃO ENTRE ETAPAS */}
+      {/* NAVEGAÇÃO ENTRE ETAPAS (Cockpit Style) */}
       <div className="flex items-center justify-between pt-6 border-t border-slate-200">
         <button
           type="button"
           onClick={prevStep}
-          className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-bold cursor-pointer"
+          className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl border border-slate-200 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold cursor-pointer transition-all"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Voltar para Entender o Cliente</span>
@@ -282,7 +282,7 @@ export const RecommendationReviewScreen: React.FC = () => {
         <button
           type="button"
           onClick={nextStep}
-          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 text-white font-bold text-sm shadow-md transition-all cursor-pointer"
+          className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#0077E6] hover:bg-[#0066CC] text-white font-bold text-xs tracking-tight transition-all shadow-glow-blue cursor-pointer active:scale-95"
         >
           <span>Avançar para Ver no Veículo</span>
           <ArrowRight className="w-4 h-4" />

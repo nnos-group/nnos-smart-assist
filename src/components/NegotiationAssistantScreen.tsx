@@ -68,12 +68,12 @@ export const NegotiationAssistantScreen: React.FC = () => {
       </div>
 
       {/* SELETOR DE OBJEÇÕES DO CLIENTE */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 space-y-3">
+      <div className="cockpit-panel rounded-2xl border border-slate-200 p-5 space-y-3 shadow-card">
         <div className="flex items-center justify-between pb-2 border-b border-slate-100">
           <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
             Qual objeção o cliente apresentou?
           </span>
-          <span className="text-xs text-slate-500">12 categorias mapeadas Mopar</span>
+          <span className="text-xs text-slate-500 font-medium">12 categorias mapeadas Mopar</span>
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
@@ -86,8 +86,8 @@ export const NegotiationAssistantScreen: React.FC = () => {
                 onClick={() => handleSelectObjectionCategory(arg.objection)}
                 className={`p-3 rounded-xl text-left text-xs font-semibold border transition-all cursor-pointer ${
                   isSelected
-                    ? "bg-sky-600 text-white border-sky-600 shadow-sm"
-                    : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                    ? "bg-slate-900 text-white border-slate-900 shadow-sm"
+                    : "bg-white text-slate-700 border-slate-200 hover:bg-slate-50"
                 }`}
               >
                 <div className="line-clamp-2 leading-tight">{arg.objectionLabel}</div>
@@ -98,13 +98,13 @@ export const NegotiationAssistantScreen: React.FC = () => {
       </div>
 
       {/* PAINEL ESTRUTURADO DO FLUXO DE NEGOCIAÇÃO (OS 6 PONTOS OBRIGATÓRIOS) */}
-      <div className="bg-white rounded-2xl border border-slate-200/90 shadow-md p-6 space-y-5">
+      <div className="cockpit-panel rounded-2xl border border-slate-200 p-6 space-y-5 shadow-card">
         <div className="flex items-center justify-between pb-3 border-b border-slate-100">
           <div className="flex items-center gap-2 text-sky-800 font-bold text-sm">
             <ShieldCheck className="w-5 h-5 text-sky-600" />
             <span>Conduta Recomendada para a Objeção Selecionada</span>
           </div>
-          <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-lg">
+          <span className="text-[11px] font-bold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
             Versão homologada: {activeArgument.approvedVersion} ({activeArgument.brand})
           </span>
         </div>
@@ -216,7 +216,7 @@ export const NegotiationAssistantScreen: React.FC = () => {
         <button
           type="button"
           onClick={prevStep}
-          className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 text-xs font-bold cursor-pointer"
+          className="flex items-center gap-1.5 px-5 py-2.5 rounded-xl border border-slate-200 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold cursor-pointer transition-all"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Voltar para Investimento</span>
@@ -225,7 +225,7 @@ export const NegotiationAssistantScreen: React.FC = () => {
         <button
           type="button"
           onClick={nextStep}
-          className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700 text-white font-bold text-sm shadow-md transition-all cursor-pointer"
+          className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#0077E6] hover:bg-[#0066CC] text-white font-bold text-xs tracking-tight transition-all shadow-glow-blue cursor-pointer active:scale-95"
         >
           <span>Avançar para Fechamento</span>
           <ArrowRight className="w-4 h-4" />
