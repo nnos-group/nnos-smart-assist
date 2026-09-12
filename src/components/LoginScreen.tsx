@@ -122,23 +122,14 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
   };
 
   return (
-    <div className="h-full font-sans text-slate-800 antialiased hero-tech-bg flex flex-col justify-between items-center min-h-screen relative overflow-x-hidden selection:bg-brand-500 selection:text-white">
-      {/* Ambient Light Orbs */}
-      <div className="ambient-glow w-[32rem] h-[32rem] bg-blue-200/50 top-[-100px] left-1/2 -translate-x-1/2 -z-10" />
-      <div className="ambient-glow w-96 h-96 bg-sky-200/40 bottom-[-120px] left-10 -z-10" />
-      <div className="ambient-glow w-96 h-96 bg-indigo-100/60 bottom-10 right-10 -z-10" />
-
-      {/* Wireframe Overlay Decor */}
-      <div className="absolute inset-0 blueprint-grid pointer-events-none opacity-60" />
-
+    <div className="min-h-screen bg-[#F8FAFC] font-sans text-slate-900 antialiased flex flex-col justify-between items-center relative selection:bg-sky-500 selection:text-white py-8 px-4 sm:px-6">
       {/* BEGIN: MainContainer */}
-      <main className="w-full max-w-xl mx-auto flex flex-col items-center my-auto py-8 px-4 sm:px-6 z-10">
+      <main className="w-full max-w-lg mx-auto flex flex-col items-center my-auto z-10">
         {/* BEGIN: BrandHeader */}
         <div className="flex flex-col items-center text-center mb-6 relative">
           {/* Authentic Accessories Badge (Jeep & RAM) */}
-          <div className="relative group cursor-pointer">
-            <div className="absolute -inset-1 bg-gradient-to-r from-sky-500/20 via-slate-700/30 to-indigo-950/40 rounded-2xl blur-md opacity-40 group-hover:opacity-75 transition duration-500" />
-            <div className="relative h-28 sm:h-32 w-auto aspect-[2055/1279] rounded-2xl border border-slate-700/70 shadow-2xl group-hover:scale-105 transition-all duration-300 overflow-hidden flex items-center justify-center bg-white p-1">
+          <div className="relative group">
+            <div className="relative h-20 sm:h-24 w-auto aspect-[2055/1279] rounded-2xl border border-slate-200 shadow-card overflow-hidden flex items-center justify-center bg-white p-1 mb-3">
               <img
                 src={accessoriesBadge}
                 alt="Logomarca Oficial Jeep & RAM"
@@ -148,27 +139,24 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
           </div>
 
           {/* Main Title */}
-          <div className="mt-4 flex items-center justify-center">
-            <h1 className="text-3xl sm:text-4xl font-extrabold font-display tracking-tight text-slate-900">
-              Smart<span className="text-brand-600 font-bold">-Sell</span>
+          <div className="mt-1 flex items-center justify-center">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 font-display">
+              Smart<span className="text-[#0077E6] font-extrabold">-Sell</span>
             </h1>
           </div>
 
           {/* Subtitle */}
-          <p className="text-xs sm:text-sm text-slate-600 font-medium mt-1.5 max-w-md tracking-normal">
+          <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1 max-w-md tracking-normal">
             Plataforma Inteligente de Vendas de Acessórios
           </p>
         </div>
         {/* END: BrandHeader */}
 
         {/* BEGIN: LoginFormCard */}
-        <div className="w-full max-w-lg bg-white/95 backdrop-blur-xl rounded-2xl border border-slate-200/90 shadow-card-lux p-6 sm:p-9 relative overflow-hidden">
-          {/* Top Decorative Accent Line */}
-          <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-brand-500 to-transparent" />
-
+        <div className="w-full cockpit-panel rounded-2xl p-6 sm:p-8 relative overflow-hidden shadow-card">
           {/* Card Header */}
-          <div className="pb-5 mb-5 border-b border-slate-100">
-            <h2 className="text-lg sm:text-xl font-bold font-display text-slate-900 tracking-tight">
+          <div className="pb-4 mb-5 border-b border-slate-100">
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
               Acesso ao Sistema de Vendas de Acessórios
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">Identifique-se com sua credencial de concessionária</p>
@@ -185,7 +173,7 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
                 <button
                   type="button"
                   onClick={() => setIsHubModalOpen(true)}
-                  className="text-[11px] font-semibold text-brand-600 hover:text-brand-700 hover:underline cursor-pointer transition-colors flex items-center gap-1"
+                  className="text-[11px] font-semibold text-sky-600 hover:text-sky-700 hover:underline cursor-pointer transition-colors flex items-center gap-1"
                 >
                   <span>Alterar Hub</span>
                   <ChevronRight className="w-3 h-3" />
@@ -193,13 +181,13 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
               </div>
               <div className="relative rounded-xl shadow-xs">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Building2 className="h-4 w-4 text-brand-600" />
+                  <Building2 className="h-4 w-4 text-sky-600" />
                 </div>
                 <select
                   id="dealership-code"
                   value={dealership}
                   onChange={(e) => setDealership(e.target.value)}
-                  className="block w-full pl-10 pr-9 py-2.5 text-xs sm:text-sm font-medium text-slate-800 bg-slate-50/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500/25 focus:border-brand-600 focus:bg-white transition-all appearance-none cursor-pointer"
+                  className="block w-full pl-10 pr-9 py-2.5 text-xs sm:text-sm font-medium text-slate-800 bg-slate-50/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500/20 focus:border-sky-600 focus:bg-white transition-all appearance-none cursor-pointer"
                 >
                   <optgroup label="🏢 Concessionária Matriz">
                     <option value={JEEP_DEALERSHIP_GROUP.matriz.name}>
@@ -233,7 +221,7 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
               </label>
               <div className="relative rounded-xl shadow-xs">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Mail className="h-4 w-4 text-brand-600" />
+                  <Mail className="h-4 w-4 text-sky-600" />
                 </div>
                 <input
                   id="username"
@@ -243,7 +231,7 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="consultor.fi@stellantis.com"
-                  className="block w-full pl-10 pr-3 py-2.5 text-xs sm:text-sm font-medium text-slate-900 bg-slate-50/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500/25 focus:border-brand-600 focus:bg-white placeholder:text-slate-400 transition-all"
+                  className="block w-full pl-10 pr-3 py-2.5 text-xs sm:text-sm font-medium text-slate-900 bg-slate-50/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white placeholder:text-slate-400 transition-all"
                 />
               </div>
             </div>
@@ -257,14 +245,14 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
                 <button
                   type="button"
                   onClick={() => alert("Para redefinir sua senha, solicite suporte ao Administrador da Concessionária.")}
-                  className="text-xs font-semibold text-brand-600 hover:text-brand-700 hover:underline transition-colors"
+                  className="text-xs font-semibold text-sky-600 hover:text-sky-700 hover:underline transition-colors cursor-pointer"
                 >
                   Esqueceu sua senha?
                 </button>
               </div>
               <div className="relative rounded-xl shadow-xs">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <Lock className="h-4 w-4 text-brand-600" />
+                  <Lock className="h-4 w-4 text-sky-600" />
                 </div>
                 <input
                   id="password"
@@ -280,14 +268,14 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
                   className={`block w-full pl-10 pr-10 py-2.5 text-xs sm:text-sm font-medium text-slate-900 bg-slate-50/80 border rounded-xl focus:ring-2 focus:bg-white transition-all ${
                     errorMessage
                       ? "border-red-400 focus:border-red-500 focus:ring-red-500/20"
-                      : "border-slate-200 focus:ring-brand-500/25 focus:border-brand-600"
+                      : "border-slate-200 focus:ring-sky-500/20 focus:border-sky-500"
                   } ${!showPassword ? "tracking-widest" : ""}`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   aria-label="Alternar visualização da senha"
-                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-700 focus:outline-none transition-colors"
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-700 focus:outline-none transition-colors cursor-pointer"
                 >
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
@@ -309,7 +297,7 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
                 id="login-role"
                 value={userRole}
                 onChange={(e) => setUserRole(e.target.value as UserRole)}
-                className="block w-full py-2 px-3 text-xs sm:text-sm font-semibold text-slate-800 bg-slate-50/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500/25 focus:border-brand-600 focus:bg-white transition-all cursor-pointer"
+                className="block w-full py-2 px-3 text-xs sm:text-sm font-semibold text-slate-800 bg-slate-50/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 focus:bg-white transition-all cursor-pointer"
               >
                 <option value="consultor">👤 Consultor de Vendas (Alçada até 5%)</option>
                 <option value="gerente">🛡️ Gerente Geral (Alçada até 15%)</option>
@@ -324,7 +312,7 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
                   type="checkbox"
                   checked={rememberSession}
                   onChange={(e) => setRememberSession(e.target.checked)}
-                  className="h-4 w-4 rounded border-slate-300 text-brand-600 focus:ring-brand-500/30 focus:ring-offset-0 transition-colors"
+                  className="h-4 w-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500/30 focus:ring-offset-0 transition-colors"
                 />
                 <span className="ml-2.5">Manter sessão ativa neste terminal</span>
               </label>
@@ -333,10 +321,10 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
             {/* Primary Action Button */}
             <button
               type="submit"
-              className="shimmer-btn w-full group relative flex items-center justify-center gap-2.5 py-3.5 px-5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-brand-500 via-[#005ed9] to-brand-600 hover:from-brand-600 hover:to-brand-700 active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 focus:ring-offset-white shadow-glow-blue transition-all duration-200 cursor-pointer"
+              className="w-full group relative flex items-center justify-center gap-2 py-3 px-5 rounded-xl text-xs sm:text-sm font-bold text-white bg-[#0077E6] hover:bg-[#0066CC] active:scale-[0.99] focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 focus:ring-offset-white shadow-glow-blue transition-all duration-200 cursor-pointer"
             >
               <span className="tracking-wide">Iniciar Venda / Acessar Sistema de Vendas</span>
-              <ArrowRight className="w-4 h-4 text-white transform group-hover:translate-x-1.5 transition-transform" />
+              <ArrowRight className="w-4 h-4 text-white transform group-hover:translate-x-1 transition-transform" />
             </button>
           </form>
         </div>
@@ -351,18 +339,18 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
             {/* Modal Header */}
             <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/70">
               <div>
-                <span className="text-[11px] font-bold text-brand-600 uppercase tracking-wider font-mono">
+                <span className="text-[11px] font-bold text-sky-600 uppercase tracking-wider font-mono">
                   Rede de Concessionárias Autorizadas
                 </span>
                 <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2 mt-0.5">
-                  <Building2 className="w-5 h-5 text-brand-600" />
+                  <Building2 className="w-5 h-5 text-sky-600" />
                   {JEEP_DEALERSHIP_GROUP.groupName}
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setIsHubModalOpen(false)}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-colors"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-400 hover:text-slate-700 hover:bg-slate-200/60 transition-colors cursor-pointer"
                 aria-label="Fechar modal"
               >
                 <X className="w-4 h-4" />
@@ -374,19 +362,19 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
               {/* Seção Matriz */}
               <div>
                 <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 font-mono flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-brand-600" />
+                  <span className="w-2 h-2 rounded-full bg-sky-600" />
                   Concessionária Matriz (Sede Operacional)
                 </p>
                 <div
                   onClick={() => handleSelectHub(JEEP_DEALERSHIP_GROUP.matriz.name)}
                   className={`p-3.5 rounded-xl border-2 cursor-pointer transition-all flex items-center justify-between ${
                     dealership === JEEP_DEALERSHIP_GROUP.matriz.name
-                      ? "border-brand-600 bg-brand-50/50 shadow-sm"
-                      : "border-slate-200 hover:border-brand-300 hover:bg-slate-50"
+                      ? "border-sky-600 bg-sky-50/50 shadow-sm"
+                      : "border-slate-200 hover:border-sky-300 hover:bg-slate-50"
                   }`}
                 >
                   <div className="flex items-start gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-brand-600 text-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                    <div className="w-9 h-9 rounded-lg bg-sky-600 text-white flex items-center justify-center flex-shrink-0 shadow-sm">
                       <Building2 className="w-5 h-5" />
                     </div>
                     <div>
@@ -394,7 +382,7 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
                         <span className="text-xs font-bold text-slate-900">
                           {JEEP_DEALERSHIP_GROUP.matriz.name}
                         </span>
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-brand-100 text-brand-700">
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 text-sky-700">
                           MATRIZ
                         </span>
                       </div>
@@ -405,7 +393,7 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
                     </div>
                   </div>
                   {dealership === JEEP_DEALERSHIP_GROUP.matriz.name && (
-                    <div className="w-6 h-6 rounded-full bg-brand-600 text-white flex items-center justify-center shadow-sm">
+                    <div className="w-6 h-6 rounded-full bg-sky-600 text-white flex items-center justify-center shadow-sm">
                       <Check className="w-3.5 h-3.5 stroke-[3]" />
                     </div>
                   )}
@@ -427,8 +415,8 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
                         onClick={() => handleSelectHub(filial.name)}
                         className={`p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between ${
                           isSelected
-                            ? "border-brand-600 bg-brand-50/50 shadow-sm"
-                            : "border-slate-200 hover:border-brand-200 hover:bg-slate-50"
+                            ? "border-sky-600 bg-sky-50/50 shadow-sm"
+                            : "border-slate-200 hover:border-sky-200 hover:bg-slate-50"
                         }`}
                       >
                         <div className="flex items-center gap-3">
@@ -446,11 +434,11 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
                           </div>
                         </div>
                         {isSelected ? (
-                          <div className="w-5 h-5 rounded-full bg-brand-600 text-white flex items-center justify-center shadow-sm">
+                          <div className="w-5 h-5 rounded-full bg-sky-600 text-white flex items-center justify-center shadow-sm">
                             <Check className="w-3 h-3 stroke-[3]" />
                           </div>
                         ) : (
-                          <span className="text-[11px] font-semibold text-brand-600 hover:underline">
+                          <span className="text-[11px] font-semibold text-sky-600 hover:underline">
                             Selecionar
                           </span>
                         )}
@@ -466,7 +454,7 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
               <button
                 type="button"
                 onClick={() => setIsHubModalOpen(false)}
-                className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-brand-600 hover:bg-brand-700 transition-colors shadow-sm"
+                className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-[#0077E6] hover:bg-[#0066CC] transition-colors shadow-sm cursor-pointer"
               >
                 Confirmar Seleção
               </button>
@@ -483,11 +471,11 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
           <span className="text-slate-500 hidden sm:inline">Rede de Concessionárias Autorizadas</span>
         </div>
         <div className="flex flex-wrap items-center justify-center gap-3.5 text-[11px] text-slate-500 font-medium">
-          <a href="#privacidade" className="hover:text-brand-600 transition-colors">
+          <a href="#privacidade" className="hover:text-sky-600 transition-colors">
             Privacidade &amp; LGPD
           </a>
           <span className="text-slate-300">•</span>
-          <a href="#termos" className="hover:text-brand-600 transition-colors">
+          <a href="#termos" className="hover:text-sky-600 transition-colors">
             Termos de Uso
           </a>
 

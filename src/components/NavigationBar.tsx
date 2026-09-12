@@ -74,9 +74,6 @@ const NavigationBar = ({
               <span className="text-lg lg:text-xl font-bold tracking-tight text-slate-900 font-display whitespace-nowrap">
                 Smart-Sell
               </span>
-              <span className="hidden sm:inline-flex text-[11px] font-semibold px-2 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200">
-                Cockpit OS 4.9
-              </span>
             </div>
           </div>
 

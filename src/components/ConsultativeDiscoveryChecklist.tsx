@@ -235,7 +235,7 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
   ].filter(Boolean).length;
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-300">
+    <div className="space-y-6 animate-in fade-in duration-300 pb-36 sm:pb-40">
       {/* HEADER DE ETAPA */}
       <div className="bg-white rounded-2xl border border-slate-200/90 shadow-sm p-5 sm:p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
@@ -923,7 +923,7 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
                 Selecione até 3 prioridades ({discoveryProfile.priorities.length}/3)
               </div>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
               {([
                 { id: "protecao", label: "🛡️ Proteção" },
                 { id: "seguranca", label: "🔒 Segurança" },
@@ -934,29 +934,20 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
                 { id: "desempenho", label: "⚙️ Desempenho" },
                 { id: "valorizacao_revenda", label: "📈 Valorização na revenda" },
               ] as { id: DiscoveryProfile["priorities"][number]; label: string }[]).map((opt) => {
-                const priorityIndex = discoveryProfile.priorities.indexOf(opt.id);
-                const isSelected = priorityIndex !== -1;
+                const isSelected = discoveryProfile.priorities.includes(opt.id);
                 return (
                   <button
                     key={opt.id}
                     type="button"
                     onClick={() => togglePriority(opt.id)}
-                    className={`p-3.5 rounded-xl transition-all flex flex-col justify-between text-left h-24 cursor-pointer ${
+                    className={`p-2.5 rounded-xl transition-all text-xs font-medium cursor-pointer ${
                       isSelected
-                        ? "bg-sky-50 border border-sky-300 text-slate-900 shadow-xs"
-                        : "bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-500"
+                        ? "bg-slate-900 border border-slate-900 text-white font-semibold shadow-sm flex items-center justify-center gap-1.5"
+                        : "bg-white border border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-700 text-center"
                     }`}
                   >
-                    <span className={`text-[10px] uppercase font-bold tracking-wider ${
-                      isSelected ? "text-sky-700" : "text-slate-400"
-                    }`}>
-                      {isSelected ? `${priorityIndex + 1}ª Prioridade` : "Em Espera"}
-                    </span>
-                    <span className={`text-xs block ${
-                      isSelected ? "font-bold text-slate-900" : "font-semibold text-slate-700"
-                    }`}>
-                      {opt.label}
-                    </span>
+                    {isSelected && <span className="w-1.5 h-1.5 rounded-full bg-sky-400 shrink-0" />}
+                    <span>{opt.label}</span>
                   </button>
                 );
               })}
