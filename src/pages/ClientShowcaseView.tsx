@@ -164,9 +164,9 @@ const ClientShowcaseView = () => {
 
         {/* Interactive Vehicle Showcase (Video / 3D) */}
         <div className="cockpit-panel rounded-2xl overflow-hidden shadow-card">
-          <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="p-4 sm:p-5 border-b border-slate-100 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
             <div className="flex items-center space-x-2.5">
-              <div className="w-9 h-9 rounded-xl bg-sky-50 text-sky-600 border border-sky-200/80 flex items-center justify-center font-bold">
+              <div className="w-9 h-9 rounded-xl bg-sky-50 text-sky-600 border border-sky-200/80 flex items-center justify-center font-bold shrink-0">
                 <Video className="w-4 h-4" />
               </div>
               <div>
@@ -179,10 +179,10 @@ const ClientShowcaseView = () => {
               </div>
             </div>
 
-            {/* Controls: Externo/Interno e Antes/Depois */}
-            <div className="flex flex-wrap items-center gap-2.5 self-start sm:self-auto">
+            {/* Controls: Externo/Interno e Antes/Depois Lado a Lado na Mesma Fileira */}
+            <div className="flex items-center gap-2.5 shrink-0 flex-nowrap overflow-x-auto self-start xl:self-auto max-w-full">
               {/* Dynamic Perspective Switcher */}
-              <div className="flex items-center bg-slate-100/80 p-1 rounded-xl border border-slate-200/80">
+              <div className="flex items-center bg-slate-100/80 p-1 rounded-xl border border-slate-200/80 shrink-0">
                 <button
                   type="button"
                   onClick={() => setViewPerspective("externo")}
@@ -218,11 +218,11 @@ const ClientShowcaseView = () => {
               </div>
 
               {/* Before / After Switcher */}
-              <div className="flex items-center bg-slate-100/80 p-1 rounded-xl border border-slate-200/80">
+              <div className="flex items-center bg-slate-100/80 p-1 rounded-xl border border-slate-200/80 shrink-0">
                 <button
                   type="button"
                   onClick={() => setShowAfter(false)}
-                  className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition cursor-pointer ${
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition cursor-pointer ${
                     !showAfter
                       ? "font-bold text-slate-900 bg-white shadow-xs border border-slate-200"
                       : "text-slate-600 hover:text-slate-900"
@@ -243,7 +243,7 @@ const ClientShowcaseView = () => {
                 <button
                   type="button"
                   onClick={() => setShowAfter(true)}
-                  className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition cursor-pointer ${
+                  className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition cursor-pointer ${
                     showAfter
                       ? "font-bold text-slate-900 bg-white shadow-xs border border-slate-200"
                       : "text-slate-600 hover:text-slate-900"
@@ -424,28 +424,31 @@ const ClientShowcaseView = () => {
               </div>
 
               {/* Total Card */}
-              <div className="bg-slate-50/90 rounded-xl p-4.5 border border-slate-200/80 space-y-3">
-                <div className="flex items-baseline justify-between">
-                  <span className="text-xs font-bold uppercase text-slate-400">Total à Vista</span>
-                  <span className="text-3xl font-extrabold text-[#0077E6] tracking-tight font-display">
+              <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 shadow-xs space-y-4">
+                <div className="flex items-center justify-between gap-2 pb-3.5 border-b border-slate-200/90">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                    Total à Vista
+                  </span>
+                  <span className="text-2xl sm:text-3xl font-black text-[#0077E6] tracking-tight font-display">
                     R$ {calculatedTotal.toLocaleString("pt-BR")}
                   </span>
                 </div>
 
-                <div className="border-t border-slate-200/80 pt-2.5 space-y-2">
-                  <div className="text-xs text-slate-700 flex justify-between font-medium">
-                    <span>Parcelamento no Cartão:</span>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between text-xs text-slate-700 font-medium">
+                    <span className="text-slate-600">Parcelamento no Cartão:</span>
                     <span className="font-bold text-slate-900">
-                      12x de R$ {Math.ceil(calculatedTotal / 12).toLocaleString("pt-BR")} s/ juros
+                      12x de R$ {Math.ceil(calculatedTotal / 12).toLocaleString("pt-BR")}{" "}
+                      <span className="font-normal text-slate-500">s/ juros</span>
                     </span>
                   </div>
 
-                  <div className="bg-sky-50/80 p-3 rounded-lg border border-sky-200/60 flex items-start gap-2">
+                  <div className="bg-sky-50/90 p-3.5 rounded-xl border border-sky-200/80 flex items-start gap-2.5">
                     <Zap className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
-                    <div className="text-xs text-sky-950 leading-tight">
-                      <strong className="font-bold text-sky-900">Diluição no Financiamento CDC:</strong>
-                      <span className="block mt-0.5 text-sky-800">
-                        + apenas <strong>R$ {cdcMonthly} / mês</strong> nas parcelas do seu veículo.
+                    <div className="text-xs text-sky-950 leading-relaxed">
+                      <strong className="font-bold text-sky-900 block">Diluição no Financiamento CDC:</strong>
+                      <span className="block mt-0.5 text-sky-800 text-[11px]">
+                        + apenas <strong className="text-sky-950 font-bold">R$ {cdcMonthly} / mês</strong> nas parcelas do seu veículo.
                       </span>
                     </div>
                   </div>
