@@ -394,7 +394,7 @@ const ClientShowcaseView = () => {
 
                     <div className="text-right shrink-0">
                       <span className="text-xs text-slate-400 block">Preço tabela</span>
-                      <span className="text-sm font-extrabold text-blue-700 font-mono">
+                      <span className="text-xs font-bold text-slate-900">
                         R$ {finalPrice.toLocaleString("pt-BR")}
                       </span>
                     </div>
@@ -417,8 +417,8 @@ const ClientShowcaseView = () => {
               {/* Total Card */}
               <div className="bg-slate-50 rounded-xl p-4 border border-slate-200/80 space-y-3">
                 <div className="flex items-baseline justify-between">
-                  <span className="text-xs font-bold uppercase text-slate-500 tracking-wider">Total à Vista</span>
-                  <span className="text-2xl sm:text-3xl font-black text-blue-600 font-mono">
+                  <span className="text-xs font-bold uppercase text-slate-500">Total à Vista</span>
+                  <span className="text-3xl font-black text-sky-600">
                     R$ {calculatedTotal.toLocaleString("pt-BR")}
                   </span>
                 </div>

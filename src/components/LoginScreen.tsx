@@ -156,7 +156,7 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
 
           {/* Subtitle */}
           <p className="text-xs sm:text-sm text-slate-600 font-medium mt-1.5 max-w-md tracking-normal">
-            Plataforma Inteligente de Vendas de F&amp;I
+            Plataforma Inteligente de Vendas de Acessórios
           </p>
         </div>
         {/* END: BrandHeader */}
@@ -169,7 +169,7 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
           {/* Card Header */}
           <div className="pb-5 mb-5 border-b border-slate-100">
             <h2 className="text-lg sm:text-xl font-bold font-display text-slate-900 tracking-tight">
-              Acesso ao Sistema de Vendas F&amp;I
+              Acesso ao Sistema de Vendas de Acessórios
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">Identifique-se com sua credencial de concessionária</p>
           </div>
@@ -317,7 +317,7 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
               </select>
             </div>
 
-            {/* Remember Session & Version */}
+            {/* Remember Session */}
             <div className="flex items-center justify-between pt-1 pb-1">
               <label className="flex items-center text-xs text-slate-600 cursor-pointer hover:text-slate-900 transition-colors select-none font-medium">
                 <input
@@ -328,7 +328,6 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
                 />
                 <span className="ml-2.5">Manter sessão ativa neste terminal</span>
               </label>
-              <span className="text-[11px] text-slate-500 font-mono font-medium">v4.9.4 PRO</span>
             </div>
 
             {/* Primary Action Button */}
