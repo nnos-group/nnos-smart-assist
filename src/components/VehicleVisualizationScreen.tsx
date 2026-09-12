@@ -368,6 +368,9 @@ const VehicleVisualizationScreen = ({
                             onChange={() => onAccessoryToggle(item.id)}
                             className="w-4 h-4 rounded text-sky-600 border-slate-300 focus:ring-sky-500 cursor-pointer shrink-0"
                           />
+                          <div className="truncate">
+                            <span className="text-xs font-semibold text-slate-800 truncate block">{item.name}</span>
+                            {isOutOfStock && (
                               <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-100/80 px-1.5 py-0.2 rounded mt-0.5">
                                 ⚠️ Sem estoque local (Encomenda CD)
                               </span>
