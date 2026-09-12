@@ -63,11 +63,11 @@ const NavigationBar = ({
               </button>
             )}
 
-            <div className="relative h-10 px-2.5 py-1 rounded-xl bg-slate-950/90 border border-slate-700/80 shadow-md ring-1 ring-white/10 flex items-center justify-center shrink-0">
+            <div className="relative h-11 w-28 sm:w-32 rounded-lg overflow-hidden shadow-sm flex items-center justify-center shrink-0 border border-white/20">
               <img
                 src={accessoriesBadge}
                 alt="Logomarca Oficial Jeep & RAM"
-                className="h-full w-auto max-w-[110px] object-contain"
+                className="w-full h-full object-cover object-center"
               />
             </div>
             <div className="shrink-0">

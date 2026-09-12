@@ -137,12 +137,12 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
         <div className="flex flex-col items-center text-center mb-6 relative">
           {/* Authentic Accessories Badge (Jeep & RAM) */}
           <div className="relative group cursor-pointer">
-            <div className="absolute -inset-2 bg-gradient-to-r from-sky-500/20 via-slate-700/30 to-indigo-950/40 rounded-2xl blur-lg opacity-50 group-hover:opacity-80 transition duration-500" />
-            <div className="relative w-48 sm:w-56 h-24 sm:h-28 rounded-2xl bg-slate-950/95 border-2 border-slate-700/80 shadow-2xl group-hover:scale-105 group-hover:border-sky-500/50 transition-all duration-300 p-2 flex items-center justify-center overflow-hidden">
+            <div className="absolute -inset-1 bg-gradient-to-r from-sky-500/20 via-slate-700/30 to-indigo-950/40 rounded-2xl blur-md opacity-40 group-hover:opacity-75 transition duration-500" />
+            <div className="relative w-52 sm:w-60 h-28 sm:h-32 rounded-2xl border border-slate-700/70 shadow-2xl group-hover:scale-105 transition-all duration-300 overflow-hidden flex items-center justify-center bg-slate-950">
               <img
                 src={accessoriesBadge}
                 alt="Logomarca Oficial Jeep & RAM"
-                className="max-h-full max-w-full object-contain drop-shadow-md"
+                className="w-full h-full object-cover object-center"
               />
             </div>
           </div>
