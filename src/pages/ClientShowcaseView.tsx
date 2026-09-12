@@ -109,11 +109,11 @@ const ClientShowcaseView = () => {
       <header className="bg-[#001E36] text-white border-b border-sky-950 shadow-md sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="relative h-11 w-28 sm:w-32 rounded-lg overflow-hidden shadow-sm flex items-center justify-center shrink-0 border border-white/20">
+            <div className="relative h-11 w-auto aspect-[2055/1279] rounded-lg overflow-hidden shadow-sm flex items-center justify-center shrink-0 bg-white p-0.5 border border-white/20">
               <img
                 src={accessoriesBadge}
                 alt="Logomarca Oficial Jeep & RAM"
-                className="w-full h-full object-cover object-center"
+                className="w-full h-full object-contain"
               />
             </div>
             <div>
