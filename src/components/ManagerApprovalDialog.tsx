@@ -17,7 +17,7 @@ export const ManagerApprovalDialog: React.FC<ManagerApprovalDialogProps> = ({
   requestedDiscountValue,
 }) => {
   const [managerCode, setManagerCode] = useState("");
-  const [managerName, setManagerName] = useState("Eduardo Ramos (Gerente Geral F&I)");
+  const [managerName, setManagerName] = useState("Eduardo Ramos (Gerente Geral)");
   const [notes, setNotes] = useState("");
   const [error, setError] = useState("");
 
@@ -39,7 +39,7 @@ export const ManagerApprovalDialog: React.FC<ManagerApprovalDialogProps> = ({
         <div className="flex items-center justify-between pb-3 border-b border-slate-100">
           <div className="flex items-center gap-2 text-sky-800 font-bold text-sm">
             <ShieldCheck className="w-5 h-5 text-sky-600" />
-            <span>Autorização de Alçada Gerencial F&amp;I</span>
+            <span>Autorização de Alçada Gerencial</span>
           </div>
           <button
             type="button"
@@ -74,7 +74,7 @@ export const ManagerApprovalDialog: React.FC<ManagerApprovalDialogProps> = ({
               onChange={(e) => setManagerName(e.target.value)}
               className="w-full rounded-xl border border-slate-200 p-2.5 text-xs text-slate-800 bg-slate-50 focus:ring-2 focus:ring-sky-500/20"
             >
-              <option value="Eduardo Ramos (Gerente Geral F&I)">Eduardo Ramos (Gerente Geral F&I)</option>
+              <option value="Eduardo Ramos (Gerente Geral)">Eduardo Ramos (Gerente Geral)</option>
               <option value="Mariana Castro (Gerente de Novos Jeep/RAM)">Mariana Castro (Gerente de Novos Jeep/RAM)</option>
               <option value="Diretoria Comercial Matriz">Diretoria Comercial Matriz</option>
             </select>

@@ -176,7 +176,7 @@ export const PricePresentationScreen: React.FC = () => {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-50 text-sky-700 text-xs font-bold mb-2 border border-sky-200/60">
             <Tag className="w-3.5 h-3.5 text-sky-600" />
-            <span>Etapa 5 de 7 · Condições Comerciais &amp; F&amp;I</span>
+            <span>Etapa 5 de 7 · Condições Comerciais</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight font-display">
             Investimento

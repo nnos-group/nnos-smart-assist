@@ -230,7 +230,7 @@ const SalesScriptScreen = ({
 
   const handleCopyResponse = () => {
     if (!result) return;
-    const fullText = `*Script Recomendado para o Consultor*\n\n1. Validação Empática: "${result.empathicValidation}"\n\n2. Quebra Técnica: "${result.technicalRefutation}"\n\n3. Fechamento F&I: "${result.closingFi}"`;
+    const fullText = `*Script Recomendado para o Consultor*\n\n1. Validação Empática: "${result.empathicValidation}"\n\n2. Quebra Técnica: "${result.technicalRefutation}"\n\n3. Fechamento: "${result.closingFi}"`;
     navigator.clipboard.writeText(fullText);
     setIsCopiedResponse(true);
     toast.success("Contra-argumento copiado!");
@@ -404,7 +404,7 @@ const SalesScriptScreen = ({
               </div>
             </div>
 
-            {/* Pacote F&I Card */}
+            {/* Pacote Card */}
             <div className="flex items-center space-x-3.5 pt-3 sm:pt-0 sm:pl-4">
               <div className="w-10 h-10 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 shrink-0">
                 <BadgePercent className="w-5 h-5" />
@@ -627,7 +627,7 @@ const SalesScriptScreen = ({
               </div>
             </div>
 
-            {/* Pillar 3: F&I & Diluição */}
+            {/* Pillar 3: Pagamento & Diluição */}
             <div className="bg-white rounded-xl border border-slate-200/90 shadow-sm hover:shadow-md transition-shadow p-5 flex flex-col justify-between">
               <div>
                 <div className="flex items-center space-x-3 mb-3">
@@ -636,7 +636,7 @@ const SalesScriptScreen = ({
                   </div>
                   <div>
                     <span className="text-[10px] font-bold tracking-wider uppercase text-emerald-600">Pilar 03</span>
-                    <h3 className="text-sm font-bold text-slate-900 leading-snug">Facilidade F&amp;I &amp; Diluição no CDC</h3>
+                    <h3 className="text-sm font-bold text-slate-900 leading-snug">Facilidade de Pagamento &amp; Diluição no CDC</h3>
                   </div>
                 </div>
 
@@ -834,7 +834,7 @@ const SalesScriptScreen = ({
                   <span>"{result?.technicalRefutation || `Porém, no caso dos acessórios genuínos Mopar, eles são calibrados e testados especificamente para a eletrônica de bordo, sensores de segurança e suspensão do ${clientData.vehicleModel}. Peças de prateleira externa não contam com homologação e podem invalidar a garantia de fábrica de 3 anos.`}"</span>
                 </p>
                 <p>
-                  <strong className="text-slate-900 font-bold block sm:inline">3. Fechamento de Valor F&amp;I:</strong>{" "}
+                  <strong className="text-slate-900 font-bold block sm:inline">3. Fechamento de Valor:</strong>{" "}
                   <span>"{result?.closingFi || `Além disso, instalando hoje aqui na concessionária, o senhor não descapitaliza seu caixa: diluímos os itens em + apenas R$ ${cdcMonthly} na parcela mensal do financiamento. Podemos emitir a ordem de serviço com a aprovação imediata?`}"</span>
                 </p>
               </div>
@@ -882,7 +882,7 @@ const SalesScriptScreen = ({
                 className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-500 text-white text-xs sm:text-sm font-bold px-6 py-2.5 rounded-lg shadow-lg shadow-blue-600/30 transition transform active:scale-95 group cursor-pointer"
               >
                 <CheckCircle className="w-4 h-4 text-blue-200 group-hover:scale-110 transition-transform" />
-                <span>Concluir e Enviar para Aprovação F&amp;I</span>
+                <span>Concluir e Enviar para Aprovação</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
               </button>
             </div>
@@ -896,7 +896,7 @@ const SalesScriptScreen = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            <span>Ambiente Seguro Concessionária (DMS &amp; F&amp;I Integrados)</span>
+            <span>Ambiente Seguro Concessionária (DMS Integrado)</span>
           </div>
           <div>
             <span>Dados de Conformidade LGPD</span>

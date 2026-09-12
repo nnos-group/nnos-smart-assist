@@ -48,7 +48,7 @@ describe("SalesScriptScreen (Etapa 4)", () => {
 
     expect(screen.getByText(/Proteção do Investimento & Revenda/i)).toBeInTheDocument();
     expect(screen.getByText(/Segurança & Performance Operacional/i)).toBeInTheDocument();
-    expect(screen.getByText(/Facilidade F&I & Diluição no CDC/i)).toBeInTheDocument();
+    expect(screen.getByText(/Facilidade de Pagamento & Diluição no CDC/i)).toBeInTheDocument();
     expect(screen.getByText(/Dica Contra Preço Alto:/i)).toBeInTheDocument();
   });
 
@@ -72,7 +72,7 @@ describe("SalesScriptScreen (Etapa 4)", () => {
     expect(screen.getByText(/Script Recomendado para o Consultor/i)).toBeInTheDocument();
     expect(screen.getByText(/1\. Validação Empática:/i)).toBeInTheDocument();
     expect(screen.getByText(/2\. Quebra Técnica de Objeção:/i)).toBeInTheDocument();
-    expect(screen.getByText(/3\. Fechamento de Valor F&I:/i)).toBeInTheDocument();
+    expect(screen.getByText(/3\. Fechamento de Valor:/i)).toBeInTheDocument();
     expect(screen.getByText(/Compreendo o seu ponto/i)).toBeInTheDocument();
   });
 
@@ -98,7 +98,7 @@ describe("SalesScriptScreen (Etapa 4)", () => {
     expect(screen.getByText(/Que tal enviarmos a visualização 3D oficial agora mesmo para ela conferir no WhatsApp\?/i)).toBeInTheDocument();
   });
 
-  it("triggers onClose when clicking 'Concluir e Enviar para Aprovação F&I'", () => {
+  it("triggers onClose when clicking 'Concluir e Enviar para Aprovação'", () => {
     const handleClose = vi.fn();
     const accessories = getAccessoriesForVehicle("RAM RAMPAGE REBEL");
     render(
@@ -109,7 +109,7 @@ describe("SalesScriptScreen (Etapa 4)", () => {
       />
     );
 
-    const finishBtn = screen.getByRole("button", { name: /Concluir e Enviar para Aprovação F&I/i });
+    const finishBtn = screen.getByRole("button", { name: /Concluir e Enviar para Aprovação/i });
     fireEvent.click(finishBtn);
     expect(handleClose).toHaveBeenCalled();
   });

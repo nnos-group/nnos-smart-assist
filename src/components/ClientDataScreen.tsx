@@ -797,13 +797,13 @@ const ClientDataScreen = ({ clientData, onClientDataChange, onGenerateSuggestion
                   ? "Gerar Pacote de Entrega Técnica"
                   : clientSource === "crm"
                   ? "Confirmar Pacote CRM & Avançar"
-                  : "Gerar Sugestão de Acessórios & Pacote F&I"}
+                  : "Gerar Sugestão de Acessórios"}
               </span>
               <ArrowRight className="w-5 h-5 text-sky-200" />
             </button>
             <div className="flex items-center gap-2 text-[11px] text-slate-400 font-medium">
               <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Processamento por IA: <strong>1.4s</strong> • Base F&I atualizada hoje</span>
+              <span>Processamento por IA: <strong>1.4s</strong> • Base atualizada hoje</span>
             </div>
           </div>
         )}

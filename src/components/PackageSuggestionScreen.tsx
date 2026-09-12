@@ -449,8 +449,8 @@ const PackageSuggestionScreen = ({
             </div>
           </section>
 
-          {/* RIGHT COLUMN: Resumo Financeiro & Totais / F&I Calculator (4 cols) */}
-          <aside aria-label="Resumo Comercial e F&I" className="lg:col-span-4 space-y-4">
+          {/* RIGHT COLUMN: Resumo Financeiro & Totais (4 cols) */}
+          <aside aria-label="Resumo Comercial de Acessórios" className="lg:col-span-4 space-y-4">
             <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-md sticky top-24 space-y-4">
               {/* Header do Resumo */}
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -717,7 +717,7 @@ const PackageSuggestionScreen = ({
           </div>
           <div className="flex items-center space-x-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-500" />
-            <span className="text-slate-600 font-medium">Sistemas 100% Operacionais (DMS &amp; F&amp;I Integrados)</span>
+            <span className="text-slate-600 font-medium">Sistemas 100% Operacionais (DMS Integrado)</span>
           </div>
         </div>
       </footer>

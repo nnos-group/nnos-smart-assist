@@ -256,7 +256,7 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
                 </label>
                 <button
                   type="button"
-                  onClick={() => alert("Para redefinir sua senha, solicite suporte ao Administrador F&I da Concessionária.")}
+                  onClick={() => alert("Para redefinir sua senha, solicite suporte ao Administrador da Concessionária.")}
                   className="text-xs font-semibold text-brand-600 hover:text-brand-700 hover:underline transition-colors"
                 >
                   Esqueceu sua senha?
@@ -311,8 +311,8 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
                 onChange={(e) => setUserRole(e.target.value as UserRole)}
                 className="block w-full py-2 px-3 text-xs sm:text-sm font-semibold text-slate-800 bg-slate-50/80 border border-slate-200 rounded-xl focus:ring-2 focus:ring-brand-500/25 focus:border-brand-600 focus:bg-white transition-all cursor-pointer"
               >
-                <option value="consultor">👤 Consultor de Vendas F&amp;I (Alçada até 5%)</option>
-                <option value="gerente">🛡️ Gerente Geral F&amp;I (Alçada até 15%)</option>
+                <option value="consultor">👤 Consultor de Vendas (Alçada até 5%)</option>
+                <option value="gerente">🛡️ Gerente Geral (Alçada até 15%)</option>
                 <option value="administrador">👑 Administrador / Diretor Comercial (Alçada até 25%)</option>
               </select>
             </div>

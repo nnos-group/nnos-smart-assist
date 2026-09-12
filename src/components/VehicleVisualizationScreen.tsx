@@ -172,7 +172,7 @@ const VehicleVisualizationScreen = ({
               </span>
               <span>•</span>
               <span>
-                Proposta: <strong className="text-slate-700">#RAM-84920-F&amp;I</strong>
+                Proposta: <strong className="text-slate-700">#RAM-84920</strong>
               </span>
               <span>•</span>
               <span className="inline-flex items-center text-emerald-600 font-medium">
@@ -410,7 +410,7 @@ const VehicleVisualizationScreen = ({
               </div>
             </aside>
           ) : (
-          <aside aria-label="Resumo Comercial e F&I" className="lg:col-span-4 space-y-4">
+          <aside aria-label="Resumo Comercial de Acessórios" className="lg:col-span-4 space-y-4">
             <div className="bg-white border border-slate-200 rounded-2xl p-5 sm:p-6 shadow-md sticky top-20 space-y-4">
               {/* Header do Resumo */}
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
@@ -752,7 +752,7 @@ const VehicleVisualizationScreen = ({
           <div className="flex items-center space-x-4 text-[11px]">
             <span className="inline-flex items-center text-emerald-700 font-semibold">
               <span className="w-2 h-2 rounded-full bg-emerald-500 mr-1.5" />
-              Sistemas 100% Operacionais (DMS &amp; F&amp;I Integrados)
+              Sistemas 100% Operacionais (DMS Integrado)
             </span>
           </div>
         </div>

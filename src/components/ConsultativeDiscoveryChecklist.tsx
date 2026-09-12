@@ -1009,10 +1009,7 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
       </div>
 
       {/* BOTÃO DE AVANÇO PARA A ETAPA 2 */}
-      <div className="flex items-center justify-between pt-4 border-t border-slate-200">
-        <div className="text-xs text-slate-500">
-          Ordem obrigatória: <strong>Entender o cliente</strong> → Recomendar acessórios → Ver no veículo
-        </div>
+      <div className="flex items-center justify-end pt-4 border-t border-slate-200">
         <button
           type="button"
           onClick={nextStep}
