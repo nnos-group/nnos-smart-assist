@@ -6,7 +6,7 @@ import { ReheatedLeadsModal } from "@/components/ReheatedLeadsModal";
 import LostSalesDashboard from "@/components/LostSalesDashboard";
 import { SalesJourneyProvider, useSalesJourney } from "@/context/SalesJourneyContext";
 import { SalesJourneyStepper } from "@/components/SalesJourneyStepper";
-import { Tablet, Smartphone, RotateCcw } from "lucide-react";
+import { DeviceSimulator } from "@/components/DeviceSimulator";
 
 // 7 Etapas Consultivas
 import { ConsultativeDiscoveryChecklist } from "@/components/ConsultativeDiscoveryChecklist";
@@ -167,60 +167,20 @@ const InnerSalesJourney = () => {
         </>
       )}
 
-      {viewportDevice === "tablet" && (
-        <div className="flex-1 w-full bg-slate-200/90 py-6 px-4 flex flex-col items-center overflow-x-auto">
-          <div className="mb-4 flex items-center gap-2.5 text-xs font-bold text-slate-700 bg-white/95 px-4 py-1.5 rounded-full shadow-md border border-slate-300">
-            <Tablet className="w-4 h-4 text-sky-600" />
-            <span>Simulação de Tela: Tablet (iPad 768px)</span>
-            <button
-              type="button"
-              onClick={() => setViewportDevice("desktop")}
-              className="ml-2 text-xs font-extrabold text-sky-600 hover:text-sky-800 flex items-center gap-1 cursor-pointer"
-            >
-              <RotateCcw className="w-3 h-3" />
-              Restaurar Computador
-            </button>
-          </div>
+      {/* Simulador Avançado de Dispositivos (iPad Pro & iPhone 15 Pro) */}
+      {viewportDevice !== "desktop" && (
+        <DeviceSimulator
+          device={viewportDevice}
+          onDeviceChange={setViewportDevice}
+        >
+          {/* Stepper Consultivo Adaptativo */}
+          <SalesJourneyStepper />
 
-          {/* Moldura Tablet */}
-          <div className="w-full max-w-[768px] bg-slate-950 p-4 rounded-[36px] shadow-2xl border-4 border-slate-700 ring-2 ring-slate-900/50">
-            <div className="bg-slate-100 rounded-[24px] overflow-hidden min-h-[820px] flex flex-col shadow-inner">
-              <SalesJourneyStepper />
-              <main className="flex-1 w-full p-4">
-                {renderCurrentStep()}
-              </main>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {viewportDevice === "mobile" && (
-        <div className="flex-1 w-full bg-slate-200/90 py-6 px-4 flex flex-col items-center overflow-x-auto">
-          <div className="mb-4 flex items-center gap-2.5 text-xs font-bold text-slate-700 bg-white/95 px-4 py-1.5 rounded-full shadow-md border border-slate-300">
-            <Smartphone className="w-4 h-4 text-sky-600" />
-            <span>Simulação de Tela: Celular (iPhone 390px)</span>
-            <button
-              type="button"
-              onClick={() => setViewportDevice("desktop")}
-              className="ml-2 text-xs font-extrabold text-sky-600 hover:text-sky-800 flex items-center gap-1 cursor-pointer"
-            >
-              <RotateCcw className="w-3 h-3" />
-              Restaurar Computador
-            </button>
-          </div>
-
-          {/* Moldura Celular */}
-          <div className="w-full max-w-[400px] bg-slate-950 p-3 pt-4 rounded-[48px] shadow-2xl border-4 border-slate-700 ring-2 ring-slate-900/50">
-            {/* Dynamic Island */}
-            <div className="w-24 h-4 bg-black rounded-full mx-auto mb-3 shadow-inner" />
-            <div className="bg-slate-100 rounded-[36px] overflow-hidden min-h-[800px] flex flex-col shadow-inner">
-              <SalesJourneyStepper />
-              <main className="flex-1 w-full p-3">
-                {renderCurrentStep()}
-              </main>
-            </div>
-          </div>
-        </div>
+          {/* Conteúdo Renderizado da Etapa Atual */}
+          <main className="flex-1 w-full p-3 sm:p-5">
+            {renderCurrentStep()}
+          </main>
+        </DeviceSimulator>
       )}
 
       {/* Modais Gerenciais & Retargeting */}

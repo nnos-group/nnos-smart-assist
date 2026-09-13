@@ -654,12 +654,12 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* 1. Onde o veículo será utilizado */}
           <article className="cockpit-panel rounded-2xl p-5 border border-slate-200 space-y-3.5 transition-shadow hover:shadow-card">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0">01</span>
-                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold">Onde o veículo será utilizado com maior frequência?</h3>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">01</span>
+                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold leading-snug">Onde o veículo será utilizado com maior frequência?</h3>
               </div>
-              <span className="text-[10px] font-semibold text-slate-400">Pergunta 1 de 10</span>
+              <span className="text-[10px] font-semibold text-slate-400 shrink-0 whitespace-nowrap bg-slate-50 px-2 py-0.5 rounded-md border border-slate-200/60">Pergunta 1 de 10</span>
             </div>
             <div className="grid grid-cols-2 gap-2 text-xs">
               {([
@@ -692,12 +692,12 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
 
           {/* 2. Quilometragem mensal aproximada */}
           <article className="cockpit-panel rounded-2xl p-5 border border-slate-200 space-y-3.5 transition-shadow hover:shadow-card">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0">02</span>
-                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold">Qual será a quilometragem mensal aproximada?</h3>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">02</span>
+                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold leading-snug">Qual será a quilometragem mensal aproximada?</h3>
               </div>
-              <span className="text-[10px] font-semibold text-slate-400">Pergunta 2 de 10</span>
+              <span className="text-[10px] font-semibold text-slate-400 shrink-0 whitespace-nowrap bg-slate-50 px-2 py-0.5 rounded-md border border-slate-200/60">Pergunta 2 de 10</span>
             </div>
             <div className="grid grid-cols-2 gap-2 text-xs">
               {([
@@ -728,12 +728,12 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
 
           {/* 3. Frequência em estradas de terra */}
           <article className="cockpit-panel rounded-2xl p-5 border border-slate-200 space-y-3.5 transition-shadow hover:shadow-card">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0">03</span>
-                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold">Com que frequência passará por estradas de terra?</h3>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">03</span>
+                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold leading-snug">Com que frequência passará por estradas de terra?</h3>
               </div>
-              <span className="text-[10px] font-semibold text-slate-400">Pergunta 3 de 10</span>
+              <span className="text-[10px] font-semibold text-slate-400 shrink-0 whitespace-nowrap bg-slate-50 px-2 py-0.5 rounded-md border border-slate-200/60">Pergunta 3 de 10</span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
               {([
@@ -764,12 +764,12 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
 
           {/* 4. Transporte de cargas */}
           <article className="cockpit-panel rounded-2xl p-5 border border-slate-200 space-y-3.5 transition-shadow hover:shadow-card">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0">04</span>
-                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold">O veículo será usado para transportar cargas?</h3>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">04</span>
+                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold leading-snug">O veículo será usado para transportar cargas?</h3>
               </div>
-              <span className="text-[10px] font-semibold text-slate-400">Pergunta 4 de 10</span>
+              <span className="text-[10px] font-semibold text-slate-400 shrink-0 whitespace-nowrap bg-slate-50 px-2 py-0.5 rounded-md border border-slate-200/60">Pergunta 4 de 10</span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
               {([
@@ -801,12 +801,12 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
 
           {/* 5. Quem será transportado com frequência? (múltipla seleção) */}
           <article className="cockpit-panel rounded-2xl p-5 border border-slate-200 space-y-3.5 transition-shadow hover:shadow-card">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0">05</span>
-                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold">Quem será transportado com frequência?</h3>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">05</span>
+                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold leading-snug">Quem será transportado com frequência?</h3>
               </div>
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Múltipla seleção</span>
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 shrink-0 whitespace-nowrap">Múltipla seleção</span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
               {([
@@ -838,12 +838,12 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
 
           {/* 6. Frequência de viagens */}
           <article className="cockpit-panel rounded-2xl p-5 border border-slate-200 space-y-3.5 transition-shadow hover:shadow-card">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0">06</span>
-                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold">Com que frequência realiza viagens?</h3>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">06</span>
+                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold leading-snug">Com que frequência realiza viagens?</h3>
               </div>
-              <span className="text-[10px] font-semibold text-slate-400">Pergunta 6 de 10</span>
+              <span className="text-[10px] font-semibold text-slate-400 shrink-0 whitespace-nowrap bg-slate-50 px-2 py-0.5 rounded-md border border-slate-200/60">Pergunta 6 de 10</span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
               {([
@@ -874,12 +874,12 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
 
           {/* 7. Necessidades específicas (múltipla seleção) */}
           <article className="cockpit-panel rounded-2xl p-5 border border-slate-200 space-y-3.5 md:col-span-2 transition-shadow hover:shadow-card">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0">07</span>
-                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold">Existe necessidade específica identificada?</h3>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">07</span>
+                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold leading-snug">Existe necessidade específica identificada?</h3>
               </div>
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">Múltipla seleção</span>
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 shrink-0 whitespace-nowrap">Múltipla seleção</span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
               {([
@@ -913,14 +913,14 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
 
           {/* 8. As 3 prioridades principais */}
           <article className="cockpit-panel rounded-2xl p-5 border border-slate-200 space-y-3.5 md:col-span-2 transition-shadow hover:shadow-card">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0">08</span>
-                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold">Quais são as três prioridades principais para o cliente?</h3>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">08</span>
+                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold leading-snug">Quais são as três prioridades principais para o cliente?</h3>
               </div>
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200 shrink-0 whitespace-nowrap">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                Selecione até 3 prioridades ({discoveryProfile.priorities.length}/3)
+                Até 3 prioridades ({discoveryProfile.priorities.length}/3)
               </div>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
@@ -956,12 +956,12 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
 
           {/* 9. Onde o veículo ficará estacionado? */}
           <article className="cockpit-panel rounded-2xl p-5 border border-slate-200 space-y-3.5 transition-shadow hover:shadow-card">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0">09</span>
-                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold">Onde o veículo ficará estacionado?</h3>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">09</span>
+                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold leading-snug">Onde o veículo ficará estacionado?</h3>
               </div>
-              <span className="text-[10px] font-semibold text-slate-400">Pergunta 9 de 10</span>
+              <span className="text-[10px] font-semibold text-slate-400 shrink-0 whitespace-nowrap bg-slate-50 px-2 py-0.5 rounded-md border border-slate-200/60">Pergunta 9 de 10</span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
               {([
@@ -993,12 +993,12 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
 
           {/* 10. Necessidade ou preocupação específica (texto livre) */}
           <article className="cockpit-panel rounded-2xl p-5 border border-slate-200 space-y-3.5 transition-shadow hover:shadow-card">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0">10</span>
-                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold">Existe alguma necessidade ou preocupação específica?</h3>
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                <span className="w-6 h-6 rounded-full bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center shrink-0 mt-0.5">10</span>
+                <h3 className="text-xs uppercase tracking-wider text-slate-700 font-bold leading-snug">Existe alguma necessidade ou preocupação específica?</h3>
               </div>
-              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 shrink-0 whitespace-nowrap">
                 Sincronizado
               </span>
             </div>

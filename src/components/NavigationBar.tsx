@@ -77,20 +77,25 @@ const NavigationBar = ({
             </div>
           </div>
 
-          {/* Simulator Device Switcher (Computador, Tablet, Celular) */}
           {onDeviceChange && (
-            <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-inner">
-              <span className="hidden xl:inline-block text-[10px] font-bold uppercase tracking-wider text-slate-400 px-2">
-                Simulação:
+            <div
+              className="flex items-center gap-0.5 p-1 rounded-xl border border-slate-200/80"
+              style={{
+                background: "linear-gradient(135deg, #f1f5f9 0%, #f8fafc 100%)",
+                boxShadow: "inset 0 1px 2px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.06)",
+              }}
+            >
+              <span className="hidden xl:inline-block text-[10px] font-bold uppercase tracking-wider text-slate-400 px-2 select-none">
+                Preview:
               </span>
               <button
                 type="button"
                 id="btn-viewport-desktop"
                 onClick={() => onDeviceChange("desktop")}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
                   currentDevice === "desktop"
                     ? "bg-slate-900 text-white shadow-sm"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-white"
+                    : "text-slate-500 hover:text-slate-800 hover:bg-white/70"
                 }`}
                 title="Simular visualização em Computador / Desktop"
               >
@@ -101,29 +106,31 @@ const NavigationBar = ({
                 type="button"
                 id="btn-viewport-tablet"
                 onClick={() => onDeviceChange("tablet")}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
                   currentDevice === "tablet"
                     ? "bg-slate-900 text-white shadow-sm"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-white"
+                    : "text-slate-500 hover:text-slate-800 hover:bg-white/70"
                 }`}
-                title="Simular visualização em Tablet (iPad / Galaxy Tab)"
+                title="Simular visualização em Tablet (iPad 768px)"
               >
                 <Tablet className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Tablet</span>
+                <span className="hidden xl:inline text-[9px] font-semibold opacity-60">768px</span>
               </button>
               <button
                 type="button"
                 id="btn-viewport-mobile"
                 onClick={() => onDeviceChange("mobile")}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
                   currentDevice === "mobile"
                     ? "bg-slate-900 text-white shadow-sm"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-white"
+                    : "text-slate-500 hover:text-slate-800 hover:bg-white/70"
                 }`}
-                title="Simular visualização em Celular / Smartphone"
+                title="Simular visualização em Celular (iPhone 14 390px)"
               >
                 <Smartphone className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Celular</span>
+                <span className="hidden xl:inline text-[9px] font-semibold opacity-60">390px</span>
               </button>
             </div>
           )}
