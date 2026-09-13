@@ -155,12 +155,14 @@ const VehicleVisualizationScreen = ({
               )}
             </div>
 
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3">
-              {clientData.vehicleModel} — {clientData.vehicleColor}
-              <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-200">
+            <div className="flex flex-wrap items-center gap-2.5 sm:gap-3">
+              <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 tracking-tight">
+                {clientData.vehicleModel} — {clientData.vehicleColor}
+              </h1>
+              <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-sky-50 text-sky-700 border border-sky-200 whitespace-nowrap shrink-0">
                 {isRampage ? "Turbo Diesel 4x4" : "Tração 4x4 Integral"}
               </span>
-            </h1>
+            </div>
 
             <p className="text-xs text-slate-500 mt-1 flex flex-wrap items-center gap-x-3 gap-y-1">
               <span>
@@ -219,20 +221,20 @@ const VehicleVisualizationScreen = ({
             </div>
 
             {/* Demonstration Switcher Control Bar (Cockpit Panel) */}
-            <div className="cockpit-panel rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center font-bold">
+            <div className="cockpit-panel demo-switcher-bar rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+              <div className="flex items-center space-x-3 min-w-0">
+                <div className="w-8 h-8 rounded-lg bg-sky-50 text-sky-600 flex items-center justify-center font-bold shrink-0">
                   <Video className="w-4 h-4" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <h4 className="text-sm font-bold text-slate-800">
                       Demonstração Dinâmica {getVehicleShortName()}
                     </h4>
-                    <span className="text-[10px] font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
+                    <span className="text-[10px] font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded border border-sky-200 whitespace-nowrap">
                       {viewPerspective === "interno" ? "Cabine Interna" : "Visão Externa"}
                     </span>
-                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200 whitespace-nowrap">
                       {showAfter ? `Depois • ${selectedAccessories.length} Acessórios` : "Original de Fábrica • Sem Acessórios"}
                     </span>
                   </div>
@@ -243,7 +245,7 @@ const VehicleVisualizationScreen = ({
               </div>
 
               {/* Controles de Visão & Comparativo */}
-              <div className="flex items-center gap-2.5">
+              <div className="demo-switcher-controls flex flex-wrap items-center gap-2.5 self-start xl:self-auto shrink-0">
                 {/* Dynamic Perspective Switcher */}
                 <div className="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 shadow-2xs">
                   <button

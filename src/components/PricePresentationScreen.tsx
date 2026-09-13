@@ -324,21 +324,21 @@ export const PricePresentationScreen: React.FC = () => {
           {/* PAINEL DE ANÁLISE DE ESTOQUE DA CONCESSIONÁRIA (SEMPRE RECOLHIDO INICIALMENTE) */}
           {selectedAccessories.length > 0 && (
             <div className="mt-4 p-4 rounded-xl bg-slate-900 text-white border border-slate-800 space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="p-1.5 rounded-lg bg-sky-500/20 text-sky-400">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                  <div className="p-1.5 rounded-lg bg-sky-500/20 text-sky-400 shrink-0">
                     <Boxes className="w-4 h-4" />
                   </div>
-                  <div>
-                    <div className="flex items-center gap-2">
+                  <div className="min-w-0">
+                    <div className="flex flex-wrap items-center gap-2">
                       <h3 className="text-xs font-black uppercase tracking-wider text-slate-200">
                         Análise de Estoque da Concessionária (Giro &amp; Oportunidades)
                       </h3>
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-amber-300 border border-amber-500/30">
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-amber-300 border border-amber-500/30 whitespace-nowrap">
                         🔒 Sigiloso / Uso Interno
                       </span>
                     </div>
-                    <p className="text-[11px] text-slate-400">
+                    <p className="text-[11px] text-slate-400 mt-0.5">
                       {showStockDetails
                         ? "Classificação etária das peças selecionadas com descontos de giro autorizados"
                         : "Informações estratégicas de estoque protegidas para não exibir ao cliente"}
@@ -350,7 +350,7 @@ export const PricePresentationScreen: React.FC = () => {
                   type="button"
                   id="btn-toggle-stock-details"
                   onClick={() => setShowStockDetails(!showStockDetails)}
-                  className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-sky-400 hover:text-sky-300 flex items-center gap-1.5 cursor-pointer border border-slate-700 transition-colors shadow-xs"
+                  className="shrink-0 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-bold text-sky-400 hover:text-sky-300 flex items-center gap-1.5 cursor-pointer border border-slate-700 transition-colors shadow-xs self-start sm:self-auto"
                 >
                   <span>{showStockDetails ? "Recolher Informações" : "Exibir Análise de Giro"}</span>
                   {showStockDetails ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}

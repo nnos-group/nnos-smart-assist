@@ -486,12 +486,28 @@
 [data-device-viewport="mobile"] .hidden.sm\:flex         { display: none !important; }
 
 /* 5. TABLET ENGINE (768px portrait / 1024px landscape) */
-[data-device-viewport="tablet"] .lg\:grid-cols-12 {
-  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+
+/* Tablet Portrait (768px): Single-column full-width cards to eliminate empty right gaps */
+[data-device-viewport="tablet"][data-device-orientation="portrait"] .lg\:grid-cols-12 {
+  grid-template-columns: 1fr !important;
 }
-[data-device-viewport="tablet"] .lg\:col-span-6 {
+[data-device-viewport="tablet"][data-device-orientation="portrait"] .lg\:col-span-12,
+[data-device-viewport="tablet"][data-device-orientation="portrait"] .lg\:col-span-9,
+[data-device-viewport="tablet"][data-device-orientation="portrait"] .lg\:col-span-8,
+[data-device-viewport="tablet"][data-device-orientation="portrait"] .lg\:col-span-7,
+[data-device-viewport="tablet"][data-device-orientation="portrait"] .lg\:col-span-6,
+[data-device-viewport="tablet"][data-device-orientation="portrait"] .lg\:col-span-5,
+[data-device-viewport="tablet"][data-device-orientation="portrait"] .lg\:col-span-4,
+[data-device-viewport="tablet"][data-device-orientation="portrait"] .lg\:col-span-3 {
   grid-column: span 1 / span 1 !important;
+  width: 100% !important;
 }
+
+/* Tablet Landscape (1024px): Standard 12-column side-by-side cockpit layout */
+[data-device-viewport="tablet"][data-device-orientation="landscape"] .lg\:grid-cols-12 {
+  grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+}
+
 [data-device-viewport="tablet"] .lg\:grid-cols-4 {
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
 }
@@ -499,9 +515,29 @@
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
 }
 
+/* Sticky top inside device scroll container */
+[data-device-viewport] .sticky.top-16,
+[data-device-viewport] .sticky.top-20 {
+  top: 0 !important;
+}
+
 /* Tablet Portrait (768px): prevent overlapping options in 4-column question cards */
 [data-device-viewport="tablet"][data-device-orientation="portrait"] .sm\:grid-cols-4 {
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+}
+
+/* Ensure demo switcher bar in simulated tablet portrait and mobile stacks vertically for generous width */
+[data-device-viewport="tablet"][data-device-orientation="portrait"] .demo-switcher-bar,
+[data-device-viewport="mobile"] .demo-switcher-bar {
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 0.875rem !important;
+}
+
+[data-device-viewport="tablet"][data-device-orientation="portrait"] .demo-switcher-controls,
+[data-device-viewport="mobile"] .demo-switcher-controls {
+  width: 100% !important;
+  justify-content: flex-start !important;
 }
 
 /* 6. MOBILE ENGINE (iPhone 393px): Clean single-column layout, touch-friendly tap targets */
@@ -509,16 +545,24 @@
   grid-template-columns: 1fr !important;
 }
 [data-device-viewport="mobile"] .lg\:grid-cols-12 {
-  grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+  grid-template-columns: 1fr !important;
+}
+[data-device-viewport="mobile"] .lg\:col-span-12,
+[data-device-viewport="mobile"] .lg\:col-span-9,
+[data-device-viewport="mobile"] .lg\:col-span-8,
+[data-device-viewport="mobile"] .lg\:col-span-7,
+[data-device-viewport="mobile"] .lg\:col-span-6,
+[data-device-viewport="mobile"] .lg\:col-span-5,
+[data-device-viewport="mobile"] .lg\:col-span-4,
+[data-device-viewport="mobile"] .lg\:col-span-3 {
+  grid-column: span 1 / span 1 !important;
+  width: 100% !important;
 }
 [data-device-viewport="mobile"] .lg\:grid-cols-4 {
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
 }
 [data-device-viewport="mobile"] .lg\:grid-cols-3 {
   grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
-}
-[data-device-viewport="mobile"] .lg\:col-span-6 {
-  grid-column: span 1 / span 1 !important;
 }
 
 [data-device-viewport="mobile"] .md\:grid-cols-2 {

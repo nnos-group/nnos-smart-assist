@@ -50,6 +50,10 @@ const InnerSalesJourney = () => {
     if (document.body) {
       document.body.scrollTop = 0;
     }
+    document.querySelectorAll(".device-scroll-area, [data-device-viewport]").forEach((el) => {
+      (el as HTMLElement).scrollTop = 0;
+      (el as HTMLElement).scrollTo?.({ top: 0, left: 0, behavior: "instant" });
+    });
   }, [state.currentStep]);
 
   const handleLoginSuccess = () => {
@@ -172,12 +176,13 @@ const InnerSalesJourney = () => {
         <DeviceSimulator
           device={viewportDevice}
           onDeviceChange={setViewportDevice}
+          currentStep={state.currentStep}
         >
           {/* Stepper Consultivo Adaptativo */}
           <SalesJourneyStepper />
 
           {/* Conteúdo Renderizado da Etapa Atual */}
-          <main className="flex-1 w-full p-3 sm:p-5">
+          <main key={state.currentStep} className="flex-1 w-full p-3 sm:p-5">
             {renderCurrentStep()}
           </main>
         </DeviceSimulator>

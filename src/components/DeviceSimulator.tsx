@@ -20,18 +20,34 @@ export type DeviceOrientation = "portrait" | "landscape";
 interface DeviceSimulatorProps {
   device: "tablet" | "mobile";
   onDeviceChange: (device: ViewportDevice) => void;
+  currentStep?: string;
   children: React.ReactNode;
 }
 
 export const DeviceSimulator: React.FC<DeviceSimulatorProps> = ({
   device,
   onDeviceChange,
+  currentStep,
   children,
 }) => {
   const [orientation, setOrientation] = useState<DeviceOrientation>("portrait");
   const [zoomLevel, setZoomLevel] = useState<number>(0.85); // Padrão 85% para visualização confortável em laptops
   const [currentTime, setCurrentTime] = useState<string>("09:41");
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+  // Garante que ao mudar de etapa a tela dentro do aparelho sempre inicie imediatamente no topo
+  useEffect(() => {
+    const resetScroll = () => {
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTop = 0;
+        scrollContainerRef.current.scrollTo({ top: 0, left: 0, behavior: "instant" });
+      }
+    };
+    resetScroll();
+    requestAnimationFrame(resetScroll);
+    const timer = setTimeout(resetScroll, 30);
+    return () => clearTimeout(timer);
+  }, [currentStep]);
 
   // Atualiza a hora da status bar em tempo real
   useEffect(() => {
@@ -468,7 +484,7 @@ export const DeviceSimulator: React.FC<DeviceSimulatorProps> = ({
               ref={scrollContainerRef}
               data-device-viewport={device}
               data-device-orientation={orientation}
-              className="flex-1 w-full overflow-y-auto relative scroll-smooth device-scroll-area"
+              className="flex-1 w-full overflow-y-auto relative device-scroll-area"
               style={{
                 WebkitOverflowScrolling: "touch",
               }}
