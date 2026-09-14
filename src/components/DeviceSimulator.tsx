@@ -12,6 +12,7 @@ import {
   Sparkles,
   Check,
   Compass,
+  X,
 } from "lucide-react";
 import { ViewportDevice } from "./NavigationBar";
 
@@ -33,6 +34,7 @@ export const DeviceSimulator: React.FC<DeviceSimulatorProps> = ({
   const [orientation, setOrientation] = useState<DeviceOrientation>("portrait");
   const [zoomLevel, setZoomLevel] = useState<number>(0.85); // Padrão 85% para visualização confortável em laptops
   const [currentTime, setCurrentTime] = useState<string>("09:41");
+  const [showLandscapeHint, setShowLandscapeHint] = useState<boolean>(true);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Garante que ao mudar de etapa a tela dentro do aparelho sempre inicie imediatamente no topo
@@ -489,6 +491,50 @@ export const DeviceSimulator: React.FC<DeviceSimulatorProps> = ({
                 WebkitOverflowScrolling: "touch",
               }}
             >
+              {/* Aviso Inteligente de Dica de Visualização em Modo Paisagem */}
+              {!isTablet && !isLandscape && showLandscapeHint && (
+                <aside
+                  aria-label="Dica de visualização em modo paisagem"
+                  className="mx-3 mt-3 p-3 rounded-2xl bg-gradient-to-r from-sky-500/15 via-blue-500/10 to-indigo-500/15 border border-sky-300/60 backdrop-blur-md text-slate-800 shadow-xs flex items-center justify-between gap-2.5 animate-in fade-in slide-in-from-top-2 duration-300 select-none"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="w-8 h-8 rounded-xl bg-sky-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                      <RotateCw className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-xs font-bold text-slate-900 leading-tight">
+                        Melhor visualização em modo Paisagem
+                      </div>
+                      <div className="text-[11px] text-slate-600 truncate mt-0.5">
+                        Gire o celular na horizontal para o cockpit completo
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    <button
+                      type="button"
+                      onClick={toggleOrientation}
+                      className="px-2.5 py-1.5 rounded-lg bg-sky-600 hover:bg-sky-700 text-white text-[11px] font-bold shadow-xs cursor-pointer active:scale-95 transition-all flex items-center gap-1"
+                      title="Girar para modo horizontal agora"
+                    >
+                      <RotateCw className="w-3 h-3" />
+                      <span>Girar</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowLandscapeHint(false)}
+                      className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-200/50 transition-colors cursor-pointer"
+                      title="Dispensar dica"
+                      aria-label="Dispensar dica de rotação"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </aside>
+              )}
+
               {children}
             </div>
 

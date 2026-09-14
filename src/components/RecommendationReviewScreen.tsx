@@ -137,14 +137,14 @@ export const RecommendationReviewScreen: React.FC = () => {
       </div>
 
       {/* AVISO CONSULTIVO IMPORTANTE: SEM PREÇOS NESTA ETAPA */}
-      <div className="bg-amber-500/10 border border-amber-400/40 rounded-xl p-3.5 flex items-center justify-between text-xs text-amber-900 font-medium">
+      <div className="bg-amber-500/10 border border-amber-400/40 rounded-xl p-3 sm:p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 text-xs text-amber-900 font-medium">
         <div className="flex items-center gap-2">
           <HelpCircle className="w-4 h-4 text-amber-700 shrink-0" />
-          <span>
+          <span className="leading-snug">
             <strong>Foco nos benefícios técnicos:</strong> os valores e condições comerciais são apresentados exclusivamente a partir da Etapa 5.
           </span>
         </div>
-        <span className="text-[11px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-md">
+        <span className="text-[11px] font-bold text-amber-800 bg-amber-100 px-2.5 py-1 rounded-md self-start sm:self-auto shrink-0 whitespace-nowrap">
           {selectedAccessoryIds.length} selecionados
         </span>
       </div>

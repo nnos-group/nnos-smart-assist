@@ -1123,8 +1123,8 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
       <div className="h-[96px] pointer-events-none" aria-hidden="true" />
 
       {/* DOCKED CLEAN ACTION BAR (Rivian / CarPlay Style) */}
-      <aside aria-label="Controles de Navegação Cockpit" className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 border-t border-slate-200 backdrop-blur-xl py-3.5 px-4 lg:px-8 shadow-lg">
-        <div className="max-w-[1720px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+      <aside aria-label="Controles de Navegação Cockpit" className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 border-t border-slate-200 backdrop-blur-xl py-2.5 sm:py-3.5 px-3 sm:px-4 lg:px-8 shadow-lg">
+        <div className="max-w-[1720px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5 sm:gap-4">
           <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
             <div className="flex items-center gap-2">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-emerald-100" />
@@ -1132,15 +1132,15 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
                 {completedQuestionsCount}/10 Parâmetros Homologados
               </span>
             </div>
-            <span className="hidden sm:inline-block text-slate-300">|</span>
-            <span className="text-xs text-slate-500 font-medium">Sincronizado com CRM & Concessionária</span>
+            <span className="hidden md:inline-block text-slate-300">|</span>
+            <span className="hidden md:inline-block text-xs text-slate-500 font-medium">Sincronizado com CRM &amp; Concessionária</span>
           </div>
 
           <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
             <button
               type="button"
               onClick={nextStep}
-              className="flex-1 sm:flex-none px-6 py-2.5 rounded-xl bg-[#0077E6] hover:bg-[#0066CC] text-white font-bold text-xs tracking-tight transition-all shadow-glow-blue flex items-center justify-center gap-2 cursor-pointer active:scale-95"
+              className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#0077E6] hover:bg-[#0066CC] text-white font-bold text-xs tracking-tight transition-all shadow-glow-blue flex items-center justify-center gap-2 cursor-pointer active:scale-95"
             >
               <span>Avançar para Recomendar Acessórios</span>
               <ArrowRight className="w-4 h-4" />
