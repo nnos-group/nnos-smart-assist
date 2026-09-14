@@ -105,7 +105,7 @@ const accessoryArgumentBase: Record<string, AccessoryArgumentData> = {
       ],
       general: [
         "Um reparo de cárter furado custa de R$ 15.000 a R$ 25.000 — o protetor custa uma fração disso",
-        "Preserva 100% da garantia de fábrica de 3 anos",
+        "Acessório genuíno desenvolvido para integração com o veículo com garantia contratual Mopar",
         "Veículo protegido tem histórico limpo na revenda",
       ],
     },
@@ -722,7 +722,7 @@ const generatePackageNarrative = (
   if (hasUtility) keyBenefits.push("Capacidade e versatilidade maximizadas para trabalho e lazer");
   if (hasTech) keyBenefits.push("Tecnologia de ponta para conforto e manobras precisas");
   keyBenefits.push(`Diluição no financiamento: apenas + R$ ${cdcMonthly}/mês sem impacto no caixa`);
-  keyBenefits.push("Garantia integral de 3 anos de fábrica 100% preservada com itens Mopar");
+  keyBenefits.push("Acessórios genuínos com instalação pela rede autorizada e garantia contratual Mopar");
 
   const packageClosing = `${prefix} ${firstName}, com o ${packageName} incluído no financiamento por apenas + R$ ${cdcMonthly} ao mês, o senhor sai com o ${clientData.vehicleModel} completo, protegido e valorizado. Posso confirmar a inclusão e programar a instalação para a entrega?`;
 
@@ -766,7 +766,7 @@ const generateWhatsAppMessage = (
     `💡 *Por que essa configuração?*\n${topBenefits}\n\n` +
     `💰 *Investimento:* R$ ${totalValue.toLocaleString("pt-BR")} à vista\n` +
     `📊 *No financiamento:* apenas + R$ ${cdcMonthly}/mês diluído nas parcelas\n\n` +
-    `🛡️ Todos os itens com garantia total de 3 anos de fábrica preservada.\n\n` +
+    `🛡️ Acessórios genuínos com instalação pela rede autorizada e garantia contratual Mopar.\n\n` +
     `Posso reservar essa condição e agendar a instalação? Estou à disposição! 🚗`
   );
 };
@@ -879,7 +879,7 @@ export const generateRecoveryRecommendation = (
       `Valor otimizado: R$ ${recoveryTotal.toLocaleString("pt-BR")} (economia de R$ ${(recoveryContext.originalProposalValue - recoveryTotal).toLocaleString("pt-BR")})`,
       `Diluição mínima: + R$ ${cdcMonthly}/mês no financiamento`,
       "Itens de maior impacto mantidos para proteção e valorização",
-      "Garantia integral de 3 anos preservada",
+      "Acessórios genuínos com garantia contratual Mopar",
     ],
     packageClosing: `${prefix} ${firstName}, essa configuração revisada mantém a proteção essencial por um investimento menor. Posso confirmar a inclusão?`,
   };

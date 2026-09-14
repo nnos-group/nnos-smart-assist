@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import { useSalesJourney } from "@/context/SalesJourneyContext";
 import { AccessoryRecommendation, RecommendationTier } from "@/types/salesJourney";
+import { getAccessoryPartNumber, DEMO_PART_NUMBER_TOOLTIP } from "@/types/accessories";
 import { RecommendationReasonCard } from "./RecommendationReasonCard";
 
 export const RecommendationReviewScreen: React.FC = () => {
@@ -413,12 +414,18 @@ export const RecommendationReviewScreen: React.FC = () => {
                     <div className="min-w-0">
                       <div className="text-xs font-bold text-slate-900 truncate">{item.name}</div>
                       <div className="text-[11px] text-slate-500 line-clamp-1">{item.description}</div>
-                      <div className="flex items-center gap-2 mt-1">
+                      <div className="flex items-center gap-2 flex-wrap mt-1">
                         <span className="text-[10px] font-semibold text-slate-600 bg-slate-200/70 px-2 py-0.5 rounded">
                           {(item.category || 'acessório').toUpperCase()}
                         </span>
+                        <span
+                          className="text-[10px] font-mono text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200 cursor-help"
+                          title={DEMO_PART_NUMBER_TOOLTIP}
+                        >
+                          Part Number: {getAccessoryPartNumber(item)} <span className="text-[9px] text-amber-700 font-sans font-bold">(DEMO)</span>
+                        </span>
                         <span className="text-[10px] text-emerald-700 font-medium">
-                          Homologação Stellantis • 3 anos de garantia
+                          Acessório Genuíno • Garantia Contratual Mopar
                         </span>
                       </div>
                     </div>

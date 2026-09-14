@@ -1,6 +1,7 @@
 import React from "react";
 import { ShieldCheck, Sparkles, Check, AlertTriangle, Layers, Info, MapPin, Wrench } from "lucide-react";
 import { AccessoryRecommendation, RecommendationTier } from "@/types/salesJourney";
+import { getAccessoryPartNumber, DEMO_PART_NUMBER_TOOLTIP } from "@/types/accessories";
 
 interface RecommendationReasonCardProps {
   recommendation: AccessoryRecommendation;
@@ -100,7 +101,14 @@ export const RecommendationReasonCard: React.FC<RecommendationReasonCardProps> =
           </span>
           <div className="min-w-0 flex-1">
             <h3 className="text-sm font-bold text-slate-900 leading-snug group-hover:text-sky-600 transition-colors">{accessory.name}</h3>
-            <p className="text-xs text-slate-500 line-clamp-2 mt-0.5">{accessory.description}</p>
+            <div
+              className="inline-flex items-center gap-1 text-[10px] font-mono text-slate-500 bg-slate-100 hover:bg-slate-200 px-1.5 py-0.5 rounded border border-slate-200 mt-1 cursor-help transition-colors"
+              title={DEMO_PART_NUMBER_TOOLTIP}
+            >
+              <span>Part Number: {getAccessoryPartNumber(accessory)}</span>
+              <span className="text-[9px] text-amber-700 bg-amber-50 border border-amber-200 px-1 rounded font-sans font-bold">DEMO</span>
+            </div>
+            <p className="text-xs text-slate-500 line-clamp-2 mt-1">{accessory.description}</p>
           </div>
         </div>
       </div>

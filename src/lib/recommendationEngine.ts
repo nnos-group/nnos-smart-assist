@@ -196,7 +196,7 @@ export const ACCESSORY_METADATA_DATABASE: Record<string, AccessoryMetadata> = {
     cargoTypes: ["cargas_pesadas", "ferramentas"],
     primaryBenefit: "Capacidade de tracionar carretas, reboques náuticos e suportes de bicicleta",
     problemSolved: "Incapacidade de tracionar cargas externas pesadas ou jetski/barcos",
-    practicalBenefit: "Homologado pelo INMETRO com ponteira removível e tomada elétrica completa",
+    practicalBenefit: "Desenvolvido sob padrões de engenharia com ponteira removível e tomada elétrica completa",
     protectionBenefit: "Fixação direta nas longarinas do chassi sem sobrecarregar a suspensão",
     safetyBenefit: "Atende integralmente às resoluções do CONTRAN sem anular garantia elétrica",
     convenienceBenefit: "Ponteira removível rápida com pino de trava de segurança",

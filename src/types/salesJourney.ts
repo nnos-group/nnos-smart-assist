@@ -195,6 +195,14 @@ export interface NegotiationState {
   isManagerApprovalNeeded: boolean;
   managerApprovalGranted: boolean;
   managerName?: string;
+  targetAccessoryInvestment?: number;
+}
+
+/** Contexto da negociação do veículo (aquisição, troca e financiamento) */
+export interface VehiclePurchaseContext {
+  hasTradeIn?: boolean;
+  paymentMethod?: "cash" | "financing" | "consortium" | "other";
+  vehicleInstallmentCount?: number;
 }
 
 export type ClosingStatus =
@@ -224,12 +232,23 @@ export interface VisualizationState {
   selectedColor?: string;
 }
 
+export interface ResumedLeadInteractionContext {
+  channel: string;
+  status: string;
+  objection: string;
+  previousTotal: number;
+  topInterestItems: string[];
+  date: string;
+  suggestedApproach: string;
+}
+
 export interface SalesJourneyState {
   currentStep: SalesJourneyStep;
   clientSource: JourneyClientSource;
   clientData: ClientData;
   userSession: UserSession;
   discoveryProfile: DiscoveryProfile;
+  vehiclePurchaseContext?: VehiclePurchaseContext;
   recommendations: AccessoryRecommendation[];
   selectedAccessoryIds: string[];
   visualizationState: VisualizationState;
@@ -239,6 +258,8 @@ export interface SalesJourneyState {
   selectedCampaign?: CommercialCampaign;
   closingStatus: ClosingStatus;
   lostSaleDetails?: LostSaleDetails;
+  resumedLeadInfo?: ResumedLeadInteractionContext;
   createdAt: string;
   updatedAt: string;
 }
+

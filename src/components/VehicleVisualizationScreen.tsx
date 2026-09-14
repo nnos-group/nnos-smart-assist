@@ -727,7 +727,7 @@ const VehicleVisualizationScreen = ({
                 </div>
                 <div>
                   <p className="text-xs font-bold text-white">Garantia Original Mopar Stellantis</p>
-                  <p className="text-[10px] text-slate-400">Instalação certificada preserva garantia de 3 anos</p>
+                  <p className="text-[10px] text-slate-400">Instalação certificada • Garantia contratual Mopar</p>
                 </div>
               </div>
               <span className="text-[10px] bg-slate-800 border border-slate-700 text-slate-300 px-2 py-0.5 rounded font-mono">
@@ -751,7 +751,7 @@ const VehicleVisualizationScreen = ({
           <div className="flex items-center space-x-4 text-[11px]">
             <span className="inline-flex items-center text-emerald-700 font-semibold">
               <span className="w-2 h-2 rounded-full bg-emerald-500 mr-1.5" />
-              Sistemas 100% Operacionais (DMS Integrado)
+              Ambiente Demonstrativo (DMS — Integração Futura)
             </span>
           </div>
         </div>

@@ -151,15 +151,19 @@ const NavigationBar = ({
               </span>
             </button>
 
-            {/* Botão Painel de Vendas Perdidas (Pareto) */}
+            {/* Botão Dashboard Comercial & Painel de Perdas */}
             <button
               type="button"
+              id="btn-open-commercial-dashboard"
               onClick={onOpenLostSales}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 transition text-xs font-bold shadow-xs cursor-pointer group"
-              title="Acessar Painel Gerencial de Vendas Perdidas (Análise de Pareto)"
+              className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-800 transition text-xs font-bold shadow-xs cursor-pointer group"
+              title="Acessar Dashboard Comercial & Análise de Perdas (DEMO)"
             >
-              <BarChart3 className="w-4 h-4 text-rose-500 group-hover:scale-110 transition-transform" />
-              <span className="hidden sm:inline">Painel de Perdas</span>
+              <BarChart3 className="w-4 h-4 text-blue-600 group-hover:scale-110 transition-transform" />
+              <span className="hidden sm:inline">Dashboard Comercial</span>
+              <span className="text-[9px] font-black uppercase tracking-wider bg-blue-200/80 text-blue-900 px-1 py-0.2 rounded">
+                DEMO
+              </span>
             </button>
 
             <div className="hidden lg:flex flex-col text-right">

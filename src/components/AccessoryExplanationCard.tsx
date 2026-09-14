@@ -3,7 +3,7 @@ import {
   ShieldCheck, Wrench, Clock, Award, CheckCircle2,
   HelpCircle, ThumbsUp, AlertCircle, EyeOff, MapPin, Sparkles
 } from "lucide-react";
-import { Accessory } from "@/types/accessories";
+import { Accessory, getAccessoryPartNumber, DEMO_PART_NUMBER_TOOLTIP } from "@/types/accessories";
 import { ACCESSORY_METADATA_DATABASE } from "@/lib/recommendationEngine";
 import { AccessoryExplanationStatus, ExplanationStatusType } from "@/types/salesJourney";
 
@@ -44,27 +44,38 @@ export const AccessoryExplanationCard: React.FC<AccessoryExplanationCardProps> =
           </span>
           <div className="min-w-0">
             <h3 className="text-sm sm:text-base font-bold text-slate-900 leading-snug">{accessory.name}</h3>
-            <div className="flex items-center gap-2 text-xs text-slate-500 mt-0.5">
-              <MapPin className="w-3.5 h-3.5 text-sky-600 shrink-0" />
-              <span className="truncate">{meta?.locationOnVehicle || "Veículo original Mopar"}</span>
+            <div className="flex items-center gap-2 flex-wrap text-xs text-slate-500 mt-0.5">
+              <span className="flex items-center gap-1">
+                <MapPin className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                <span className="truncate">{meta?.locationOnVehicle || "Veículo original Mopar"}</span>
+              </span>
+              <span
+                className="inline-flex items-center gap-1 text-[10px] font-mono text-slate-500 bg-slate-100 hover:bg-slate-200 px-1.5 py-0.5 rounded border border-slate-200 cursor-help"
+                title={DEMO_PART_NUMBER_TOOLTIP}
+              >
+                <span>Part Number: {getAccessoryPartNumber(accessory)}</span>
+                <span className="text-[9px] text-amber-700 bg-amber-50 border border-amber-200 px-1 rounded font-sans font-bold">DEMO</span>
+              </span>
             </div>
           </div>
         </div>
 
         {/* BADGES TÉCNICAS: INSTALAÇÃO E GARANTIA */}
         <div className="flex flex-wrap items-center gap-2 shrink-0 self-start sm:self-auto">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-sky-50 text-sky-800 border border-sky-200 text-[11px] font-semibold whitespace-nowrap">
+            <ShieldCheck className="w-3 h-3 text-sky-600" />
+            <span>Acessório Genuíno</span>
+          </span>
           {meta?.installationHours && (
             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-100 text-slate-700 text-[11px] font-semibold whitespace-nowrap">
               <Clock className="w-3 h-3 text-slate-500" />
               <span>{meta.installationHours}h inst.</span>
             </span>
           )}
-          {meta?.warrantyYears && (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-bold whitespace-nowrap">
-              <Award className="w-3 h-3 text-emerald-600" />
-              <span>{meta.warrantyYears} anos gar.</span>
-            </span>
-          )}
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-bold whitespace-nowrap">
+            <Award className="w-3 h-3 text-emerald-600" />
+            <span>Garantia Contratual Mopar</span>
+          </span>
         </div>
       </div>
 

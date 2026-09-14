@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import {
   Car, User, MapPin, Compass, ShieldCheck, Check, Sparkles,
   Mic, AlertCircle, ArrowRight, CheckCircle2, RotateCcw,
-  Info, Database, Store, PackageCheck, Flame, Edit3
+  Info, Database, Store, PackageCheck, Flame, Edit3, DollarSign,
+  MessageSquare, Calendar, Lightbulb, Clock, History
 } from "lucide-react";
 import { useSalesJourney } from "@/context/SalesJourneyContext";
 import { DiscoveryProfile, JourneyClientSource } from "@/types/salesJourney";
@@ -85,11 +86,12 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
     state,
     updateClientData,
     updateDiscoveryProfile,
+    updateVehiclePurchaseContext,
     setClientSource,
     nextStep,
   } = useSalesJourney();
 
-  const { clientData, discoveryProfile, clientSource } = state;
+  const { clientData, discoveryProfile, clientSource, resumedLeadInfo } = state;
 
   const [voiceModalOpen, setVoiceModalOpen] = useState(false);
   const [voiceTranscriptText, setVoiceTranscriptText] = useState("");
@@ -356,9 +358,9 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-black uppercase tracking-wider text-blue-800">Sincronização CRM Stellantis Ativa</span>
+                  <span className="text-xs font-black uppercase tracking-wider text-blue-800">CRM — Simulação Demonstrativa (DEMO)</span>
                   <span className="text-[10px] bg-blue-200 text-blue-900 border border-blue-300 px-2 py-0.5 rounded-full font-bold">
-                    Cliente Cadastrado
+                    Cliente Simulado
                   </span>
                 </div>
                 <h3 className="text-sm sm:text-base font-black text-slate-900 mt-0.5">
@@ -374,7 +376,7 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
           <div className="bg-white rounded-xl border border-blue-100 p-3 text-xs text-slate-600 flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-blue-600 shrink-0" />
             <span>
-              <strong>Histórico Sincronizado:</strong> Perfil de trabalho intenso com tração e caçamba em Mato Grosso (MT). Demandas de reboque e proteção pré-validadas.
+              <strong>Histórico Demonstrativo (Simulação CRM):</strong> Perfil de trabalho intenso com tração e caçamba em Mato Grosso (MT). Demandas de reboque e proteção pré-validadas.
             </span>
           </div>
         </div>
@@ -478,43 +480,153 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
         </div>
       )}
 
-      {/* 4. MODO LEAD REAQUECIDO */}
-      {clientSource === "reheated-lead" && (
-        <div className="rounded-2xl bg-orange-50/90 border-2 border-orange-200 p-4 sm:p-5 shadow-sm space-y-3 animate-in fade-in">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-orange-500 text-white flex items-center justify-center font-bold shadow-md shadow-orange-500/20 shrink-0">
-                <Flame className="w-5 h-5" />
+      {/* 4. MODO LEAD REAQUECIDO — CONTEXTO ESTRUTURADO DE RETOMADA */}
+      {clientSource === "reheated-lead" && (() => {
+        const info = resumedLeadInfo || {
+          channel: "Showroom Presencial",
+          status: "Venda não concluída",
+          objection: "Impacto no orçamento total",
+          previousTotal: 6420,
+          topInterestItems: ["Estribos Laterais", "Tapetes All-Weather"],
+          date: "08/09/2026",
+          suggestedApproach: "O cliente demonstrou alto interesse em Estribos Laterais e Tapetes All-Weather, mas pausou por impacto no orçamento total. Sugerir condição com entrada reduzida ou focar nos 2 itens prioritários para viabilizar o fechamento hoje.",
+        };
+
+        return (
+          <div className="rounded-2xl bg-gradient-to-br from-amber-50/90 via-orange-50/50 to-white border-2 border-amber-200/80 p-5 sm:p-6 shadow-sm space-y-4 animate-in fade-in">
+            {/* Header com identificação e botão de troca */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-amber-200/60">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-orange-500 text-white flex items-center justify-center font-bold shadow-md shadow-orange-500/20 shrink-0">
+                  <Flame className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-xs font-black uppercase tracking-wider text-orange-900">Lead Reaquecido em Atendimento</span>
+                    <span className="text-[10px] bg-amber-200 text-amber-900 border border-amber-300 px-2 py-0.5 rounded-full font-bold">
+                      Retomada Consultiva
+                    </span>
+                    <span className="text-[10px] bg-rose-100 text-rose-800 border border-rose-200 px-2 py-0.5 rounded-full font-bold">
+                      Status: {info.status}
+                    </span>
+                  </div>
+                  <h3 className="text-base font-black text-slate-900 mt-0.5">
+                    {clientData.clientName || "Lead Selecionado"} — {clientData.vehicleModel} ({clientData.vehicleColor})
+                  </h3>
+                </div>
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-black uppercase tracking-wider text-orange-800">Lead Reaquecido Ativo</span>
-                  <span className="text-[10px] bg-orange-200 text-orange-900 border border-orange-300 px-2 py-0.5 rounded-full font-bold">
-                    Retomada de Oportunidade
+              <button
+                type="button"
+                onClick={onOpenReheatedLeads}
+                className="px-3 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs self-start sm:self-auto transition"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Trocar / Selecionar Lead</span>
+              </button>
+            </div>
+
+            {/* Grid 2 colunas: 1. Última Interação | 2. Abordagem Sugerida */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+              {/* Card 1: Última Interação */}
+              <div className="lg:col-span-6 bg-white rounded-xl border border-amber-100 p-4 shadow-xs space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <History className="w-4 h-4 text-orange-600" />
+                    <h4 className="text-xs font-black uppercase tracking-wider text-slate-700">1. Última Interação</h4>
+                  </div>
+                  <span className="text-[11px] font-semibold text-slate-500 flex items-center gap-1">
+                    <Calendar className="w-3 h-3" />
+                    {info.date}
                   </span>
                 </div>
-                <h3 className="text-sm sm:text-base font-black text-slate-900 mt-0.5">
-                  {clientData.clientName || "Lead Selecionado"} — {clientData.vehicleModel} ({clientData.vehicleColor})
-                </h3>
+
+                <div className="grid grid-cols-2 gap-2.5 text-xs">
+                  <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Canal</span>
+                    <span className="font-bold text-slate-800 flex items-center gap-1 mt-0.5">
+                      <MessageSquare className="w-3 h-3 text-sky-600" />
+                      {info.channel}
+                    </span>
+                  </div>
+
+                  <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Status</span>
+                    <span className="font-bold text-rose-700 mt-0.5 block">
+                      {info.status}
+                    </span>
+                  </div>
+
+                  <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Principal Objeção</span>
+                    <span className="font-bold text-amber-900 mt-0.5 block truncate" title={info.objection}>
+                      {info.objection}
+                    </span>
+                  </div>
+
+                  <div className="bg-slate-50 p-2 rounded-lg border border-slate-100">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Pacote Anterior</span>
+                    <span className="font-bold text-slate-900 font-mono mt-0.5 block">
+                      R$ {info.previousTotal.toLocaleString("pt-BR")}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                    Itens de Maior Interesse
+                  </span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {info.topInterestItems.map((item, idx) => (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center text-[11px] font-semibold bg-white text-slate-700 border border-slate-200 px-2 py-0.5 rounded-md shadow-2xs"
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 2: Abordagem Sugerida */}
+              <div className="lg:col-span-6 bg-gradient-to-br from-amber-500/10 to-orange-500/5 rounded-xl border border-amber-300/70 p-4 shadow-xs flex flex-col justify-between space-y-3">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Lightbulb className="w-4 h-4 text-amber-600" />
+                      <h4 className="text-xs font-black uppercase tracking-wider text-amber-900">2. Abordagem Sugerida</h4>
+                    </div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-200/80 text-amber-950 px-2 py-0.5 rounded-full border border-amber-300">
+                      Roteiro Consultivo
+                    </span>
+                  </div>
+
+                  <div className="bg-white/90 backdrop-blur-xs rounded-lg p-3 border border-amber-200/60 shadow-2xs">
+                    <p className="text-xs sm:text-[13px] text-slate-800 font-medium leading-relaxed italic">
+                      "{info.suggestedApproach}"
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-amber-200/50">
+                  <span className="flex items-center gap-1 text-slate-600">
+                    <Info className="w-3.5 h-3.5 text-amber-600 shrink-0" />
+                    Diagnóstico carregado. Avance para as recomendações ou calibre as respostas abaixo.
+                  </span>
+                  <button
+                    type="button"
+                    onClick={nextStep}
+                    className="px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg font-bold text-xs flex items-center gap-1 cursor-pointer transition shrink-0 ml-2"
+                  >
+                    <span>Ver Pacote</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </button>
+                </div>
               </div>
             </div>
-            <button
-              type="button"
-              onClick={onOpenReheatedLeads}
-              className="px-3 py-1.5 rounded-lg bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-xs self-start sm:self-auto transition"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>Abrir Lista de Leads</span>
-            </button>
           </div>
-          <div className="bg-white rounded-xl border border-orange-100 p-3 text-xs text-slate-600 flex items-center gap-2">
-            <Info className="w-4 h-4 text-orange-600 shrink-0" />
-            <span>
-              Proposta anterior e histórico de objeções carregados. Você pode revisar as respostas do diagnóstico ou avançar diretamente para as recomendações calibradas.
-            </span>
-          </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* DADOS BÁSICOS DO CLIENTE & VEÍCULO (Cockpit Telemetry Strip) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
@@ -628,6 +740,119 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
           </div>
         </div>
       </div>
+
+      {/* CONTEXTO DA NEGOCIAÇÃO DO VEÍCULO (DISCRETO • APOIO À ARGUMENTAÇÃO FINANCEIRA) */}
+      {(() => {
+        const purchaseContext = state.vehiclePurchaseContext || {
+          hasTradeIn: false,
+          paymentMethod: "financing" as const,
+          vehicleInstallmentCount: 48,
+        };
+
+        return (
+          <div className="cockpit-panel rounded-2xl p-5 space-y-3.5 bg-white border border-slate-200 shadow-card">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <DollarSign className="w-4 h-4 text-emerald-600" />
+                <h2 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  Contexto da Negociação do Veículo
+                </h2>
+              </div>
+              <span className="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                Apoio F&amp;I (DEMO)
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+              {/* 1. Usado na troca */}
+              <div>
+                <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5">
+                  Possui veículo usado na troca?
+                </label>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => updateVehiclePurchaseContext({ hasTradeIn: true })}
+                    className={`flex-1 py-2 px-3 rounded-xl font-bold transition cursor-pointer text-xs border ${
+                      purchaseContext.hasTradeIn
+                        ? "bg-slate-900 text-white border-slate-900 shadow-2xs"
+                        : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                    }`}
+                  >
+                    Sim
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => updateVehiclePurchaseContext({ hasTradeIn: false })}
+                    className={`flex-1 py-2 px-3 rounded-xl font-bold transition cursor-pointer text-xs border ${
+                      !purchaseContext.hasTradeIn
+                        ? "bg-slate-900 text-white border-slate-900 shadow-2xs"
+                        : "bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100"
+                    }`}
+                  >
+                    Não
+                  </button>
+                </div>
+              </div>
+
+              {/* 2. Forma de aquisição */}
+              <div>
+                <label
+                  className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5"
+                  htmlFor="select-payment-method"
+                >
+                  Forma de aquisição do novo veículo
+                </label>
+                <select
+                  id="select-payment-method"
+                  value={purchaseContext.paymentMethod || "financing"}
+                  onChange={(e) =>
+                    updateVehiclePurchaseContext({
+                      paymentMethod: e.target.value as "cash" | "financing" | "consortium" | "other",
+                    })
+                  }
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100/70 p-2 text-xs font-semibold text-slate-900 focus:ring-2 focus:ring-sky-500/20 focus:border-sky-600 focus:bg-white cursor-pointer transition-colors"
+                >
+                  <option value="cash">À vista</option>
+                  <option value="financing">Financiamento</option>
+                  <option value="consortium">Consórcio</option>
+                  <option value="other">Outra</option>
+                </select>
+              </div>
+
+              {/* 3. Parcelas (se financiamento) */}
+              {purchaseContext.paymentMethod === "financing" ? (
+                <div>
+                  <label
+                    className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-1.5"
+                    htmlFor="select-installment-count"
+                  >
+                    Quantidade aproximada de parcelas
+                  </label>
+                  <select
+                    id="select-installment-count"
+                    value={purchaseContext.vehicleInstallmentCount || 48}
+                    onChange={(e) =>
+                      updateVehiclePurchaseContext({ vehicleInstallmentCount: Number(e.target.value) })
+                    }
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100/70 p-2 text-xs font-semibold text-slate-900 focus:ring-2 focus:ring-sky-500/20 focus:border-sky-600 focus:bg-white cursor-pointer transition-colors"
+                  >
+                    <option value={12}>12 parcelas</option>
+                    <option value={24}>24 parcelas</option>
+                    <option value={36}>36 parcelas</option>
+                    <option value={48}>48 parcelas</option>
+                    <option value={60}>60 parcelas</option>
+                  </select>
+                </div>
+              ) : (
+                <div className="flex items-center text-slate-400 text-xs italic pt-4">
+                  Condição à vista / sem parcelamento veicular
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })()}
 
       {/* AS 10 PERGUNTAS CONSULTIVAS ESTRUTURADAS EM CARDS (Cockpit Technical Grid) */}
       <div className="space-y-4">
@@ -1133,7 +1358,7 @@ export const ConsultativeDiscoveryChecklist: React.FC<{ onOpenReheatedLeads?: ()
               </span>
             </div>
             <span className="hidden md:inline-block text-slate-300">|</span>
-            <span className="hidden md:inline-block text-xs text-slate-500 font-medium">Sincronizado com CRM &amp; Concessionária</span>
+            <span className="hidden md:inline-block text-xs text-slate-500 font-medium">Dados Demonstrativos • Ambiente Simulado</span>
           </div>
 
           <div className="flex items-center gap-3 w-full sm:w-auto justify-end">

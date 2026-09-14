@@ -263,7 +263,7 @@ const SalesScriptScreen = ({
         focusedAccessories.map((a) => `✅ ${a.name} — R$ ${Math.round(a.price * (1 - a.discountPercent / 100)).toLocaleString("pt-BR")}`).join("\n") +
         `\n\n💰 *Total Otimizado:* R$ ${focusedTotal.toLocaleString("pt-BR")}\n` +
         `📊 *No financiamento:* apenas + R$ ${((focusedTotal * 0.0235)).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}/mês (menos de R$ 5/dia)\n\n` +
-        `Garantia oficial de 3 anos preservada e segurança total para sua rotina em ${clientData.state?.replace(/\s*\(.*\)/, "") || "sua região"}.\n` +
+        `Acessórios genuínos com garantia contratual Mopar e segurança total para sua rotina em ${clientData.state?.replace(/\s*\(.*\)/, "") || "sua região"}.\n` +
         `Podemos reservar essa condição especial esta semana? 🚗`
       );
     } else {
@@ -275,7 +275,7 @@ const SalesScriptScreen = ({
         `\n\n💡 *Por que agora:* Itens configurados para sua rotina em ${clientData.state?.replace(/\s*\(.*\)/, "") || "sua região"} com proteção e valorização na revenda.\n` +
         `💰 *Valor Total:* R$ ${totalPrice.toLocaleString("pt-BR")}\n` +
         `📊 *Diluição no CDC:* apenas + R$ ${cdcMonthly}/mês\n` +
-        `🛡️ *Garantia:* 3 anos de fábrica com instalação homologada.\n\n` +
+        `🛡️ *Garantia:* Contratual Mopar com instalação pela rede autorizada.\n\n` +
         `Podemos aprovar a instalação na entrega do veículo?`
       );
     }
@@ -831,7 +831,7 @@ const SalesScriptScreen = ({
                 </p>
                 <p>
                   <strong className="text-slate-900 font-bold block sm:inline">2. Quebra Técnica de Objeção:</strong>{" "}
-                  <span>"{result?.technicalRefutation || `Porém, no caso dos acessórios genuínos Mopar, eles são calibrados e testados especificamente para a eletrônica de bordo, sensores de segurança e suspensão do ${clientData.vehicleModel}. Peças de prateleira externa não contam com homologação e podem invalidar a garantia de fábrica de 3 anos.`}"</span>
+                  <span>"{result?.technicalRefutation || `Porém, no caso dos acessórios genuínos Mopar, eles são calibrados e testados especificamente para a eletrônica de bordo, sensores de segurança e suspensão do ${clientData.vehicleModel}. Peças de prateleira externa não contam com homologação e podem invalidar a garantia de fábrica do veículo.`}"</span>
                 </p>
                 <p>
                   <strong className="text-slate-900 font-bold block sm:inline">3. Fechamento de Valor:</strong>{" "}
@@ -896,7 +896,7 @@ const SalesScriptScreen = ({
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
           <div className="flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            <span>Ambiente Seguro Concessionária (DMS Integrado)</span>
+            <span>Ambiente Demonstrativo (DMS — Integração Futura)</span>
           </div>
           <div>
             <span>Dados de Conformidade LGPD</span>

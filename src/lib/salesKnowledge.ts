@@ -345,7 +345,7 @@ export const generateSalesArguments = (
   switch (objectionType) {
     case "partner":
       empathicValidation = `Entendo perfeitamente, ${genderPrefix} ${firstName}. A decisão em conjunto com a sua família ou cônjuge é fundamental e demonstra zelo pelo patrimônio que estão adquirindo juntos.`;
-      technicalRefutation = `Para quem viaja com o senhor, o que mais conta é a ergonomia de embarque (como o estribo para crianças e passageiros) e a tranquilidade de rodar com itens 100% originais Mopar, que preservam a garantia total de 3 anos de fábrica do seu ${clientData.vehicleModel}, sem risco de manutenções imprevistas.`;
+      technicalRefutation = `Para quem viaja com o senhor, o que mais conta é a ergonomia de embarque (como o estribo para crianças e passageiros) e a tranquilidade de rodar com itens 100% originais Mopar, que contam com garantia contratual Mopar e instalação certificada pela rede autorizada para o seu ${clientData.vehicleModel}, sem risco de manutenções imprevistas.`;
       closingFi = `Além disso, o valor de R$ ${focusedTotal.toLocaleString("pt-BR")} diluído no financiamento representa apenas + R$ ${cdcEstimate} por mês. Que tal enviarmos a visualização 3D oficial agora mesmo para ela conferir no WhatsApp?`;
       conversionProbability = 88;
       break;
@@ -366,8 +366,8 @@ export const generateSalesArguments = (
 
     case "origin":
       empathicValidation = `Compreendo perfeitamente que buscar opções no mercado paralelo pareça atrativo à primeira vista, ${genderPrefix} ${firstName}.`;
-      technicalRefutation = `Porém, no caso dos acessórios genuínos Mopar, eles são calibrados e testados especificamente para a eletrônica de bordo, sensores de segurança e suspensão do ${clientData.vehicleModel}. Peças de prateleira externa não contam com homologação e podem invalidar a garantia de fábrica de 3 anos do trem de força.`;
-      closingFi = `Aqui na concessionária o senhor conta com instalação certificada e parcelamento por + apenas R$ ${cdcEstimate} por mês no CDC. Vale a pena arriscar a garantia do carro por uma pequena diferença?`;
+      technicalRefutation = `Porém, no caso dos acessórios genuínos Mopar, eles são calibrados e desenvolvidos para integração com o veículo ${clientData.vehicleModel}, preservando a eletrônica de bordo, sensores e suspensão. Peças do mercado paralelo não contam com homologação e podem invalidar a garantia de fábrica do trem de força.`;
+      closingFi = `Aqui na concessionária o senhor conta com instalação pela rede autorizada e garantia contratual Mopar. Vale a pena arriscar a garantia do carro por uma pequena diferença?`;
       conversionProbability = 91;
       break;
 

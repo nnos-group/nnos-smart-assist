@@ -16,7 +16,19 @@ export interface Accessory {
   category: string; // ex: "interior", "exterior", "proteção", "tecnologia", "utilitário"
   inStock?: boolean; // disponibilidade imediata no estoque local da concessionária
   stockQuantity?: number; // quantidade física disponível em estoque
+  partNumber?: string;
+  demoPartNumber?: string;
 }
+
+export const DEMO_PART_NUMBER_TOOLTIP =
+  "Dado demonstrativo — será substituído pelo Part Number oficial na integração definitiva.";
+
+export const getAccessoryPartNumber = (item: { id: string; partNumber?: string; demoPartNumber?: string }): string => {
+  if (item.demoPartNumber) return item.demoPartNumber;
+  if (item.partNumber) return item.partNumber;
+  const hash = Math.abs(item.id.split("").reduce((acc, char) => (acc << 5) - acc + char.charCodeAt(0), 0)) % 900 + 100;
+  return `PN-DEMO-${hash}`;
+};
 
 export interface ClientData {
   vehicleModel: string;
@@ -80,7 +92,7 @@ const inferCategory = (id: string): string => {
   return 'acessório';
 };
 
-// Helper: criar acessório com estoque simulado
+// Helper: criar acessório com estoque simulado e part number demonstrativo
 const acc = (
   id: string, name: string, description: string, price: number, icon: string,
   selected: boolean, stockDays: number, category?: string, stockQty?: number
@@ -88,6 +100,9 @@ const acc = (
   const info = getStockInfo(stockDays);
   // Simular que engate e película solar tem estoque zerado por padrão em alguns modelos para validação
   const defaultQuantity = stockQty !== undefined ? stockQty : (id.includes("engate") ? 0 : 3);
+  const hash = Math.abs(id.split("").reduce((acc, char) => (acc << 5) - acc + char.charCodeAt(0), 0)) % 900 + 100;
+  const demoPartNumber = `PN-DEMO-${hash}`;
+
   return {
     id, name, description, price, icon, selected,
     stockStatus: info.status,
@@ -96,6 +111,8 @@ const acc = (
     category: category || inferCategory(id),
     stockQuantity: defaultQuantity,
     inStock: defaultQuantity > 0,
+    partNumber: demoPartNumber,
+    demoPartNumber,
   };
 };
 

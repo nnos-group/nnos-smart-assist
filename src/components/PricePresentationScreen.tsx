@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { useSalesJourney } from "@/context/SalesJourneyContext";
 import { getItemDiscountedPrice } from "@/lib/pricingEngine";
+import { getAccessoryPartNumber, DEMO_PART_NUMBER_TOOLTIP } from "@/types/accessories";
 import { MOCK_COMMERCIAL_CAMPAIGNS, getEligibleCampaigns } from "@/lib/campaignEligibilityEngine";
 import { CommercialCampaignBanner } from "./CommercialCampaignBanner";
 import { toast } from "sonner";
@@ -265,7 +266,16 @@ export const PricePresentationScreen: React.FC = () => {
                     <div className="flex items-center gap-3 min-w-0">
                       <span className="text-2xl shrink-0">{item.icon}</span>
                       <div className="truncate">
-                        <div className="text-xs font-bold text-slate-900 truncate">{item.name}</div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <div className="text-xs font-bold text-slate-900 truncate">{item.name}</div>
+                          <span
+                            className="inline-flex items-center gap-1 text-[10px] font-mono text-slate-500 bg-white hover:bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200 cursor-help"
+                            title={DEMO_PART_NUMBER_TOOLTIP}
+                          >
+                            <span>Part Number: {getAccessoryPartNumber(item)}</span>
+                            <span className="text-[9px] text-amber-700 bg-amber-50 border border-amber-200 px-1 rounded font-sans font-bold">DEMO</span>
+                          </span>
+                        </div>
                         <div className="flex items-center gap-2 mt-0.5">
                           <span className="text-[11px] text-slate-500 truncate">{item.description}</span>
                           {days > 365 ? (
@@ -519,14 +529,28 @@ export const PricePresentationScreen: React.FC = () => {
                 </span>
               </div>
 
-              <div className="bg-sky-50 text-sky-900 p-3 rounded-xl border border-sky-200 flex items-start gap-2">
-                <Zap className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
-                <div className="text-xs leading-tight">
-                  <span className="font-black block">Diluição no CDC Jeep / RAM Financiamento:</span>
-                  <span className="text-[11px] block mt-0.5">
-                    Apenas <strong>+ R$ {quote.monthlyCdc.toLocaleString("pt-BR", { minimumFractionDigits: 2 })} / mês</strong> na parcela do veículo.
+              {/* SIMULAÇÃO DE IMPACTO NO FINANCIAMENTO (IDENTIFICADA COMO ESTIMATIVA DEMONSTRATIVA) */}
+              <div className="bg-sky-50/80 text-sky-950 p-3.5 rounded-xl border border-sky-200/80 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5 text-xs font-black text-sky-900 uppercase tracking-tight">
+                    <Zap className="w-3.5 h-3.5 text-sky-600 shrink-0" />
+                    <span>Simulação de impacto no financiamento</span>
+                  </div>
+                  <span className="text-[9px] font-black uppercase tracking-wider bg-sky-200/80 text-sky-900 px-1.5 py-0.2 rounded">
+                    DEMO
                   </span>
                 </div>
+
+                <div className="text-xs text-slate-700 leading-snug">
+                  <span className="block text-[11px] text-slate-500">Simulação demonstrativa:</span>
+                  <span className="text-sm font-black text-sky-900">
+                    A partir de aproximadamente + R$ {quote.monthlyCdc.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}/mês*
+                  </span>
+                </div>
+
+                <p className="text-[10px] text-slate-500 leading-snug border-t border-sky-200/60 pt-1.5">
+                  *Valor estimado para fins demonstrativos. A condição definitiva depende da operação financeira do veículo.
+                </p>
               </div>
             </div>
           </div>

@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { useSalesJourney } from "@/context/SalesJourneyContext";
 import { ClosingStatus, LostSaleDetails, ObjectionCategory } from "@/types/salesJourney";
+import { getAccessoryPartNumber, DEMO_PART_NUMBER_TOOLTIP } from "@/types/accessories";
 import { toast } from "sonner";
 import { logLostSale } from "@/lib/argumentationRepository";
 
@@ -211,9 +212,17 @@ export const ClosingScreen: React.FC<ClosingScreenProps> = ({ onSaleWon }) => {
                     key={item.id}
                     className="p-2.5 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between text-xs hover:border-slate-300 transition-colors"
                   >
-                    <div className="flex items-center gap-2 truncate">
-                      <span>{item.icon}</span>
-                      <span className="font-semibold text-slate-800 truncate">{item.name}</span>
+                    <div className="flex flex-col min-w-0 truncate">
+                      <div className="flex items-center gap-2 truncate">
+                        <span>{item.icon}</span>
+                        <span className="font-semibold text-slate-800 truncate">{item.name}</span>
+                      </div>
+                      <span
+                        className="text-[10px] font-mono text-slate-500 mt-0.5 cursor-help"
+                        title={DEMO_PART_NUMBER_TOOLTIP}
+                      >
+                        Part Number: {getAccessoryPartNumber(item)} <span className="text-[9px] text-amber-700 font-sans font-bold">(DEMO)</span>
+                      </span>
                     </div>
 
                     <div className="flex items-center gap-1.5 shrink-0 ml-2">

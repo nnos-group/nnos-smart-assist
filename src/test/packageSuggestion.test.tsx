@@ -193,6 +193,6 @@ describe("PackageSuggestionScreen", () => {
     );
 
     expect(screen.queryByText(/0800 707 9000/i)).not.toBeInTheDocument();
-    expect(screen.getByText("Sistemas 100% Operacionais (DMS Integrado)")).toBeInTheDocument();
+    expect(screen.getByText("Ambiente Demonstrativo (DMS — Integração Futura)")).toBeInTheDocument();
   });
 });

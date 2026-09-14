@@ -7,7 +7,7 @@
  */
 
 import { ArgumentationLog } from "@/types/salesArgument";
-import { LostSaleRecord, ParetoAnalysis, RankedMetric } from "@/types/lostSales";
+import { LostSaleRecord, ParetoAnalysis, RankedMetric, CommercialManagementOverview } from "@/types/lostSales";
 
 const ARGUMENTATION_LOG_KEY = "smart_sell_argumentation_log_v1";
 const LOST_SALES_KEY = "smart_sell_lost_sales_v1";
@@ -451,3 +451,59 @@ export const getConversionAnalytics = (): {
     ],
   };
 };
+
+/** Retorna visão executiva consolidada da gestão comercial da concessionária */
+export const getCommercialManagementOverview = (): CommercialManagementOverview => {
+  const lostSales = getLostSales();
+  const logs = getArgumentationLogs();
+  const dynamicWon = logs.filter((l) => l.result === "won").length;
+  const dynamicLost = Math.max(lostSales.length, logs.filter((l) => l.result === "lost").length);
+
+  // Valores de referência do painel executivo com acoplamento aos dados dinâmicos do MVP
+  const totalServiceCalls = 128 + Math.max(0, logs.length - 6);
+  const completedSales = 47 + Math.max(0, dynamicWon - 2);
+  const lostSalesCount = 24 + Math.max(0, dynamicLost - 6);
+  const openProposals = Math.max(0, totalServiceCalls - completedSales - lostSalesCount);
+  const decided = completedSales + lostSalesCount;
+  const conversionRate = decided > 0 ? Number(((completedSales / decided) * 100).toFixed(1)) : 36.7;
+  const totalRevenue = 184500 + Math.max(0, dynamicWon - 2) * 3925;
+  const avgTicket = completedSales > 0 ? Math.round(totalRevenue / completedSales) : 3925;
+
+  return {
+    totalServiceCalls,
+    completedSales,
+    openProposals,
+    lostSalesCount,
+    conversionRate,
+    totalRevenue,
+    avgTicket,
+    pipelineStages: [
+      { id: "stage-1", label: "Em atendimento", count: 28, value: 104200, conversionPercent: 100, color: "blue" },
+      { id: "stage-2", label: "Proposta enviada", count: 24, value: 89400, conversionPercent: 85, color: "indigo" },
+      { id: "stage-3", label: "Em negociação", count: 15, value: 58600, conversionPercent: 53, color: "amber" },
+      { id: "stage-4", label: "Aguardando retorno", count: 14, value: 51100, conversionPercent: 50, color: "purple" },
+      { id: "stage-5", label: "Venda concluída", count: completedSales, value: totalRevenue, conversionPercent: Math.round(conversionRate), color: "emerald" },
+      { id: "stage-6", label: "Venda perdida", count: lostSalesCount, value: 94200, conversionPercent: 100 - Math.round(conversionRate), color: "rose" },
+    ],
+    topSellingAccessories: [
+      { rank: 1, name: "Tapetes All-Weather de Borda Elevada", salesCount: 38, revenue: 30020 },
+      { rank: 2, name: "Estribo Lateral Tubular / Premium", salesCount: 29, revenue: 72500 },
+      { rank: 3, name: "Protetor de Cárter Reforçado HD", salesCount: 26, revenue: 31200 },
+      { rank: 4, name: "Engate de Reboque Removível Mopar", salesCount: 21, revenue: 48300 },
+      { rank: 5, name: "Barras Transversais de Teto Mopar", salesCount: 18, revenue: 26100 },
+    ],
+    productConversionComparison: [
+      { name: "Tapetes All-Weather de Borda Elevada", recommendedCount: 52, presentedCount: 48, soldCount: 38, conversionRate: 79.2, revenue: 30020 },
+      { name: "Estribo Lateral Tubular / Premium", recommendedCount: 44, presentedCount: 39, soldCount: 29, conversionRate: 74.4, revenue: 72500 },
+      { name: "Protetor de Cárter Reforçado HD", recommendedCount: 41, presentedCount: 35, soldCount: 26, conversionRate: 74.3, revenue: 31200 },
+      { name: "Engate de Reboque Removível Mopar", recommendedCount: 33, presentedCount: 28, soldCount: 21, conversionRate: 75.0, revenue: 48300 },
+      { name: "Barras Transversais de Teto Mopar", recommendedCount: 28, presentedCount: 25, soldCount: 18, conversionRate: 72.0, revenue: 26100 },
+      { name: "Película Solar Nano-Cerâmica 3M", recommendedCount: 36, presentedCount: 30, soldCount: 16, conversionRate: 53.3, revenue: 22080 },
+    ],
+    unavailableDemandDemo: [
+      { name: "Engate Removível Mopar Compass (Ruptura transitória)", requests: 12, potentialRevenue: 27600 },
+      { name: "Capota Rígida Elétrica Rampage (Fila de espera fábrica)", requests: 7, potentialRevenue: 38500 },
+    ],
+  };
+};
+

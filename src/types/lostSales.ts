@@ -59,3 +59,39 @@ export interface ParetoAnalysis {
   /** Perdas por concessionária */
   lossesByDealership: RankedMetric[];
 }
+
+/** Estágio do Funil Comercial / Pipeline */
+export interface PipelineFunnelStage {
+  id: string;
+  label: string;
+  count: number;
+  value: number;
+  conversionPercent: number;
+  color: string;
+}
+
+/** Comparativo de Conversão por Produto */
+export interface ProductConversionMetric {
+  name: string;
+  recommendedCount: number;
+  presentedCount: number;
+  soldCount: number;
+  conversionRate: number;
+  revenue: number;
+}
+
+/** Dados consolidados da Gestão Comercial da Concessionária */
+export interface CommercialManagementOverview {
+  totalServiceCalls: number; // Atendimentos (ex: 128)
+  completedSales: number; // Vendas concluídas (ex: 47)
+  openProposals: number; // Propostas / Atendimentos em aberto (ex: 57)
+  lostSalesCount: number; // Vendas perdidas (ex: 24)
+  conversionRate: number; // Taxa de conversão (ex: 36.7%)
+  totalRevenue: number; // Faturamento gerado (ex: 184500)
+  avgTicket: number; // Ticket médio (ex: 3925)
+  pipelineStages: PipelineFunnelStage[];
+  topSellingAccessories: { rank: number; name: string; salesCount: number; revenue: number }[];
+  productConversionComparison: ProductConversionMetric[];
+  unavailableDemandDemo: { name: string; requests: number; potentialRevenue: number }[];
+}
+

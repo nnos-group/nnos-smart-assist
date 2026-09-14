@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import ramRampageImage from "@/assets/ram-rampage-rebel.jpg";
 import accessoriesBadge from "@/assets/accessories-badge.jpg";
-import { getAccessoriesForVehicle, getPackageName } from "@/types/accessories";
+import { getAccessoriesForVehicle, getPackageName, getAccessoryPartNumber, DEMO_PART_NUMBER_TOOLTIP } from "@/types/accessories";
 
 const ClientShowcaseView = () => {
   const [searchParams] = useSearchParams();
@@ -385,8 +385,15 @@ const ClientShowcaseView = () => {
                         {item.icon || "⚙️"}
                       </div>
                       <div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <h4 className="font-bold text-slate-900 text-sm font-display">{item.name}</h4>
+                          <span
+                            className="inline-flex items-center gap-1 text-[10px] font-mono text-slate-500 bg-slate-100 hover:bg-slate-200 px-1.5 py-0.5 rounded border border-slate-200 cursor-help"
+                            title={DEMO_PART_NUMBER_TOOLTIP}
+                          >
+                            <span>Part Number: {getAccessoryPartNumber(item)}</span>
+                            <span className="text-[9px] text-amber-700 bg-amber-50 border border-amber-200 px-1 rounded font-sans font-bold">DEMO</span>
+                          </span>
                           {isOutOfStock && (
                             <span className="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-100/90 px-1.5 py-0.5 rounded border border-amber-300">
                               ⚠️ Encomenda CD (2-5d)
@@ -396,7 +403,7 @@ const ClientShowcaseView = () => {
                         <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">{item.description}</p>
                         <span className="inline-flex items-center gap-1 text-[11px] text-emerald-700 font-bold bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200 mt-2">
                           <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                          Garantia Oficial Mopar 3 Anos
+                          Acessório Genuíno • Garantia Contratual Mopar
                         </span>
                       </div>
                     </div>
@@ -485,13 +492,18 @@ const ClientShowcaseView = () => {
                   M
                 </div>
                 <div className="text-[11px] leading-tight text-slate-300">
-                  <strong className="font-bold text-white block">Garantia de 3 Anos Preservada</strong>
-                  Instalação homologada por técnicos certificados da concessionária oficial.
+                  <strong className="font-bold text-white block">Garantia Contratual Mopar Preservada</strong>
+                  Instalação homologada por técnicos certificados da rede concessionária oficial Stellantis.
                 </div>
               </div>
             </div>
           </div>
         </div>
+
+        {/* Disclaimer Demonstrativo */}
+        <p className="text-[11px] text-slate-400 text-center italic">
+          *Conteúdo demonstrativo — informações definitivas dependem do catálogo e das políticas comerciais oficiais Stellantis.
+        </p>
       </main>
       {/* END: MainContent */}
 
@@ -505,7 +517,7 @@ const ClientShowcaseView = () => {
             <span>Rede Oficial Stellantis Mopar</span>
           </div>
           <span className="text-[11px] text-slate-400">
-            Ambiente Seguro • Proposta Válida Conforme Disponibilidade
+            Ambiente Demonstrativo • Proposta Válida Conforme Disponibilidade
           </span>
         </div>
       </footer>

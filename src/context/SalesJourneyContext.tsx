@@ -16,12 +16,19 @@ import {
   UserSession,
   ObjectionCategory,
   RecommendationTier,
+  VehiclePurchaseContext,
 } from "@/types/salesJourney";
 import { calculateQuote } from "@/lib/pricingEngine";
 import { generateRecommendations } from "@/lib/recommendationEngine";
 import { getApprovedArgumentForObjection } from "@/lib/argumentSelectionEngine";
 
 const JOURNEY_STORAGE_KEY = "smart_sell_sales_journey_v2";
+
+export const DEFAULT_VEHICLE_PURCHASE_CONTEXT: VehiclePurchaseContext = {
+  hasTradeIn: false,
+  paymentMethod: "financing",
+  vehicleInstallmentCount: 48,
+};
 
 export const DEFAULT_DISCOVERY_PROFILE: DiscoveryProfile = {
   usageLocation: "uso_misto",
@@ -120,6 +127,9 @@ interface SalesJourneyContextType {
   setUserSession: (session: Partial<UserSession>) => void;
   setVisualizationState: (viz: Partial<SalesJourneyState["visualizationState"]>) => void;
   revealPrice: () => void;
+  applyRecomposedPackage: (accessoryIds: string[], targetInvestment?: number) => void;
+  updateVehiclePurchaseContext: (context: Partial<VehiclePurchaseContext>) => void;
+  setTargetAccessoryInvestment: (amount: number) => void;
 }
 
 const SalesJourneyContext = createContext<SalesJourneyContextType | undefined>(undefined);
@@ -148,6 +158,7 @@ function getInitialState(): SalesJourneyState {
     clientData: defaultClientData,
     userSession: DEFAULT_USER_SESSION,
     discoveryProfile: DEFAULT_DISCOVERY_PROFILE,
+    vehiclePurchaseContext: DEFAULT_VEHICLE_PURCHASE_CONTEXT,
     recommendations: initialRecommendations,
     selectedAccessoryIds: initialSelectedIds,
     visualizationState: {
@@ -629,6 +640,29 @@ export const SalesJourneyProvider: React.FC<{ children: React.ReactNode }> = ({ 
       selectedAccessoryIds: selectedIds,
     });
 
+    const topItems = (selectedAccessories || []).slice(0, 2).map((a) => a.name);
+    const dateFormatted = lead.rejectedAt
+      ? new Date(lead.rejectedAt as string).toLocaleDateString("pt-BR")
+      : "10/09/2026";
+    const channel = (lead.channel as string) || (lead.clientPhone ? "WhatsApp / Showroom" : "Showroom Presencial");
+    const objectionStr = (lead.rejectionReason as string) || "impacto no orçamento total";
+    const itemsStr = topItems.length > 0 ? topItems.join(" e ") : "acessórios prioritários";
+
+    let suggestedApproach = `O cliente demonstrou alto interesse em ${itemsStr}, mas pausou por ${objectionStr.toLowerCase()}. Sugerir condição com entrada reduzida ou focar nos itens essenciais para viabilizar o fechamento hoje.`;
+    if (lead.rejectionNotes) {
+      suggestedApproach = `O cliente demonstrou interesse prioritário em ${itemsStr} (histórico: "${lead.rejectionNotes}"). Sugerir adequação da proposta focando nos itens essenciais ou condição com entrada facilitada.`;
+    }
+
+    const resumedInfo = {
+      channel,
+      status: "Venda não concluída",
+      objection: (lead.rejectionReason as string) || "Preço / Orçamento",
+      previousTotal: (lead.totalProposalValue as number) || quote.finalTotal || 5800,
+      topInterestItems: topItems.length > 0 ? topItems : ["Estribo Lateral", "Tapetes All-Weather"],
+      date: dateFormatted,
+      suggestedApproach,
+    };
+
     setState((prev) => ({
       ...prev,
       clientSource: "reheated-lead",
@@ -636,6 +670,7 @@ export const SalesJourneyProvider: React.FC<{ children: React.ReactNode }> = ({ 
       selectedAccessoryIds: selectedIds,
       recommendations: recs,
       quote,
+      resumedLeadInfo: resumedInfo,
       currentStep: prev.currentStep === "customer-understanding" ? "customer-understanding" : "vehicle-visualization",
       updatedAt: new Date().toISOString(),
     }));
@@ -661,6 +696,56 @@ export const SalesJourneyProvider: React.FC<{ children: React.ReactNode }> = ({ 
     setState((prev) => ({
       ...prev,
       quote: { ...prev.quote, isPriceRevealed: true },
+      updatedAt: new Date().toISOString(),
+    }));
+  }, []);
+
+  const applyRecomposedPackage = useCallback(
+    (accessoryIds: string[], targetInvestment?: number) => {
+      setState((prev) => {
+        const nextQuote = recalculateCurrentQuote(
+          accessoryIds,
+          prev.quote.sellerDiscount,
+          prev.quote.factoryBonus,
+          prev.selectedCampaign
+        );
+        return {
+          ...prev,
+          selectedAccessoryIds: accessoryIds,
+          quote: nextQuote,
+          negotiation: {
+            ...prev.negotiation,
+            targetAccessoryInvestment:
+              targetInvestment !== undefined ? targetInvestment : prev.negotiation.targetAccessoryInvestment,
+          },
+          updatedAt: new Date().toISOString(),
+        };
+      });
+    },
+    [recalculateCurrentQuote]
+  );
+
+  const updateVehiclePurchaseContext = useCallback(
+    (context: Partial<VehiclePurchaseContext>) => {
+      setState((prev) => ({
+        ...prev,
+        vehiclePurchaseContext: {
+          ...(prev.vehiclePurchaseContext || DEFAULT_VEHICLE_PURCHASE_CONTEXT),
+          ...context,
+        },
+        updatedAt: new Date().toISOString(),
+      }));
+    },
+    []
+  );
+
+  const setTargetAccessoryInvestment = useCallback((amount: number) => {
+    setState((prev) => ({
+      ...prev,
+      negotiation: {
+        ...prev.negotiation,
+        targetAccessoryInvestment: amount,
+      },
       updatedAt: new Date().toISOString(),
     }));
   }, []);
@@ -694,6 +779,9 @@ export const SalesJourneyProvider: React.FC<{ children: React.ReactNode }> = ({ 
         setUserSession,
         setVisualizationState,
         revealPrice,
+        applyRecomposedPackage,
+        updateVehiclePurchaseContext,
+        setTargetAccessoryInvestment,
       }}
     >
       {children}

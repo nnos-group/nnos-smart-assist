@@ -9,7 +9,7 @@ export const APPROVED_COMMERCIAL_ARGUMENTS: CommercialArgument[] = [
     mainArgument:
       "Os itens foram selecionados estrategicamente considerando a sua utilização em estradas de terra e transporte frequente. Além do conforto e estética, eles preservam o veículo 0km desde o primeiro dia de uso, evitando desvalorização severa e avarias caras.",
     alternativeArgument:
-      "Quando diluído no financiamento ou parcelado no cartão da concessionária em até 12x sem juros, o impacto diário é inferior a um cafezinho e você já sai da concessionária com garantia total Mopar de até 3 anos.",
+      "Quando diluído no financiamento ou parcelado no cartão da concessionária em até 12x sem juros, o impacto diário é inferior a um cafezinho e você já sai da concessionária com garantia contratual Mopar e instalação certificada.",
     deepeningQuestion:
       "O valor total à vista ou o impacto na parcela mensal é o ponto mais sensível para o senhor neste momento?",
     closingProposal:
@@ -72,7 +72,7 @@ export const APPROVED_COMMERCIAL_ARGUMENTS: CommercialArgument[] = [
     mainArgument:
       "Acessórios paralelos não possuem os testes de colisão (crash-test) e integridade eletrônica homologados pela engenharia Stellantis. Na concessionária, o acessório é 100% Mopar e mantém a garantia de fábrica do veículo intacta.",
     alternativeArgument:
-      "Itens elétricos ou de tração instalados fora da rede podem causar curto-circuito na rede CAN-bus ou danos estruturais que invalidam a garantia geral de 3 anos do seu veículo.",
+      "Itens elétricos ou de tração instalados fora da rede podem causar curto-circuito na rede CAN-bus ou danos estruturais que comprometem a garantia de fábrica do seu veículo.",
     deepeningQuestion:
       "O senhor sabia que peças paralelas podem comprometer a garantia de fábrica dos sistemas eletrônicos e de suspensão?",
     closingProposal:
@@ -112,14 +112,14 @@ export const APPROVED_COMMERCIAL_ARGUMENTS: CommercialArgument[] = [
     objectionLabel: "Tenho dúvida sobre o tempo e cobertura da garantia",
     appropriateStep: "negotiation",
     mainArgument:
-      "Todos os acessórios genuínos Mopar instalados na concessionária acompanham a garantia contratual de até 3 anos com respaldo direto da montadora em qualquer autorizada do país.",
+      "Todos os acessórios genuínos Mopar instalados na concessionária acompanham a garantia contratual Mopar com respaldo direto da rede autorizada em qualquer concessionária do país.",
     alternativeArgument:
       "Caso ocorra qualquer inconformidade, a troca é realizada imediatamente por peça nova original com mão de obra coberta, sem burocracia de fornecedores terceirizados.",
     deepeningQuestion:
       "Existe algum componente em específico cuja cobertura o senhor gostaria de checar em detalhe no certificado?",
     closingProposal:
       "Emitiremos o certificado de garantia genuína Mopar anexado diretamente à nota fiscal de entrega do veículo.",
-    authorizedCondition: "Certificado de garantia de 3 anos Mopar anexado à proposta",
+    authorizedCondition: "Certificado de garantia contratual Mopar anexado à proposta",
     maxAuthorizedDiscountPercent: 0,
     approvedVersion: "v2.4-2026",
     approvedAt: "2026-01-15",
