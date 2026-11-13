@@ -59,7 +59,7 @@ const VehicleVisualizationScreen = ({
     }
 
     if (isRenegade) {
-      return `${base}videos/${showAfter ? "Jeep_Renegade_com.mp4" : "Jeep_Renegade_sem.mp4"}`;
+      return `${base}videos/${showAfter ? "Jeep_Renegade_com.mp4" : "Jeep_Renegade_sem.mp4?v=2"}`;
     }
     if (isRampage) {
       return `${base}videos/${showAfter ? "Ram_Rampage_com.mp4" : "Ram_Rampage_sem.mp4"}`;
