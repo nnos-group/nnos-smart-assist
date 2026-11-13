@@ -174,7 +174,7 @@ const VehicleVisualizationScreen = ({
               </span>
               <span>•</span>
               <span>
-                Proposta: <strong className="text-slate-700">#RAM-84920</strong>
+                Proposta: <strong className="text-slate-700">#{isRampage ? "RAM" : isRenegade || isCompass ? "JEEP" : "MOPAR"}-84920</strong>
               </span>
               <span>•</span>
               <span className="inline-flex items-center text-emerald-600 font-medium">
