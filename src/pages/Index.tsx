@@ -4,9 +4,11 @@ import NavigationBar, { ViewportDevice } from "@/components/NavigationBar";
 import SuccessModal from "@/components/SuccessModal";
 import { ReheatedLeadsModal } from "@/components/ReheatedLeadsModal";
 import LostSalesDashboard from "@/components/LostSalesDashboard";
+import { AdminControlModal } from "@/components/AdminControlModal";
 import { SalesJourneyProvider, useSalesJourney } from "@/context/SalesJourneyContext";
 import { SalesJourneyStepper } from "@/components/SalesJourneyStepper";
 import { DeviceSimulator } from "@/components/DeviceSimulator";
+import { appendAccessLog } from "@/lib/accessControlRepository";
 
 // 7 Etapas Consultivas
 import { ConsultativeDiscoveryChecklist } from "@/components/ConsultativeDiscoveryChecklist";
@@ -17,7 +19,7 @@ import { PricePresentationScreen } from "@/components/PricePresentationScreen";
 import { NegotiationAssistantScreen } from "@/components/NegotiationAssistantScreen";
 import { ClosingScreen } from "@/components/ClosingScreen";
 import { ReheatedLead } from "@/types/leads";
-import { UserRole } from "@/types/salesJourney";
+import { UserRole, UserSession } from "@/types/salesJourney";
 
 const InnerSalesJourney = () => {
   const {
@@ -39,7 +41,25 @@ const InnerSalesJourney = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showReheatedLeadsModal, setShowReheatedLeadsModal] = useState(false);
   const [showLostSalesDashboard, setShowLostSalesDashboard] = useState(false);
+  const [showAdminModal, setShowAdminModal] = useState(false);
+  const [adminModalTab, setAdminModalTab] = useState<"users" | "logs">("users");
   const [viewportDevice, setViewportDevice] = useState<ViewportDevice>("desktop");
+
+  // Restaura sessão completa do usuário caso a página seja recarregada
+  React.useEffect(() => {
+    if (!isLoggedIn) return;
+    try {
+      const savedSession = sessionStorage.getItem("smart_sell_user_session");
+      if (savedSession) {
+        const parsed = JSON.parse(savedSession) as Partial<UserSession>;
+        if (parsed?.email) {
+          setUserSession(parsed);
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }, [isLoggedIn, setUserSession]);
 
   // Garante que ao mudar de etapa o usuário sempre visualize o topo da tela
   React.useEffect(() => {
@@ -60,15 +80,24 @@ const InnerSalesJourney = () => {
     setIsLoggedIn(true);
   };
 
-  const handleSessionReady = (role: UserRole, dealership: string) => {
-    setUserSession({ role, dealership });
+  const handleSessionReady = (role: UserRole, dealership: string, session?: UserSession) => {
+    setUserSession(session ? session : { role, dealership });
   };
 
   const handleLogout = () => {
+    appendAccessLog({
+      email: state.userSession.email,
+      userName: state.userSession.name,
+      role: state.userSession.role,
+      dealership: state.userSession.dealership,
+      event: "LOGOUT",
+      details: "Sessão encerrada pelo usuário.",
+    });
     sessionStorage.removeItem("smart_sell_auth_token");
     sessionStorage.removeItem("smart_sell_sales_journey_v2");
     sessionStorage.removeItem("smart_sell_user_session");
     setIsLoggedIn(false);
+    setShowAdminModal(false);
     resetJourney("showroom");
   };
 
@@ -153,6 +182,11 @@ const InnerSalesJourney = () => {
         showBack={state.currentStep !== "customer-understanding"}
         onOpenReheatedLeads={() => setShowReheatedLeadsModal(true)}
         onOpenLostSales={() => setShowLostSalesDashboard(true)}
+        onOpenUserControl={(tab = "users") => {
+          setAdminModalTab(tab);
+          setShowAdminModal(true);
+        }}
+        userSession={state.userSession}
         hideLegacyStepper={true}
         currentDevice={viewportDevice}
         onDeviceChange={setViewportDevice}
@@ -204,6 +238,13 @@ const InnerSalesJourney = () => {
       <LostSalesDashboard
         isOpen={showLostSalesDashboard}
         onClose={() => setShowLostSalesDashboard(false)}
+      />
+
+      <AdminControlModal
+        isOpen={showAdminModal}
+        onClose={() => setShowAdminModal(false)}
+        currentUser={state.userSession}
+        initialTab={adminModalTab}
       />
     </div>
   );

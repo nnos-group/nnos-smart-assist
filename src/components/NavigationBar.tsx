@@ -1,7 +1,8 @@
-import { useState, useEffect } from "react";
-import { ChevronLeft, LogOut, Check, Flame, BarChart3, Monitor, Tablet, Smartphone } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { ChevronLeft, LogOut, Check, Flame, BarChart3, Monitor, Tablet, Smartphone, ShieldCheck, Users, History, ChevronDown } from "lucide-react";
 import accessoriesBadge from "@/assets/accessories-badge.jpg";
 import { getReheatedLeads } from "@/lib/leadsRepository";
+import { UserSession } from "@/types/salesJourney";
 
 export type ViewportDevice = "desktop" | "tablet" | "mobile";
 
@@ -12,6 +13,8 @@ interface NavigationBarProps {
   showBack: boolean;
   onOpenReheatedLeads?: () => void;
   onOpenLostSales?: () => void;
+  onOpenUserControl?: (tab?: "users" | "logs") => void;
+  userSession?: UserSession;
   hideLegacyStepper?: boolean;
   currentDevice?: ViewportDevice;
   onDeviceChange?: (device: ViewportDevice) => void;
@@ -30,11 +33,15 @@ const NavigationBar = ({
   showBack,
   onOpenReheatedLeads,
   onOpenLostSales,
+  onOpenUserControl,
+  userSession,
   hideLegacyStepper = false,
   currentDevice = "desktop",
   onDeviceChange,
 }: NavigationBarProps) => {
   const [leadsCount, setLeadsCount] = useState<number>(0);
+  const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
+  const adminMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const updateCount = () => {
@@ -44,6 +51,24 @@ const NavigationBar = ({
     window.addEventListener("smart_sell_leads_updated", updateCount);
     return () => window.removeEventListener("smart_sell_leads_updated", updateCount);
   }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (adminMenuRef.current && !adminMenuRef.current.contains(event.target as Node)) {
+        setIsAdminMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const isAdmin = userSession?.role === "administrador";
+  const roleDisplay =
+    userSession?.role === "administrador"
+      ? "Administrador Online"
+      : userSession?.role === "gerente"
+      ? "Gerente Geral Online"
+      : "Consultor Sênior Online";
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 text-slate-900 border-b border-slate-200/80 shadow-xs backdrop-blur-md">
@@ -166,11 +191,63 @@ const NavigationBar = ({
               </span>
             </button>
 
+            {/* Menu Admin: Controle de Usuários & Log de Acesso */}
+            {isAdmin && onOpenUserControl && (
+              <div className="relative" ref={adminMenuRef}>
+                <button
+                  type="button"
+                  id="btn-open-admin-menu"
+                  onClick={() => setIsAdminMenuOpen((prev) => !prev)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-800 transition text-xs font-bold shadow-xs cursor-pointer"
+                  title="Menu Administrativo: Controle de Usuários e Log de Acesso"
+                  aria-expanded={isAdminMenuOpen}
+                >
+                  <ShieldCheck className="w-4 h-4 text-indigo-600" />
+                  <span className="hidden sm:inline">Admin</span>
+                  <ChevronDown className={`w-3.5 h-3.5 transition-transform ${isAdminMenuOpen ? "rotate-180" : ""}`} />
+                </button>
+
+                {isAdminMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-60 bg-white rounded-xl shadow-xl border border-slate-200 py-1.5 z-50">
+                    <div className="px-3 py-1.5 border-b border-slate-100">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                        Painel Administrativo
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsAdminMenuOpen(false);
+                        onOpenUserControl("users");
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3.5 py-2 text-left text-xs font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-800 transition cursor-pointer"
+                    >
+                      <Users className="w-4 h-4 text-indigo-600" />
+                      <span>Controle de Usuários</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsAdminMenuOpen(false);
+                        onOpenUserControl("logs");
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3.5 py-2 text-left text-xs font-semibold text-slate-700 hover:bg-indigo-50 hover:text-indigo-800 transition cursor-pointer"
+                    >
+                      <History className="w-4 h-4 text-indigo-600" />
+                      <span>Log de Acesso</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+
             <div className="hidden lg:flex flex-col text-right">
-              <span className="text-xs font-semibold text-slate-800 whitespace-nowrap">Concessionária Jeep Campinas</span>
+              <span className="text-xs font-semibold text-slate-800 whitespace-nowrap max-w-[230px] truncate" title={userSession?.dealership || "Concessionária Jeep Campinas"}>
+                {userSession?.dealership || "Concessionária Jeep Campinas"}
+              </span>
               <span className="text-[11px] text-emerald-600 flex items-center justify-end gap-1.5 whitespace-nowrap font-medium">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                Consultor Sênior Online
+                {roleDisplay}
               </span>
             </div>
             <div className="h-6 w-[1px] bg-slate-200 hidden lg:block" />

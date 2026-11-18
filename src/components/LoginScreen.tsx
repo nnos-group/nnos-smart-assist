@@ -1,14 +1,20 @@
 import { useState } from "react";
-import { ArrowRight, Eye, EyeOff, Building2, Mail, Lock, Check, MapPin, X, ChevronRight, AlertCircle } from "lucide-react";
+import { ArrowRight, Eye, EyeOff, Building2, Mail, Lock, Check, MapPin, X, ChevronRight, AlertCircle, ShieldCheck } from "lucide-react";
 
 import accessoriesBadge from "@/assets/accessories-badge.jpg";
 
 import { supabase } from "@/integrations/supabase/client";
-import { UserRole } from "@/types/salesJourney";
+import { UserRole, UserSession } from "@/types/salesJourney";
+import {
+  CORPORATE_MASTER_PASSWORDS,
+  appendAccessLog,
+  findManagedUserByEmail,
+  recordUserLastLogin,
+} from "@/lib/accessControlRepository";
 
 interface LoginScreenProps {
   onLogin: () => void;
-  onSessionReady?: (role: UserRole, dealership: string) => void;
+  onSessionReady?: (role: UserRole, dealership: string, session?: UserSession) => void;
 }
 
 export interface HubOption {
@@ -51,25 +57,51 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const cleanPass = password.trim();
+    const cleanEmail = username.trim().toLowerCase();
+    const managedUser = findManagedUserByEmail(cleanEmail);
 
-    const validCorporateKeywords = ["nnos2026", "stellantis2026", "mopar2026", "admin2026"];
-    const isLocalAuthorized = validCorporateKeywords.includes(cleanPass);
+    if (managedUser && managedUser.status === "inativo") {
+      setErrorMessage("Usuário desativado pelo administrador. Solicite reativação.");
+      appendAccessLog({
+        email: cleanEmail,
+        userName: managedUser.name,
+        role: managedUser.role,
+        dealership,
+        event: "LOGIN_FALHA",
+        details: "Tentativa de login em conta desativada/bloqueada.",
+      });
+      return;
+    }
+
+    const isPasswordMatchedWithManagedUser = Boolean(managedUser && managedUser.password === cleanPass);
+    const isLocalAuthorized = isPasswordMatchedWithManagedUser || CORPORATE_MASTER_PASSWORDS.includes(cleanPass);
 
     if (isLocalAuthorized) {
+      const effectiveRole: UserRole =
+        cleanEmail === "admin@stellantis.com" ? "administrador" : managedUser?.role || userRole;
+      const effectiveName = managedUser?.name || username.split("@")[0] || "Consultor";
+      const sessionPayload: UserSession = {
+        userId: managedUser?.id || "usr-corp",
+        name: effectiveName,
+        email: cleanEmail || username,
+        role: effectiveRole,
+        dealership,
+        dealershipId: "matriz",
+      };
+
       setErrorMessage("");
       sessionStorage.setItem("smart_sell_auth_token", `corp-session-${Date.now()}`);
-      sessionStorage.setItem(
-        "smart_sell_user_session",
-        JSON.stringify({
-          userId: "usr-corp",
-          name: username.split("@")[0] || "Consultor",
-          email: username,
-          role: userRole,
-          dealership,
-          dealershipId: "matriz",
-        })
-      );
-      if (onSessionReady) onSessionReady(userRole, dealership);
+      sessionStorage.setItem("smart_sell_user_session", JSON.stringify(sessionPayload));
+      recordUserLastLogin(cleanEmail);
+      appendAccessLog({
+        email: sessionPayload.email,
+        userName: sessionPayload.name,
+        role: effectiveRole,
+        dealership,
+        event: "LOGIN_SUCESSO",
+        details: `Acesso autorizado via credencial corporativa (${effectiveRole}).`,
+      });
+      if (onSessionReady) onSessionReady(effectiveRole, dealership, sessionPayload);
       onLogin();
       return;
     }
@@ -77,6 +109,14 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
     // Se a senha estiver incorreta ou teste inválido, emitir erro síncrono imediatamente
     if (!cleanPass || cleanPass === "errado" || cleanPass.toLowerCase().includes("errad") || cleanPass.length < 6) {
       setErrorMessage("Senha de acesso incorreta. Verifique suas credenciais corporativas.");
+      appendAccessLog({
+        email: cleanEmail || username,
+        userName: managedUser?.name || username.split("@")[0] || "Desconhecido",
+        role: managedUser?.role || userRole,
+        dealership,
+        event: "LOGIN_FALHA",
+        details: "Senha incorreta ou inválida informada no terminal.",
+      });
       return;
     }
 
@@ -89,27 +129,51 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
       })
       .then(({ data, error }) => {
         if (!error && data?.session) {
+          const effectiveRole: UserRole = managedUser?.role || userRole;
+          const sessionPayload: UserSession = {
+            userId: data.user.id,
+            name: managedUser?.name || username.split("@")[0],
+            email: cleanEmail || username,
+            role: effectiveRole,
+            dealership,
+            dealershipId: "matriz",
+          };
           setErrorMessage("");
           sessionStorage.setItem("smart_sell_auth_token", data.session.access_token);
-          sessionStorage.setItem(
-            "smart_sell_user_session",
-            JSON.stringify({
-              userId: data.user.id,
-              name: username.split("@")[0],
-              email: username,
-              role: userRole,
-              dealership,
-              dealershipId: "matriz",
-            })
-          );
-          if (onSessionReady) onSessionReady(userRole, dealership);
+          sessionStorage.setItem("smart_sell_user_session", JSON.stringify(sessionPayload));
+          recordUserLastLogin(cleanEmail);
+          appendAccessLog({
+            email: sessionPayload.email,
+            userName: sessionPayload.name,
+            role: effectiveRole,
+            dealership,
+            event: "LOGIN_SUCESSO",
+            details: "Autenticação realizada via provedor remoto.",
+          });
+          if (onSessionReady) onSessionReady(effectiveRole, dealership, sessionPayload);
           onLogin();
         } else {
           setErrorMessage("Senha de acesso incorreta. Verifique suas credenciais corporativas.");
+          appendAccessLog({
+            email: cleanEmail || username,
+            userName: managedUser?.name || username.split("@")[0] || "Desconhecido",
+            role: managedUser?.role || userRole,
+            dealership,
+            event: "LOGIN_FALHA",
+            details: "Falha na autenticação remota com as credenciais informadas.",
+          });
         }
       })
       .catch(() => {
         setErrorMessage("Senha de acesso incorreta. Verifique suas credenciais corporativas.");
+        appendAccessLog({
+          email: cleanEmail || username,
+          userName: managedUser?.name || username.split("@")[0] || "Desconhecido",
+          role: managedUser?.role || userRole,
+          dealership,
+          event: "LOGIN_FALHA",
+          details: "Erro de comunicação ao validar credenciais.",
+        });
       })
       .finally(() => {
         setIsAuthenticating(false);
@@ -155,11 +219,38 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
         {/* BEGIN: LoginFormCard */}
         <div className="w-full cockpit-panel rounded-2xl p-6 sm:p-8 relative overflow-hidden shadow-card">
           {/* Card Header */}
-          <div className="pb-4 mb-5 border-b border-slate-100">
-            <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
-              Acesso ao Sistema de Vendas de Acessórios
-            </h2>
-            <p className="text-xs text-slate-500 mt-0.5">Identifique-se com sua credencial de concessionária</p>
+          <div className="pb-4 mb-5 border-b border-slate-100 flex items-start justify-between gap-3">
+            <div>
+              <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight">
+                Acesso ao Sistema de Vendas de Acessórios
+              </h2>
+              <p className="text-xs text-slate-500 mt-0.5">Identifique-se com sua credencial de concessionária</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                const switchingToAdmin = username.trim().toLowerCase() !== "admin@stellantis.com";
+                if (switchingToAdmin) {
+                  setUsername("admin@stellantis.com");
+                  setUserRole("administrador");
+                } else {
+                  setUsername("consultor@stellantis.com");
+                  setUserRole("consultor");
+                }
+                setErrorMessage("");
+              }}
+              className={`shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-[11px] font-bold border transition cursor-pointer ${
+                username.trim().toLowerCase() === "admin@stellantis.com"
+                  ? "bg-indigo-600 text-white border-indigo-600 shadow-xs"
+                  : "bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100"
+              }`}
+              title="Alternar entre acesso padrão de Consultor e acesso Administrador"
+            >
+              <ShieldCheck className="w-3.5 h-3.5" />
+              <span>
+                {username.trim().toLowerCase() === "admin@stellantis.com" ? "Modo Admin" : "Acesso Admin"}
+              </span>
+            </button>
           </div>
 
           {/* Form */}
