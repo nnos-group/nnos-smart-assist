@@ -32,10 +32,12 @@ export interface AccessLogEntry {
   event: AccessEventType;
   details: string;
   deviceInfo: string;
+  ipAddress: string;
 }
 
 const USERS_STORAGE_KEY = "smart_sell_managed_users_v1";
 const LOGS_STORAGE_KEY = "smart_sell_access_logs_v1";
+const CLIENT_IP_STORAGE_KEY = "smart_sell_client_ip_v1";
 const MAX_LOG_ENTRIES = 250;
 
 export const ROLE_LABELS: Record<UserRole, string> = {
@@ -93,6 +95,7 @@ const DEFAULT_LOGS: AccessLogEntry[] = [
     event: "LOGIN_SUCESSO",
     details: "Autenticação corporativa realizada no terminal.",
     deviceInfo: "Desktop / Web",
+    ipAddress: "177.92.44.18",
   },
   {
     id: "log-seed-2",
@@ -104,8 +107,54 @@ const DEFAULT_LOGS: AccessLogEntry[] = [
     event: "LOGIN_SUCESSO",
     details: "Sessão administrativa iniciada.",
     deviceInfo: "Desktop / Web",
+    ipAddress: "177.92.44.18",
   },
 ];
+
+let ipFetchPromise: Promise<string> | null = null;
+
+export function getCachedClientIp(): string {
+  if (typeof window === "undefined") return "127.0.0.1";
+  try {
+    return window.sessionStorage.getItem(CLIENT_IP_STORAGE_KEY) || "";
+  } catch {
+    return "";
+  }
+}
+
+export async function prefetchClientIp(): Promise<string> {
+  const cached = getCachedClientIp();
+  if (cached) return cached;
+  if (typeof window === "undefined" || typeof fetch === "undefined") return "127.0.0.1";
+
+  if (!ipFetchPromise) {
+    const controller = typeof AbortController !== "undefined" ? new AbortController() : null;
+    const timeoutId = controller ? setTimeout(() => controller.abort(), 3000) : null;
+
+    ipFetchPromise = fetch("https://api.ipify.org?format=json", {
+      signal: controller?.signal,
+    })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { ip?: string } | null) => {
+        const ip = data?.ip?.trim() || "Não identificado";
+        try {
+          window.sessionStorage.setItem(CLIENT_IP_STORAGE_KEY, ip);
+        } catch {
+          // ignore
+        }
+        return ip;
+      })
+      .catch(() => {
+        const host = window.location?.hostname;
+        return host === "localhost" || host === "127.0.0.1" ? "127.0.0.1 (Local)" : "Não identificado";
+      })
+      .finally(() => {
+        if (timeoutId) clearTimeout(timeoutId);
+      });
+  }
+
+  return ipFetchPromise;
+}
 
 function notifyChange(): void {
   if (typeof window !== "undefined") {
@@ -267,19 +316,38 @@ export function getAccessLogs(): AccessLogEntry[] {
 }
 
 export function appendAccessLog(
-  entry: Omit<AccessLogEntry, "id" | "timestamp" | "deviceInfo"> & { deviceInfo?: string }
+  entry: Omit<AccessLogEntry, "id" | "timestamp" | "deviceInfo" | "ipAddress"> & {
+    deviceInfo?: string;
+    ipAddress?: string;
+  }
 ): AccessLogEntry {
   const logs = getAccessLogs();
+  const cachedIp = entry.ipAddress || getCachedClientIp();
   const newEntry: AccessLogEntry = {
     ...entry,
     id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
     timestamp: new Date().toISOString(),
     deviceInfo: entry.deviceInfo || getDeviceInfo(),
+    ipAddress: cachedIp || "Obtendo IP...",
   };
 
   const next = [newEntry, ...logs].slice(0, MAX_LOG_ENTRIES);
   safeWriteStorage(LOGS_STORAGE_KEY, next);
   notifyChange();
+
+  if (!cachedIp && typeof window !== "undefined") {
+    prefetchClientIp().then((resolvedIp) => {
+      const currentLogs = getAccessLogs();
+      const idx = currentLogs.findIndex((item) => item.id === newEntry.id);
+      if (idx !== -1 && currentLogs[idx].ipAddress !== resolvedIp) {
+        const updatedLogs = [...currentLogs];
+        updatedLogs[idx] = { ...updatedLogs[idx], ipAddress: resolvedIp };
+        safeWriteStorage(LOGS_STORAGE_KEY, updatedLogs);
+        notifyChange();
+      }
+    });
+  }
+
   return newEntry;
 }
 
@@ -294,13 +362,37 @@ export function clearAccessLogs(actor?: { email: string; name: string; dealershi
     event: "USUARIO_EDITADO",
     details: "Histórico de logs de acesso limpo pelo administrador.",
     deviceInfo: getDeviceInfo(),
+    ipAddress: getCachedClientIp() || "Obtendo IP...",
   };
   safeWriteStorage(LOGS_STORAGE_KEY, [resetEntry]);
   notifyChange();
+
+  if (!getCachedClientIp() && typeof window !== "undefined") {
+    prefetchClientIp().then((resolvedIp) => {
+      const currentLogs = getAccessLogs();
+      const idx = currentLogs.findIndex((item) => item.id === resetEntry.id);
+      if (idx !== -1) {
+        const updatedLogs = [...currentLogs];
+        updatedLogs[idx] = { ...updatedLogs[idx], ipAddress: resolvedIp };
+        safeWriteStorage(LOGS_STORAGE_KEY, updatedLogs);
+        notifyChange();
+      }
+    });
+  }
 }
 
 export function exportAccessLogsToCsv(logs: AccessLogEntry[]): string {
-  const header = ["Data/Hora", "Usuario", "Email", "Perfil", "Concessionaria", "Evento", "Detalhes", "Dispositivo"];
+  const header = [
+    "Data/Hora",
+    "Usuario",
+    "Email",
+    "Perfil",
+    "Concessionaria",
+    "Evento",
+    "Detalhes",
+    "IP da Maquina",
+    "Dispositivo",
+  ];
   const escapeCsv = (val: string) => `"${(val || "").replace(/"/g, '""')}"`;
 
   const rows = logs.map((l) => [
@@ -311,6 +403,7 @@ export function exportAccessLogsToCsv(logs: AccessLogEntry[]): string {
     l.dealership,
     l.event,
     l.details,
+    l.ipAddress || "Não identificado",
     l.deviceInfo,
   ]);
 

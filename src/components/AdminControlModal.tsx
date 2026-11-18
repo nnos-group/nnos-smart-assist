@@ -163,7 +163,8 @@ export const AdminControlModal = ({
         l.userName.toLowerCase().includes(q) ||
         l.email.toLowerCase().includes(q) ||
         l.details.toLowerCase().includes(q) ||
-        l.dealership.toLowerCase().includes(q);
+        l.dealership.toLowerCase().includes(q) ||
+        (l.ipAddress || "").toLowerCase().includes(q);
       const matchesEvent = eventFilter === "all" || l.event === eventFilter;
       return matchesQuery && matchesEvent;
     });
@@ -727,7 +728,7 @@ export const AdminControlModal = ({
                       type="text"
                       value={logSearch}
                       onChange={(e) => setLogSearch(e.target.value)}
-                      placeholder="Buscar por usuário, e-mail ou detalhe do evento..."
+                      placeholder="Buscar por usuário, e-mail, IP ou detalhe do evento..."
                       className="w-full pl-9 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
                     />
                   </div>
@@ -778,6 +779,7 @@ export const AdminControlModal = ({
                         <th className="py-3 px-4">Usuário / E-mail</th>
                         <th className="py-3 px-4">Perfil</th>
                         <th className="py-3 px-4">Detalhes</th>
+                        <th className="py-3 px-4">IP da Máquina</th>
                         <th className="py-3 px-4">Origem</th>
                       </tr>
                     </thead>
@@ -804,13 +806,18 @@ export const AdminControlModal = ({
                             </td>
                             <td className="py-3 px-4 text-slate-700 capitalize">{log.role}</td>
                             <td className="py-3 px-4 text-slate-600 max-w-[300px]">{log.details}</td>
+                            <td className="py-3 px-4 whitespace-nowrap">
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-mono text-[11px] font-semibold border border-slate-200">
+                                {log.ipAddress || "Não identificado"}
+                              </span>
+                            </td>
                             <td className="py-3 px-4 text-slate-500 whitespace-nowrap">{log.deviceInfo}</td>
                           </tr>
                         );
                       })}
                       {filteredLogs.length === 0 && (
                         <tr>
-                          <td colSpan={6} className="py-8 text-center text-slate-500">
+                          <td colSpan={7} className="py-8 text-center text-slate-500">
                             Nenhum registro de log encontrado.
                           </td>
                         </tr>

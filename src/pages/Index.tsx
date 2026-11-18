@@ -8,7 +8,7 @@ import { AdminControlModal } from "@/components/AdminControlModal";
 import { SalesJourneyProvider, useSalesJourney } from "@/context/SalesJourneyContext";
 import { SalesJourneyStepper } from "@/components/SalesJourneyStepper";
 import { DeviceSimulator } from "@/components/DeviceSimulator";
-import { appendAccessLog } from "@/lib/accessControlRepository";
+import { appendAccessLog, prefetchClientIp } from "@/lib/accessControlRepository";
 
 // 7 Etapas Consultivas
 import { ConsultativeDiscoveryChecklist } from "@/components/ConsultativeDiscoveryChecklist";
@@ -48,6 +48,7 @@ const InnerSalesJourney = () => {
   // Restaura sessão completa do usuário caso a página seja recarregada
   React.useEffect(() => {
     if (!isLoggedIn) return;
+    prefetchClientIp();
     try {
       const savedSession = sessionStorage.getItem("smart_sell_user_session");
       if (savedSession) {

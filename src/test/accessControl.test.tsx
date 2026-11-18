@@ -141,5 +141,6 @@ describe("Admin Access, User Control & Access Logs", () => {
     expect(screen.getByText("Novo Consultor")).toBeDefined();
     fireEvent.click(screen.getByRole("button", { name: /Log de Acesso/i }));
     expect(screen.getByText(/Novo Consultor \(novo@stellantis\.com\) criado/i)).toBeDefined();
+    expect(screen.getByText(/IP da Máquina/i)).toBeDefined();
   });
 });

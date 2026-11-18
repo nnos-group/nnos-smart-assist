@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowRight, Eye, EyeOff, Building2, Mail, Lock, Check, MapPin, X, ChevronRight, AlertCircle, ShieldCheck } from "lucide-react";
 
 import accessoriesBadge from "@/assets/accessories-badge.jpg";
@@ -9,6 +9,7 @@ import {
   CORPORATE_MASTER_PASSWORDS,
   appendAccessLog,
   findManagedUserByEmail,
+  prefetchClientIp,
   recordUserLastLogin,
 } from "@/lib/accessControlRepository";
 
@@ -53,6 +54,10 @@ const LoginScreen = ({ onLogin, onSessionReady }: LoginScreenProps) => {
   const [rememberSession, setRememberSession] = useState(true);
   const [isHubModalOpen, setIsHubModalOpen] = useState(false);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
+
+  useEffect(() => {
+    prefetchClientIp();
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
